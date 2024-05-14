@@ -1,0 +1,2 @@
+{"page_name": "1", "spectrum_filename": "JSONsample", "orientation": "vertical", "default_amount_of_spectrums": "10", "default_masses": "0,1,2", "do_display_3d": "True", "do_display_const_mass": "True", "do_display_const_time": "True"}
+{"page_name":"2","spectrum_filename":"JSONsample","orientation":"horizontal","default_amount_of_spectrums":"10","default_masses":"0,1,2","do_display_3d":"True","do_display_const_mass":"True","do_display_const_time":"True"}
