@@ -7,6 +7,3 @@ import datetime
 
 
 st.write("Welcome to Urania sampling system graphic user interface\nUse sidebar to the left to inspect samples from different pipes")
-
-
-
