@@ -7,6 +7,7 @@ import Functions as fn
 import datetime as dt
 import JSONoperators as js
 import datetime
+#from datetime import timestamp
 import mpld3
 import streamlit.components.v1 as components
 
@@ -23,7 +24,26 @@ def refresh():
     return True
 
 
+def date_time_input():  # function to input date and time as seconds from 01jan1970 through graphic user interface
 
+
+    col = st.columns((1, 1), gap='medium')  # left part of the screen to input date, right - to input time
+    with col[0]:
+        date_value = st.date_input(label="Enter date: ",min_value=datetime.date(1969,1,1))
+    with col[1]:
+        time_value = st.time_input(label="Enter time: ")
+
+    date_value = str(date_value) # obtained results converted to strings and then split into integers
+    time_value = str(time_value)
+
+    date_array = date_value.split("-")
+    time_array = time_value.split(":")
+
+    #print(date_array)
+    #print(time_array)
+
+    datetime_value = (datetime.datetime(year=int(date_array[0]),month = int(date_array[1]),day=int(date_array[2]),hour=int(time_array[0]),minute=int(time_array[1]),second=int(time_array[2]))).timestamp()
+    return datetime_value  #integers are merged together using datetime.datetime and then returned
 
 
 
@@ -174,6 +194,31 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
     spectrum_name = Settings["spectrum_filename"]
     st.write(f"Reading logs from {str(spectrum_name)} source")
+    parsing_mode = Settings["parsing_mode"]
+    st.write(f"{parsing_mode} mode of operation")
+
+    time_moment = Settings["default_moment_of_time"]
+    if Settings["parsing_mode"] == "search":  #get desired moment of time is parsing mode is search
+        #time_moment = st.text_input("Moment of time to search for: ")
+        #time_moment = int(date_time_input())
+
+        select_mode = st.selectbox(label="Select how to get time input: ",options=("Current","Default","Select"))
+
+        match select_mode:
+            case "Current":
+                time_moment = int((datetime.datetime.now()).timestamp())
+            case "Default":
+                time_moment = int(Settings["default_moment_of_time"])  # by default, time_mode is converted to default in settings
+            case "Select":
+                time_moment = int(date_time_input())
+
+
+
+        st.write(f"Time = {dt.datetime.fromtimestamp(time_moment)}")
+
+
+
+
 
     howmuchspectrums = st.text_input(label="How much spectrums to display: ")  # user is prompted to override amount of displayed spectrums
     if howmuchspectrums == "":
@@ -183,9 +228,17 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
     try:
 
-        howmuchspectrums = int(howmuchspectrums)
+        howmuchspectrums = int(howmuchspectrums) # assert that howmuchspectrums is int and greater than 0
         assert howmuchspectrums > 0
-        metadata, spectrum_list = js.read_last_spectrums(Settings["spectrum_filename"], howmuchspectrums)   # most recent spectrums are imported from JSON file
+
+        if Settings["parsing_mode"] == "last":
+            metadata, spectrum_list = js.read_last_spectrums(Settings["spectrum_filename"], howmuchspectrums)   # most recent spectrums are imported from JSON file
+        if Settings["parsing_mode"] == "search":
+            metadata, spectrum_list = js.read_period_of_time(Settings["spectrum_filename"],howmuchspectrums,time_moment)
+
+        if metadata["is_a_spectrum"] != "True":   # verification that provided file is a spectrum
+            st.write("Imported file is not valid!")
+
 
 
         if Settings["orientation"] == "horizontal":
@@ -216,7 +269,7 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
 
     except:
-        st.write("Bad input in howmuchspectrums line!!!")
+        st.write("Bad input in howmuchspectrums/momentoftime line!!!")
 
 
 
