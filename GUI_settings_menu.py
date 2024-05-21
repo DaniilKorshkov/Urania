@@ -1,6 +1,8 @@
 import JSONoperators as js
 import streamlit as st
+import StreamlitGUI as sg
 import json
+import datetime
 
 
 
@@ -50,18 +52,66 @@ def apply_page_settings(settings_filename,New_Settings):      # function to chan
 def modify_filename(Settings,settings_file):   # function to change desired filename of spectrum log that page is operating with
     New_Settings = Settings
 
-    new_filename = st.text_input(f"Input new filename: ")
-    do_modify_filename = st.button("Apply new filename")
-    if do_modify_filename:
-        New_Settings["spectrum_filename"] = new_filename
+    old_filename = Settings["spectrum_filename"]
 
-        apply_page_settings(settings_file,New_Settings)
+    new_filename = st.text_input(f"Input new filename: ")
+    st.write(f"Current filename = {old_filename}")
+    do_modify_filename = st.button("Apply new filename")
+
+
+    if new_filename != "":  # if input us non-zero, program verifies if provided file is a spectrum
+        try:
+            metadata, placeholder = js.read_spectrum_json(new_filename)
+
+            if str(metadata["is_a_spectrum"]) == str("True"):
+
+                if do_modify_filename:
+                    New_Settings["spectrum_filename"] = new_filename  # if file provided exists and is valid, filename is successfully changed
+
+                    apply_page_settings(settings_file,New_Settings)
+            else:
+                st.write(f"Not a valid file!")  # otherwise, error message is returned
+        except:
+
+            st.write(f"No such file found")
+
+def modify_parsing_mode(Settings,settings_file):  #function to change defaults parsing mode (show most recent spectrums or look for given period of time)
+    New_Settings = Settings
+
+    old_mode = Settings["parsing_mode"]
+
+    new_mode = st.radio(f"Select default parsing mode", ["last", "search"])
+    st.write(f"Current parsing mode = {old_mode}")
+    do_modify_mode = st.button("Apply new mode")
+    if do_modify_mode:
+        New_Settings["parsing_mode"] = new_mode
+
+        apply_page_settings(settings_file, New_Settings)
+
+def modify_default_time_moment(Settings,settings_file):   # function to modify default time moment for searching parsing mode
+
+    New_Settings = Settings
+
+    new_moment = sg.date_time_input()
+    old_moment = Settings["default_moment_of_time"]
+    #print(f"Current default time = {datetime.datetime.fromtimestamp(old_moment)}")
+
+    do_modify_time_moment = st.button("Apply new time moment")
+    if do_modify_time_moment:
+
+
+            New_Settings["default_moment_of_time"] = new_moment
+            apply_page_settings(settings_file, New_Settings)
+
+
 
 
 def modify_orientation(Settings,settings_file):  # function to select horizontal or vertical orientation of page
     New_Settings = Settings
 
     new_orientation = st.radio(f"Select orientation",["vertical","horizontal"])
+    old_option = Settings["orientation"]
+    st.write(f"Current orientation = {old_option}")
     do_modify_orientation = st.button("Apply new orientation")
     if do_modify_orientation:
         New_Settings["orientation"] = new_orientation
@@ -73,6 +123,8 @@ def modify_default_amount_of_spectrums(Settings,settings_file):    # function to
     New_Settings = Settings
 
     new_amount = st.text_input(f"Input new default amount of spectrums: ")
+    old_option = Settings["default_amount_of_spectrums"]
+    st.write(f"Current amount of spectrums displayed = {old_option}")
     do_modify_amount = st.button("Apply new default amount")
 
     try:
@@ -91,6 +143,8 @@ def modify_default_mass_list(Settings,settings_file):   # function to change arr
     New_Settings = Settings
 
     new_masses = st.text_input(f"Input new default masses for constant time chart: ")
+    old_option = Settings["default_masses"]
+    st.write(f"Current mass list = {old_option}")
     do_modify_masses = st.button("Apply new default masses")
 
     try:
@@ -111,6 +165,8 @@ def modify_do_display_3d(Settings,settings_file):  # function to turn on or off 
     New_Settings = Settings
 
     new_3d = st.radio(f"Do display 3d chart?", ["True", "False"])
+    old_option = Settings["do_display_3d"]
+    st.write(f"Current option = {old_option}")
     do_modify_3d = st.button("Apply new option")
     if do_modify_3d:
         New_Settings["do_display_3d"] = new_3d
@@ -122,6 +178,8 @@ def modify_do_display_const_mass(Settings,settings_file): # function to turn on 
     New_Settings = Settings
 
     new_3d = st.radio(f"Do display constant mass chart?", ["True", "False"])
+    old_option = Settings["do_display_const_mass"]
+    st.write(f"Current option = {old_option}")
     do_modify_const_mass = st.button("Apply new option1")
     if do_modify_const_mass:
         New_Settings["do_display_const_mass"] = new_3d
@@ -133,6 +191,8 @@ def modify_do_display_const_time(Settings,settings_file): # function to turn on 
     New_Settings = Settings
 
     new_3d = st.radio(f"Do display constant time chart?", ["True", "False"])
+    old_option = Settings["do_display_const_time"]
+    st.write(f"Current option = {old_option}")
     do_modify_3d = st.button("Apply new option2")
     if do_modify_3d:
         New_Settings["do_display_const_time"] = new_3d
@@ -161,12 +221,33 @@ def Settings_Menu(settings_file, default_settings_file):                        
     Settings = js.read_GUI_page_settings(settings_file, str(page_selection))
 
     modify_filename(Settings,settings_file)
+    for i in range(6):
+        st.markdown("")
+    modify_parsing_mode(Settings,settings_file)
+    for i in range(6):
+        st.markdown("")
+    st.write(f"Choose default moment of time for 'Search' parsing mode")
+    modify_default_time_moment(Settings, settings_file)
+    for i in range(6):
+        st.markdown("")
     modify_orientation(Settings,settings_file)
+    for i in range(6):
+        st.markdown("")
     modify_default_amount_of_spectrums(Settings,settings_file)
+    for i in range(6):
+        st.markdown("")
     modify_default_mass_list(Settings,settings_file)
+    for i in range(6):
+        st.markdown("")
     modify_do_display_3d(Settings,settings_file)
+    for i in range(6):
+        st.markdown("")
     modify_do_display_const_mass(Settings,settings_file)
+    for i in range(6):
+        st.markdown("")
     modify_do_display_const_time(Settings,settings_file)
+    for i in range(6):
+        st.markdown("")
 
     reset_settings = st.button(label="reset all settings to default")
     if reset_settings:
