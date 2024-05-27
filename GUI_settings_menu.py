@@ -6,17 +6,17 @@ import datetime
 
 
 
-def reset_to_default(settings_filename,default_settings_filename):
+def reset_to_default(settings_filename,default_settings_filename):  # function to reset JSON settings config to factory default
 
     Settings_List = []  # new settings list is a list of strings of old GUI_settings config to be modified later
 
     handle = open(default_settings_filename, "r")
-    for line in handle:
+    for line in handle:  # copy of factory default confing is made to Settings_List
         Settings_List.append(line)
     handle.close()
 
     handle = open(settings_filename, "w")
-    for line in Settings_List:
+    for line in Settings_List:   # copy is re-written to Settings file
         handle.write(line)
     handle.close()
 
@@ -24,10 +24,13 @@ def reset_to_default(settings_filename,default_settings_filename):
 def apply_page_settings(settings_filename,New_Settings):      # function to change one line in JSON config (settings_filename) to modified one (New_Settings) with respect to selected page
 
 
+
+
     New_Settings_List = []  #new settings list is a list of strings of old GUI_settings config to be modified later
 
     handle = open(settings_filename, "r")
-    for line in handle:
+
+    for line in handle:  # old JSON file is copied to New_Settings_List. Old file is to be erased later
             if str(New_Settings["page_name"]) == str((json.loads(line))["page_name"]):
                 New_Settings_List.append(json.dumps(New_Settings))  # if page_number in the line of old config equals to page_number in new line, the line is replaced
             else:
@@ -39,7 +42,7 @@ def apply_page_settings(settings_filename,New_Settings):      # function to chan
     handle = open(settings_filename,"w")
     i = 1
     for line in New_Settings_List:
-        handle.write(line.strip("\n"))   #GUI_settings config is re-written
+        handle.write(line.strip("\n"))   #GUI_settings config is re-written with formatted New_Settings_List
         if i < len(New_Settings_List):
              handle.write("\n")
         i += 1
@@ -220,7 +223,7 @@ def Settings_Menu(settings_file, default_settings_file):                        
 
     Settings = js.read_GUI_page_settings(settings_file, str(page_selection))
 
-    modify_filename(Settings,settings_file)
+    modify_filename(Settings,settings_file)  # all options are displayed sequentially with 6 gaps in between
     for i in range(6):
         st.markdown("")
     modify_parsing_mode(Settings,settings_file)

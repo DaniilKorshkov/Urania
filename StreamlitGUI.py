@@ -59,10 +59,11 @@ def three_dimentional_spectrum(spectrum_list):  # function to display 3d plot wi
     timeframe = fn.get_time_list(spectrum_list)  #list of all moments of time for given spectrum
 
     #colors = ['r', 'g', 'b', 'y']
-    yticks = [3, 2, 1, 0]
+   # yticks = [3, 2, 1, 0]
     for time_moment in timeframe:
 
         xs = np.arange(len(spectrum_list[str(time_moment)]))
+        #xs_converted = [dt.datetime.fromtimestamp(element) for element in xs]
         ys = spectrum_list[str(time_moment)]
 
 
@@ -77,7 +78,7 @@ def three_dimentional_spectrum(spectrum_list):  # function to display 3d plot wi
     ax.set_title(f"Spectrums for different time moments")
 
     # On the y-axis let's only label the discrete values that we have data for.
-    ax.set_yticks(yticks)
+    #ax.set_yticks(yticks)
 
 
 
@@ -96,18 +97,18 @@ def constant_time_spectrum_table(mass_array,ppm_array):
 
 
 
-def constant_time_spectrum(spectrum_list, given_time_tick):   # function to display spectrum for given moment of time
+def constant_time_spectrum(spectrum_list):   # function to display spectrum for given moment of time
 
-    time_array = fn.get_time_list(spectrum_list)
+    time_array = fn.get_time_list(spectrum_list)   # get all moments of time from loaded spectrums
 
 
 
     try:
-        given_time_tick = st.slider(label="Select time: ",max_value=(len(time_array)-1))
+        given_time_tick = st.slider(label="Select time: ",max_value=(len(time_array)-1))  # select moment of time from list of loaded spectrums
     except:
         given_time_tick = 0
 
-    given_time = time_array[given_time_tick]
+    given_time = time_array[given_time_tick]   # get desired moment of time
 
     placeholder = st.empty()
     with placeholder.container():
@@ -162,13 +163,14 @@ def constant_mass_spectrum(spectrum_list,default_mass_string):  # function to di
         with placeholder.container():
             fig, ax = plt.subplots()
             x = fn.get_time_list(spectrum_list)
+            x_converted = [dt.datetime.fromtimestamp(element) for element in x]  # convert date and time from computer format to human readable format
 
             mass_dictionary = {}  # dictionaty to be displayed in table with numerical values
-            mass_dictionary[f"Time:"] = x   # first column is time moments of measurements
+            mass_dictionary[f"Time:"] = x_converted   # first column is time moments of measurements
 
             for given_mass in mass_list:
                 y = fn.plot_mass(spectrum_list, given_mass)
-                ax.plot(x, y, label=f"M: {given_mass}",)
+                ax.plot(x_converted, y, label=f"M: {given_mass}",)
                 mass_dictionary[f"M = {str(given_mass)}"] = y
 
             ax.set_xlabel(f'Time')
@@ -176,9 +178,11 @@ def constant_mass_spectrum(spectrum_list,default_mass_string):  # function to di
             ax.legend()
             ax.set_title(f'PPM vs time for given M')
 
+            #ax.xaxis.axis_date(tz=None)
+
             st.pyplot(fig)
 
-            do_display_table = st.button(label="display table with values")
+            do_display_table = st.button(label="display table with values")  # optionally display table with numerical values
             if do_display_table:
                 st.write(pd.DataFrame(mass_dictionary))
 
@@ -226,22 +230,22 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
 
 
-    try:
 
-        howmuchspectrums = int(howmuchspectrums) # assert that howmuchspectrums is int and greater than 0
-        assert howmuchspectrums > 0
 
-        if Settings["parsing_mode"] == "last":
+    howmuchspectrums = int(howmuchspectrums) # assert that howmuchspectrums is int and greater than 0
+    assert howmuchspectrums > 0
+
+    if Settings["parsing_mode"] == "last":
             metadata, spectrum_list = js.read_last_spectrums(Settings["spectrum_filename"], howmuchspectrums)   # most recent spectrums are imported from JSON file
-        if Settings["parsing_mode"] == "search":
+    if Settings["parsing_mode"] == "search":
             metadata, spectrum_list = js.read_period_of_time(Settings["spectrum_filename"],howmuchspectrums,time_moment)
 
-        if metadata["is_a_spectrum"] != "True":   # verification that provided file is a spectrum
+    if metadata["is_a_spectrum"] != "True":   # verification that provided file is a spectrum
             st.write("Imported file is not valid!")
 
 
 
-        if Settings["orientation"] == "horizontal":
+    if Settings["orientation"] == "horizontal":   # select horizontal or vertical layout of page; and display widgets accordingly
 
             #st.set_page_config(layout="wide")
             col = st.columns((1, 1, 1), gap='medium')
@@ -251,25 +255,25 @@ def display_one_sample_data(settings_filename,self_name):           # function t
                     three_dimentional_spectrum(spectrum_list)
             if Settings["do_display_const_time"] == "True":
                 with col[1]:
-                    constant_time_spectrum(spectrum_list, 1)
+                    constant_time_spectrum(spectrum_list)
             if Settings["do_display_const_mass"] == "True":
                 with col[2]:
                     constant_mass_spectrum(spectrum_list,Settings["default_masses"])
 
-        else:
+    else:
             if Settings["do_display_3d"] == "True":
                 three_dimentional_spectrum(spectrum_list)
 
             if Settings["do_display_const_time"] == "True":
-                constant_time_spectrum(spectrum_list, 1)
+                constant_time_spectrum(spectrum_list)
 
             if Settings["do_display_const_mass"] == "True":
                 constant_mass_spectrum(spectrum_list,Settings["default_masses"])
 
 
 
-    except:
-        st.write("Bad input in howmuchspectrums/momentoftime line!!!")
+    #except:
+        #st.write("Bad input in howmuchspectrums/momentoftime line!!!")
 
 
 

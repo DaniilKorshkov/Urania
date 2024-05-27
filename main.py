@@ -1,6 +1,6 @@
 import streamlit as st   #main page of webapp. Right now it is effectively a placeholder
 
-import RGAcomms as rc
+import RGA_comms as rc
 import StreamlitGUI as sg
 import JSONoperators as js
 import datetime
