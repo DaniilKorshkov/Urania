@@ -51,25 +51,28 @@ def date_time_input():  # function to input date and time as seconds from 01jan1
 
 
 
-def three_dimentional_spectrum(spectrum_list):  # function to display 3d plot with M and time on x,y axis and PPM on z axis
+def three_dimentional_spectrum(spectrum_list, initial_value, step):  # function to display 3d plot with M and time on x,y axis and PPM on z axis
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
 
 
     timeframe = fn.get_time_list(spectrum_list)  #list of all moments of time for given spectrum
 
-    #colors = ['r', 'g', 'b', 'y']
-   # yticks = [3, 2, 1, 0]
+
+
+
+
     for time_moment in timeframe:
 
-        xs = np.arange(len(spectrum_list[str(time_moment)]))
-        #xs_converted = [dt.datetime.fromtimestamp(element) for element in xs]
+        mass_range = list()  # create array for X line with respect to initial mass value and step length
+        for i in range(len(spectrum_list[str(time_moment)])):
+            mass_range.append(initial_value + i * step)
         ys = spectrum_list[str(time_moment)]
 
 
 
         # Plot the bar graph given by xs and ys on the plane y=k with 80% opacity.
-        ax.bar(xs, ys, zs=time_moment, zdir='y', alpha=0.8)
+        ax.bar(mass_range, ys, zs=time_moment, zdir='y', alpha=0.8)
 
     ax.set_xlabel('M')
     ax.set_ylabel('time')
@@ -97,7 +100,7 @@ def constant_time_spectrum_table(mass_array,ppm_array):
 
 
 
-def constant_time_spectrum(spectrum_list):   # function to display spectrum for given moment of time
+def constant_time_spectrum(spectrum_list, initial_value, step):   # function to display spectrum for given moment of time
 
     time_array = fn.get_time_list(spectrum_list)   # get all moments of time from loaded spectrums
 
@@ -119,7 +122,13 @@ def constant_time_spectrum(spectrum_list):   # function to display spectrum for 
 
         fig, ax = plt.subplots()
 
-        ax.bar(range(len(spectrum_list[str(given_time)])), spectrum_list[str(given_time)], label="constant time spectrum") #  range(len(spectrum_list[str(given_time)]) is array of molar masses, from 0 to maximal molar mass specified in spectrum
+        mass_range = list()  # create array for X line with respect to initial mass value and step length
+        for i in range(len(spectrum_list[str(given_time)])):
+            mass_range.append(initial_value+i*step)
+
+        print(mass_range)
+
+        ax.bar(mass_range, spectrum_list[str(given_time)], label="constant time spectrum",width=0.8*step) #  range(len(spectrum_list[str(given_time)]) is array of molar masses, from 0 to maximal molar mass specified in spectrum
 
         ax.set_xlabel(f'M')
         ax.set_ylabel(f'PP(M?)')
@@ -129,7 +138,7 @@ def constant_time_spectrum(spectrum_list):   # function to display spectrum for 
 
     do_display_table = st.button(label="Display table with values")
     if do_display_table:
-        constant_time_spectrum_table(range(len(spectrum_list[str(given_time)])), spectrum_list[str(given_time)])
+        constant_time_spectrum_table(mass_range, spectrum_list[str(given_time)])
 
 
 
@@ -144,7 +153,7 @@ def constant_time_spectrum(spectrum_list):   # function to display spectrum for 
 
 
 
-def constant_mass_spectrum(spectrum_list,default_mass_string):  # function to display plots for constant masses with time on X axis and PPM on Y axis
+def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, step):  # function to display plots for constant masses with time on X axis and PPM on Y axis
 
 
     st.write(f"Enter desired molar masses separated by comma: (default: {default_mass_string}) ")
@@ -156,8 +165,8 @@ def constant_mass_spectrum(spectrum_list,default_mass_string):  # function to di
         temp_mass_list = (mass_string.strip()).split(",")
         mass_list=[]  # list of desired molar masses to be displayed on graph
         for element in temp_mass_list:
-            mass_list.append(int(element.strip()))   #elements from string are splitted, stripped and converted to integers; and appended to mass_list. If not convertable to integers, "bad input" message is printed
 
+                mass_list.append(float(element.strip()))
 
         placeholder = st.empty()
         with placeholder.container():
@@ -169,8 +178,13 @@ def constant_mass_spectrum(spectrum_list,default_mass_string):  # function to di
             mass_dictionary[f"Time:"] = x_converted   # first column is time moments of measurements
 
             for given_mass in mass_list:
-                y = fn.plot_mass(spectrum_list, given_mass)
-                ax.plot(x_converted, y, label=f"M: {given_mass}",)
+                mass_number = int((given_mass-initial_value)/step)
+                #st.write(mass_number)
+                try:
+                    y = fn.plot_mass(spectrum_list, mass_number)
+                except:
+                    pass
+                ax.plot(x_converted, y, label=f"M: {given_mass}")
                 mass_dictionary[f"M = {str(given_mass)}"] = y
 
             ax.set_xlabel(f'Time')
@@ -243,6 +257,8 @@ def display_one_sample_data(settings_filename,self_name):           # function t
     if metadata["is_a_spectrum"] != "True":   # verification that provided file is a spectrum
             st.write("Imported file is not valid!")
 
+    initial_value, step = metadata["initial_value"],metadata["step"]
+
 
 
     if Settings["orientation"] == "horizontal":   # select horizontal or vertical layout of page; and display widgets accordingly
@@ -252,43 +268,29 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
             if Settings["do_display_3d"] == "True":
                 with col[0]:
-                    three_dimentional_spectrum(spectrum_list)
+                    three_dimentional_spectrum(spectrum_list, initial_value, step)
             if Settings["do_display_const_time"] == "True":
                 with col[1]:
-                    constant_time_spectrum(spectrum_list)
+                    constant_time_spectrum(spectrum_list, initial_value, step)
             if Settings["do_display_const_mass"] == "True":
                 with col[2]:
-                    constant_mass_spectrum(spectrum_list,Settings["default_masses"])
+                    constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step)
 
     else:
             if Settings["do_display_3d"] == "True":
-                three_dimentional_spectrum(spectrum_list)
+                three_dimentional_spectrum(spectrum_list, initial_value, step)
 
             if Settings["do_display_const_time"] == "True":
-                constant_time_spectrum(spectrum_list)
+                constant_time_spectrum(spectrum_list, initial_value, step)
 
             if Settings["do_display_const_mass"] == "True":
-                constant_mass_spectrum(spectrum_list,Settings["default_masses"])
+                constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step)
 
 
 
     #except:
         #st.write("Bad input in howmuchspectrums/momentoftime line!!!")
 
-
-
-
-
-
-
-
-
-
-
-
-
-#def spectrum_dashboard(metadata, spectrum_list):
- #   st.write(f"Valve #{metadata["valve_number"]}")
 
 
 

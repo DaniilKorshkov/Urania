@@ -3,12 +3,13 @@ import time
 import datetime
 import json
 import sys
+#import pymodbus as pmb
+#from pymodbus.client import ModbusTcpClient
 
 
 
-
-def SendPacketsToRGA(packages_list):    #command to send multiple commands to RGA via list of strings
-    HOST, PORT = "169.254.198.174", 10014   #default IP and port of RGA, change later???
+def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174"):    #command to send multiple commands to RGA via list of strings
+    HOST, PORT = ip_adress, 10014   #default IP and port of RGA, change later???
 
     data_list = list()
 
@@ -44,7 +45,7 @@ def SendPacketsToRGA(packages_list):    #command to send multiple commands to RG
                                 received = str(sock.recv(1024), "ascii")
                                 received_list.append(received)
                                 received_split = received.split(" ")
-                                if received_split[0] == "MassReading" and received_split[1] == data_split[1]:
+                                if received_split[0] == "MassReading" and received_split[1] >= data_split[1]:
                                     break
 
 
@@ -61,17 +62,17 @@ def SendPacketsToRGA(packages_list):    #command to send multiple commands to RG
         return(received_list)
 
 
-def GetMassSpectrum(convertion_coefficient):
-    RawInput = SendPacketsToRGA(('Control  "MyProgram" "1.0"','FilamentControl On','AddBarchart Bar1 1 100 PeakCenter 5 0 0 0','scanadd Bar1','ScanStart 1','__wait_for_given_mass__ 100 0','Release'))
+def GetMassSpectrum(convertion_coefficient,ip_adress="169.254.198.174"):
+    RawInput = SendPacketsToRGA(('Control  "MyProgram" "1.0"','FilamentControl On','AddBarchart Bar1 1 100 PeakCenter 5 0 0 0','scanadd Bar1','ScanStart 1','__wait_for_given_mass__ 100 0','Release'),ip_adress)
     Spectrum = list()  # spectrum is a list of PPM's corresponding to integer molar masses
-    Spectrum.append(0)
 
     for line in RawInput:
         #print(line)
         split_line = line.split()
         if "MassReading" in line:
 
-            split_eng_notation = (split_line[2]).split("e")  #output is given as engineering notation and need to be interpreted to readable form
+            MassReadingPosition = split_line.index("MassReading") # in rare cases mass reading os not the zeroth element in list. Finding position of "MassReading" in line is a workaround
+            split_eng_notation = (split_line[MassReadingPosition+2]).split("e")  #output is given as engineering notation and need to be interpreted to readable form
 
 
             power = 10**(int(split_eng_notation[1]))
@@ -84,8 +85,55 @@ def GetMassSpectrum(convertion_coefficient):
 
 
 
-def AppendSpectrumJSON(filename,convertion_coefficient):  # function to get spectrum from spectrometer and append it to given JSON file
-    Spectrum = GetMassSpectrum(convertion_coefficient)  # spectrum is obtained by making request to mass spectrometer
+def AppendSpectrumJSON(filename,convertion_coefficient,ip_adress="169.254.198.174"):  # function to get spectrum from spectrometer and append it to given JSON file
+    Spectrum = GetMassSpectrum(convertion_coefficient,ip_adress)  # spectrum is obtained by making request to mass spectrometer
+
+    handle = open(filename,"a")
+
+    current_time = int(datetime.datetime.now().timestamp())
+    line_to_append = {"class":"spectrum","time":current_time,"array":Spectrum}
+    formatted_line = json.dumps(line_to_append)  # current time in computer format and array of PPM's are recorded into JSON formatted line
+
+    handle.write("\n")
+    handle.write(formatted_line)
+    handle.close()
+
+
+
+def GetNonIntegerMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step,ip_adress="169.254.198.174"):
+    packages_list = ['Control  "MyProgram" "1.0"' , 'FilamentControl On']
+    for i in range(amount_of_scans):
+        packages_list.append(f'AddSinglePeak SinglePeak{i} {start_mass+i*step} 5 0 0 0')
+        packages_list.append(f'scanadd SinglePeak{i}')
+    packages_list.append('ScanStart 1')
+    packages_list.append('__wait_for_given_mass__ 40.95 0')
+    packages_list.append( 'Release')
+
+
+    RawInput = SendPacketsToRGA(packages_list,ip_adress)
+
+
+    Spectrum = list()  # spectrum is a list of PPM's corresponding to integer molar masses
+
+    for line in RawInput:
+        # print(line)
+        split_line = line.split()
+        if "MassReading" in line:
+            #print(line)
+            MassReadingPosition = split_line.index("MassReading")
+            split_eng_notation = (split_line[MassReadingPosition+2]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
+
+            power = 10 ** (int(split_eng_notation[1]))
+
+            end_result = (float(split_eng_notation[
+                                    0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+
+            Spectrum.append(end_result)
+    return Spectrum
+
+
+def AppendNonIntegerSpectrumJSON(filename,convertion_coefficient,start_mass,amount_of_scans,step,ip_adress="169.254.198.174"):  # function to get spectrum from spectrometer and append it to given JSON file
+    Spectrum = GetNonIntegerMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step,ip_adress)  # spectrum is obtained by making request to mass spectrometer
 
     handle = open(filename,"a")
 
@@ -100,8 +148,28 @@ def AppendSpectrumJSON(filename,convertion_coefficient):  # function to get spec
 
 
 
+def OpenMassFlowController():
+
+    client = ModbusTcpClient('',502)
+    client.connect()
+
+    client.write_coil(1, True)
+    result = client.read_coils(1,1)
+    result2 = client.readwrite_registers(read_adress="0x00")
+    print(result.bits[0])
+    print(result2)
+    client.close()
+
+
+
+#AppendNonIntegerSpectrumJSON('AnalogSpectrum',1,39,64,0.03125,"169.254.198.174")
+
+#Output = SendPacketsToRGA( ('Control  "MyProgram" "1.0"','FilamentControl On','AddSinglePeak Peak1 37.5 5 0 0 0','scanadd Peak1','ScanStart 1','__listen__ 20 0','Release') )
+
+
 
 #Output = SendPacketsToRGA( ('Control  "MyProgram" "1.0"','FilamentControl On','AddBarchart Bar1 1 100 PeakCenter 5 0 0 0','scanadd Bar1','ScanStart 1','__listen__ 100 0','Release') )
+#Output = SendPacketsToRGA( ('Control  "MyProgram" "1.0"','FilamentControl On','AddBarchart Bar1 1 100 PeakCenter 5 0 0 0','scanadd Analog1','ScanStart 1','__listen__ 100 0','Release') )
 
 #for element in Output:
  #   print(element)

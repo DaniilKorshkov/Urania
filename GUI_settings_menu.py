@@ -153,7 +153,7 @@ def modify_default_mass_list(Settings,settings_file):   # function to change arr
     try:
         placeholder_array = new_masses.split(",")
         for element in placeholder_array:
-            element2 = int(element)
+            element2 = float(element)
 
         if do_modify_masses:
             New_Settings["default_masses"] = new_masses
@@ -215,7 +215,7 @@ def Settings_Menu(settings_file, default_settings_file):                        
     page_list = js.read_all_page_numbers(settings_file)
 
     if len(page_list) > 1:
-        page_selection = st.slider(label="Select page to modify settings",max_value=(len(page_list)-1))+1
+        page_selection = st.slider(label="Select page to modify settings",min_value=1,max_value=(len(page_list)))
     else:
         page_selection = 1
 

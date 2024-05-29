@@ -1,4 +1,4 @@
-{"class":"metadata","valve_number":1,"is_a_spectrum":"True"}
+{"class":"metadata","valve_number":1,"is_a_spectrum":"True","initial_value":0,"step":1}
 {"class":"spectrum","time":0,"array":[0,1,2,3]}
 {"class":"spectrum","time":1,"array":[1,2,3,4]}
 {"class":"spectrum","time":2,"array":[8,7,6,5]}
