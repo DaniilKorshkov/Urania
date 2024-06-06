@@ -78,6 +78,37 @@ def modify_filename(Settings,settings_file):   # function to change desired file
 
             st.write(f"No such file found")
 
+
+def modify_control_spectrum_filename(Settings,settings_file):   # function to change desired filename of spectrum log that page is operating with
+    New_Settings = Settings
+
+    old_filename = Settings["control_spectrum_filename"]
+
+    new_filename = st.text_input(f"Input new control spectrum filename: ")
+    st.write(f"Current filename = {old_filename}")
+    do_modify_filename = st.button("Apply new control spectrum filename")
+
+
+    if new_filename != "":  # if input us non-zero, program verifies if provided file is a spectrum
+        try:
+            metadata, placeholder = js.read_spectrum_json(new_filename)
+
+            if str(metadata["is_a_control_spectrum"]) == str("True"):
+
+                if do_modify_filename:
+                    New_Settings["control_spectrum_filename"] = new_filename  # if file provided exists and is valid, filename is successfully changed
+
+                    apply_page_settings(settings_file,New_Settings)
+            else:
+                st.write(f"Not a valid file!")  # otherwise, error message is returned
+        except:
+
+            st.write(f"No such file found")
+
+
+
+
+
 def modify_parsing_mode(Settings,settings_file):  #function to change defaults parsing mode (show most recent spectrums or look for given period of time)
     New_Settings = Settings
 
@@ -224,6 +255,9 @@ def Settings_Menu(settings_file, default_settings_file):                        
     Settings = js.read_GUI_page_settings(settings_file, str(page_selection))
 
     modify_filename(Settings,settings_file)  # all options are displayed sequentially with 6 gaps in between
+    for i in range(6):
+        st.markdown("")
+    modify_control_spectrum_filename(Settings, settings_file)
     for i in range(6):
         st.markdown("")
     modify_parsing_mode(Settings,settings_file)

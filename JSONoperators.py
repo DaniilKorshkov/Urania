@@ -22,6 +22,7 @@ def read_spectrum_json(filename):   #function to read array of spectrums from JS
         match tempdict["class"]:
             case "metadata":
                 metadata = tempdict
+                assert metadata["is_a_spectrum"] == "True"
             case "spectrum":
                 time = tempdict["time"]
                 spectrum_array = tempdict["array"]
@@ -76,6 +77,8 @@ def read_period_of_time(filename, howmuchspectrums, desired_time):  #function to
 
     metadata, spectrum_list = read_spectrum_json(filename)
     time_list = fn.get_time_list(spectrum_list)  # list of all time moments of spectrums in full array of spectrums
+
+
     lng = len(spectrum_list)
     time_list.sort()
 

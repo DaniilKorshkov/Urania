@@ -1,7 +1,7 @@
 def get_time_list(spectrum_list): # get all moments of time from given array of spectrums
     time_list = []
     for time_moment in spectrum_list:
-        time_list.append(float(time_moment))
+        time_list.append(int(time_moment))
     return(time_list)
 
 

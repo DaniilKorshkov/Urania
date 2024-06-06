@@ -10,6 +10,8 @@ import datetime
 #from datetime import timestamp
 import mpld3
 import streamlit.components.v1 as components
+import math
+import AbnormalityReaction as ar
 
 
 import schedule
@@ -100,9 +102,12 @@ def constant_time_spectrum_table(mass_array,ppm_array):
 
 
 
-def constant_time_spectrum(spectrum_list, initial_value, step):   # function to display spectrum for given moment of time
+def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic):   # function to display spectrum for given moment of time
 
+    initial_load_time = datetime.datetime.now()
     time_array = fn.get_time_list(spectrum_list)   # get all moments of time from loaded spectrums
+    final_load_time = datetime.datetime.now()
+    #print(f"Loading time = {final_load_time-initial_load_time}")
 
 
 
@@ -113,6 +118,7 @@ def constant_time_spectrum(spectrum_list, initial_value, step):   # function to 
 
     given_time = time_array[given_time_tick]   # get desired moment of time
 
+
     placeholder = st.empty()
     with placeholder.container():
 
@@ -120,18 +126,39 @@ def constant_time_spectrum(spectrum_list, initial_value, step):   # function to 
 
         assert spectrum_list[str(given_time)] != None
 
+
+
         fig, ax = plt.subplots()
 
         mass_range = list()  # create array for X line with respect to initial mass value and step length
         for i in range(len(spectrum_list[str(given_time)])):
             mass_range.append(initial_value+i*step)
 
-        print(mass_range)
+        #print(mass_range)
 
-        ax.bar(mass_range, spectrum_list[str(given_time)], label="constant time spectrum",width=0.8*step) #  range(len(spectrum_list[str(given_time)]) is array of molar masses, from 0 to maximal molar mass specified in spectrum
+        if islogarithmic == "True":
+            display_range = []
+            for element in spectrum_list[str(given_time)]:
+                if element < 0:
+                    element = element*(-1)
+                element += 1
+
+                display_range.append(math.log(element,10))
+            ylabel = 'log10 PP(M???)'
+        else:
+            display_range = spectrum_list[str(given_time)]
+            ylabel = 'PP(M???)'
+
+
+
+
+
+        ax.bar(mass_range, display_range, label="constant time spectrum",width=0.8*step) #  range(len(spectrum_list[str(given_time)]) is array of molar masses, from 0 to maximal molar mass specified in spectrum
+
+
 
         ax.set_xlabel(f'M')
-        ax.set_ylabel(f'PP(M?)')
+        ax.set_ylabel(ylabel)
         ax.set_title(f'Spectrum for time: {dt.datetime.fromtimestamp(given_time)}')
 
         st.pyplot(fig)
@@ -208,6 +235,9 @@ def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, ste
 
 def display_one_sample_data(settings_filename,self_name):           # function to display all 3 plots for given sample
 
+    initial_load_time = datetime.datetime.now()
+
+
     Settings = js.read_GUI_page_settings(settings_filename,self_name)   # settings are imported from JSON config
 
     spectrum_name = Settings["spectrum_filename"]
@@ -266,6 +296,7 @@ def display_one_sample_data(settings_filename,self_name):           # function t
             #st.set_page_config(layout="wide")
             col = st.columns((1, 1, 1), gap='medium')
 
+
             if Settings["do_display_3d"] == "True":
                 with col[0]:
                     three_dimentional_spectrum(spectrum_list, initial_value, step)
@@ -281,20 +312,28 @@ def display_one_sample_data(settings_filename,self_name):           # function t
                 three_dimentional_spectrum(spectrum_list, initial_value, step)
 
             if Settings["do_display_const_time"] == "True":
-                constant_time_spectrum(spectrum_list, initial_value, step)
+                islogarithmic = st.radio(f"Do display logarithmic scale?", ["True", "False"])
+                constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic)
 
             if Settings["do_display_const_mass"] == "True":
                 constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step)
+
+            find_abnormalities = st.button("Find abnormalities")
+            if find_abnormalities:
+                control_spectrum_filename = Settings["control_spectrum_filename"]
+                spectrum_filename = Settings["spectrum_filename"]
+                ar.AnalyseSpectrum(spectrum_filename,control_spectrum_filename,None,False)
 
 
 
     #except:
         #st.write("Bad input in howmuchspectrums/momentoftime line!!!")
 
+    final_load_time = datetime.datetime.now()
+    #print(f"Total time = {final_load_time - initial_load_time}")
 
 
-
-def GUI():  # test function that is not used
+def TestGUI():  # test function that is not used
 
     st.write("Here's our first attempt at using data to create a table:")
     st.write("Here's our first attempt at using data to create a table:")
