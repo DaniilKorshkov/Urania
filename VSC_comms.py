@@ -4,6 +4,7 @@ import time
 #import serial
 import subprocess
 import os
+import serial
 
 
 def SendCommandToVSC(command):
@@ -47,9 +48,49 @@ def SendCommandToVSC(command):
     #while True:
         #print(dev.read)
 
+def SendCommandThroughSerial():
+
+    # configure the serial connections (the parameters differs on the device you are connecting to)
+    ser = serial.Serial(
+        port='/dev/ttyUSB0',
+        baudrate=9600,
+        parity=serial.PARITY_ODD,
+        stopbits=serial.STOPBITS_TWO,
+        bytesize=serial.SEVENBITS
+    )
+
+    ser.isOpen()
+
+
+    #ser.write(bytes(f'@001QMD1Open?;FF','ascii'))
+
+    #ser.close()
+
+    while True:
+
+        bytesline = ser.readline(1)
+        print(bytesline)
+
+    '''buffer = bytes()  # .read() returns bytes right?
+    while True:
+
+        #if ser.in_waiting:
+            buffer += ser.read(1)
+            print(buffer)
+            try:
+                complete = buffer[:buffer.index(b'}') + 1]  # get up to '}'
+                buffer = buffer[buffer.index(b'}') + 1:]  # leave the rest in buffer
+            except ValueError:
+                continue  # Go back and keep reading
+                print('error')
+            print('buffer=', complete)
+            ascii = buffer.decode('ascii')
+            print('ascii=', ascii)'''
 
 
 
+
+SendCommandThroughSerial()
 
 
 
@@ -73,4 +114,4 @@ def SendCommandToVSC(command):
 
 
 
-SendCommandToVSC(f"@005QMD5!Open;FF")
+#SendCommandToVSC(f"@005QMD5!Open;FF")
