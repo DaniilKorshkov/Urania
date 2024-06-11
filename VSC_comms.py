@@ -90,28 +90,44 @@ def SendCommandThroughSerial():
 
 
 
-SendCommandThroughSerial()
+#SendCommandThroughSerial()
+
+PORT = '/dev/ttyUSB0'  #"COM7"
+MKS_ADDRESS = "253"
 
 
-
-
-
-'''def SendCommandToVSC(command):
-    # configure the serial connections (the parameters differs on the device you are connecting to)
+def SendCommand(MKS_ADRESS,command):
     ser = serial.Serial(
-        port='/dev/ttyUSB1',
+        port=PORT,
+        timeout=10.0,
         baudrate=9600,
-        parity=serial.PARITY_ODD,
-        stopbits=serial.STOPBITS_TWO,
-        bytesize=serial.SEVENBITS
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
     )
-
-    ser.isOpen()
-
-    ser.write(command+"\r\n")'''
-
-
-
+    try:
+        ser.close()
+    except:
+        pass
+    ser.open()
 
 
-#SendCommandToVSC(f"@005QMD5!Open;FF")
+
+    ser.write(bytes(f"@{MKS_ADDRESS}{command}?;FF", "ascii"))
+
+    print("data sent !!!")
+
+    time.sleep(1)
+
+    result = ser.read_until(b"FF")
+
+    print(f"result is: {result}")
+
+    ser.close()
+
+    '''if 'NAK160' in str(result):
+        raise AssertionError('NAK Error keyword in output')'''
+
+#for i in range(6):
+ #   for j in range(6):
+  #      SendCommand(f'00{i}',f'QMD{j}!Open')

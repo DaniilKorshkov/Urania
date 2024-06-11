@@ -216,51 +216,40 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,log_filename,convertio
             break
     handle.close()
 
-    handle = open(filename, "a")
-    handle.write("\n")
+
 
     current_time = int(datetime.datetime.now().timestamp())
-    handle.write('{"class": "spectrum", "time": '+str(current_time)+', "array": [')
-    handle.close()
+    dictionary_to_append = {}
+    dictionary_to_append["class"] = "spectrum"
+    dictionary_to_append["time"] = current_time
+
+    array_to_append = []
+
 
 
 
     while amount_of_scans > 0:
+
         if amount_of_scans > 128:
             temp_amount_of_scans = 128
             amount_of_scans = amount_of_scans - 128
-
-            Spectrum = GetMassSpectrum(convertion_coefficient, start_mass, temp_amount_of_scans, step, accuracy, ip_adress)
-            handle = open(filename, "a")
-            for element in Spectrum:
-                handle.write(f'{element}, ')
-            handle.close()
-
-            start_mass = start_mass + 128*step
-
-
         else:
             temp_amount_of_scans = amount_of_scans
             amount_of_scans = 0
 
 
-            Spectrum = GetMassSpectrum(convertion_coefficient, start_mass, temp_amount_of_scans, step, accuracy, ip_adress)
-            handle = open(filename, "a")
+        Spectrum = GetMassSpectrum(convertion_coefficient, start_mass, temp_amount_of_scans, step, accuracy, ip_adress)
+        for element in Spectrum:
+                array_to_append.append(element)
 
-            i = 1
+        start_mass = start_mass + 128*step
 
-            for element in Spectrum:
-                if i < temp_amount_of_scans:
-                    handle.write(f'{element}, ')
-                    i += 1
-                else:
-                    handle.write(f'{element}')
-            handle.write(']}')
-            handle.close
+
+
 
     if doliveabnormalitycheck:
 
-        controlspectrum_handle = open(control_spectrum_filename, "r")
+        controlspectrum_handle = open(control_spectrum_filename, "r")  #required data loaded from control spectrum
         for line in controlspectrum_handle:
             match json.loads(line)["class"]:
                 case "control_spectrum":
@@ -269,8 +258,16 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,log_filename,convertio
                     control_metadata = json.loads(line)
         controlspectrum_handle.close()
 
-        spectrum_to_check = js.read_last_spectrums(filename,1)
-        ar.FindAbnormalityInSpectrum(spectrum_to_check,controlspectrum,current_time,True,filename,log_filename,start_mass,step,do_emit_sound)
+        ar.FindAbnormalityInSpectrum(array_to_append,controlspectrum,current_time,True,filename,log_filename,start_mass,step,do_emit_sound)
+
+
+
+    dictionary_to_append["array"] = array_to_append
+
+    handle = open(filename, "a")
+    handle.write("\n")
+    handle.write(json.dumps(dictionary_to_append))
+    handle.close()
 
 
 
