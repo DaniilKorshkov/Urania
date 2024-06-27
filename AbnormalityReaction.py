@@ -3,6 +3,7 @@ import json
 import datetime
 import os
 import JSONoperators as js
+import SimpleXChat_Interface as sxci
 
 
 
@@ -35,10 +36,11 @@ def AnalyseSpectrum(spectrum_filename,control_spectrum_filename,log_filename,do_
 
 
 
-# Function to analyse each spectrum for abnormalities
-def FindAbnormalityInSpectrum(spectrum,controlspectrum,measurement_time,do_report_to_json,spectrum_filename,log_filename,initial_mass=1,step=1,emitsound=False):
+# Function to analyse single spectrum for abnormalities
+def FindAbnormalityInSpectrum(spectrum,controlspectrum,measurement_time,do_report_to_json,spectrum_filename,log_filename,initial_mass=1,step=1,emitsound=False,simplex=True):
     i = 0
     sound_already_emitted = False
+
     for element in spectrum:
         if int(initial_mass + step*i) == float(initial_mass + step*i):  # only integer peaks are analysed
 
@@ -57,9 +59,17 @@ def FindAbnormalityInSpectrum(spectrum,controlspectrum,measurement_time,do_repor
                             os.system('play -nq -t alsa synth {} sine {}'.format(0.1, 440))
                         sound_already_emitted = True
 
+                    if simplex:
+                        ReportAbnormalityViaSimpleXChat(spectrum_filename, measurement_time, (initial_mass + step*i), element,boundaries)
+
+
+
+
                     if do_report_to_json:  # scenario 1 - abnormality logged to JSON file
 
                         ReportAbnormalityToTextFile(log_filename,spectrum_filename,measurement_time,(initial_mass + step*i),element,boundaries)
+
+
 
                     else:  # scenario 2 - abnormality messages are displayed live
                         try:
@@ -74,14 +84,21 @@ def FindAbnormalityInSpectrum(spectrum,controlspectrum,measurement_time,do_repor
 
 
 
+def ReportAbnormalityViaSimpleXChat(spectrum_filename,measurement_time,molar_mass,abnormal_value,boundaries):
+    message = f'{datetime.datetime.fromtimestamp(int(measurement_time))}, filename - {spectrum_filename}: Molar mass at peak {molar_mass} is {abnormal_value}, while boundaries are {boundaries}'
+    #message = 'error'
+    sxci.SendCommandToUser(message)
+
+
 
 
 
 # function to append single line into abnormality log
 def ReportAbnormalityToTextFile(log_filename,spectrum_filename,measurement_time,molar_mass,abnormal_value,boundaries):
     handle = open(log_filename, "a")
+
     handle.write(f'\n{datetime.datetime.fromtimestamp(int(measurement_time))}, filename - {spectrum_filename}: Molar mass at peak {molar_mass} is {abnormal_value}, while boundaries are {boundaries}')
     handle.close()
 
 
-AnalyseSpectrum("FullScan","ControlSpectrumTest","AbnormalityLog",True)
+#AnalyseSpectrum("FullScan","ControlSpectrumTest","AbnormalityLog",True)

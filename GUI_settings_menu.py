@@ -16,8 +16,12 @@ def reset_to_default(settings_filename,default_settings_filename):  # function t
     handle.close()
 
     handle = open(settings_filename, "w")
+    i = 1
     for line in Settings_List:   # copy is re-written to Settings file
         handle.write(line)
+        if i < len(Settings_List):
+             handle.write("\n")
+        i += 1
     handle.close()
 
 

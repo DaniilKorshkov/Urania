@@ -258,7 +258,7 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,log_filename,convertio
                     control_metadata = json.loads(line)
         controlspectrum_handle.close()
 
-        ar.FindAbnormalityInSpectrum(array_to_append,controlspectrum,current_time,True,filename,log_filename,start_mass,step,do_emit_sound)
+        ar.FindAbnormalityInSpectrum(array_to_append,controlspectrum,current_time,True,filename,log_filename,start_mass,step,do_emit_sound=False,simplex=True)
 
 
 

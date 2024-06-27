@@ -1,0 +1,6 @@
+{"class": "asap_log", "last_executed": 0}
+{"class": "task", "name": "task1", "type": "schedule", "freq": 10, "last_execution": 1719512018}
+{"class": "task", "name": "task4", "type": "asap"}
+{"class": "task", "name": "task2", "type": "schedule", "freq": 20, "last_execution": 1719512018}
+{"class": "task", "name": "task123", "type": "emergency", "freq": 20, "how_much_executions": 5}
+{"class": "task", "name": "task3", "type": "asap"}
