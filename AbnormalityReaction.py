@@ -4,6 +4,7 @@ import datetime
 import os
 import JSONoperators as js
 import SimpleXChat_Interface as sxci
+import Logging
 
 
 
@@ -37,9 +38,14 @@ def AnalyseSpectrum(spectrum_filename,control_spectrum_filename,log_filename,do_
 
 
 # Function to analyse single spectrum for abnormalities
-def FindAbnormalityInSpectrum(spectrum,controlspectrum,measurement_time,do_report_to_json,spectrum_filename,log_filename,initial_mass=1,step=1,emitsound=False,simplex=True):
+def FindAbnormalityInSpectrum(spectrum,controlspectrum,measurement_time,do_report_to_json,spectrum_filename,log_filename,initial_mass=1,step=1,emitsound=False,simplex=False,do_logging=False):
+
+
+
     i = 0
     sound_already_emitted = False
+
+    abnormalities_detected = False
 
     for element in spectrum:
         if int(initial_mass + step*i) == float(initial_mass + step*i):  # only integer peaks are analysed
@@ -81,13 +87,17 @@ def FindAbnormalityInSpectrum(spectrum,controlspectrum,measurement_time,do_repor
 
         i += 1
 
+        if abnormalities_detected and do_logging:
+            Logging.MakeLogEntry(f"Abnormality detected. Please check abnormality log")
+
+
 
 
 
 def ReportAbnormalityViaSimpleXChat(spectrum_filename,measurement_time,molar_mass,abnormal_value,boundaries):
     message = f'{datetime.datetime.fromtimestamp(int(measurement_time))}, filename - {spectrum_filename}: Molar mass at peak {molar_mass} is {abnormal_value}, while boundaries are {boundaries}'
     #message = 'error'
-    sxci.SendCommandToUser(message)
+    sxci.SendMessageToUser(message)
 
 
 
@@ -99,6 +109,19 @@ def ReportAbnormalityToTextFile(log_filename,spectrum_filename,measurement_time,
 
     handle.write(f'\n{datetime.datetime.fromtimestamp(int(measurement_time))}, filename - {spectrum_filename}: Molar mass at peak {molar_mass} is {abnormal_value}, while boundaries are {boundaries}')
     handle.close()
+
+
+def GetParameters(JSONConfigFilename="MainConfig"):
+    handle = open(JSONConfigFilename,'r')
+    for line in handle:
+        interpreted_line = json.loads(line)
+        if interpreted_line["class"] == "user_notifications":
+            if_simplex = bool(interpreted_line["do_simplex"])
+            if_sound = bool(interpreted_line["do_sound"])
+            if_logging = bool(interpreted_line["do_logging"])
+            break
+    return if_simplex,if_sound,if_logging
+
 
 
 #AnalyseSpectrum("FullScan","ControlSpectrumTest","AbnormalityLog",True)

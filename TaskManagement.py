@@ -1,11 +1,14 @@
 import json
 import datetime
+import Logging as lg
 
 
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
     tasklist_name = None
     handle = open(config, "r")
     for line in handle:
+        if line == None or line == "\n":
+            continue
         dict_line = json.loads(line)
         if dict_line["class"] == "tasks":
             tasklist_name = dict_line["TaskList"]
@@ -105,14 +108,14 @@ def GetAmountOfASAPTasks(config="MainConfig"):  # function to get amount of regu
     for line in handle:
         dict_line = json.loads(line)
         if dict_line["class"] == "task":
-            if dict_line["type"] == "asap":
+            if dict_line["type"] == "regular":
                 asap_tasks_count += 1
 
     handle.close()
     return asap_tasks_count
 
 
-def GetASAPTask(config="MainConfig"):  #function to get regular task name
+def GetRegularTask(config="MainConfig"):  #function to get regular task name
 
     text_copy = []
 
@@ -123,7 +126,7 @@ def GetASAPTask(config="MainConfig"):  #function to get regular task name
     handle = open(tasklist_name,'r')
     for line in handle:
         dict_line = json.loads(line)
-        if dict_line["class"] == "asap_log":
+        if dict_line["class"] == "regular_log":
             current_task_number = (dict_line["last_executed"] + 1) % task_amount  #number of previously executed task updated
             dict_line["last_executed"] = current_task_number
             text_copy.append(json.dumps(dict_line))
@@ -138,7 +141,7 @@ def GetASAPTask(config="MainConfig"):  #function to get regular task name
     for line in handle:
         dict_line = json.loads(line)
         if dict_line["class"] == "task":
-            if dict_line["type"] == "asap":
+            if dict_line["type"] == "regular":
                 if i == current_task_number:
                     task_to_execute = dict_line["name"]
                 i += 1
@@ -150,13 +153,19 @@ def GetASAPTask(config="MainConfig"):  #function to get regular task name
 
 
 
-def GetTask(config="MainConfig"):  # function that checks for emergency tasks; for scheduled tasks, for regular tasks and returns name of required task
+def GetTask(config="MainConfig",do_logging=True):  # function that checks for emergency tasks; for scheduled tasks, for regular tasks and returns name of required task
     ifemergencytasks, taskname = CheckForEmergencyTasks(config)
     if not ifemergencytasks:
         ifscheduledtasks, taskname = CheckForScheduledTasks(config)
         if not ifscheduledtasks:
-            taskname = GetASAPTask(config)
+            taskname = GetRegularTask(config)
+
+    if do_logging:
+        lg.MakeLogEntry(f"{taskname} initiated")
+
     return taskname
 
-#ret = GetTask()
-#print(ret)
+ret = GetTask()
+print(ret)
+
+

@@ -2,11 +2,9 @@ import socket
 import time
 import datetime
 import json
-import sys
-import pymodbus as pmb
-from pymodbus.client import ModbusTcpClient
 import JSONoperators as js
 import AbnormalityReaction as ar
+import Logging
 
 
 
@@ -205,7 +203,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     handle.close()'''
 
 
-def AppendSpectrumJSON(filename,control_spectrum_filename,log_filename,convertion_coefficient=1,accuracy=5,ip_adress="169.254.198.174",doliveabnormalitycheck=False,do_emit_sound = True):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
+def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,ip_adress="169.254.198.174",doliveabnormalitycheck=False):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
 
     handle = open(filename, "r")
     for line in handle:
@@ -216,7 +214,7 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,log_filename,convertio
             break
     handle.close()
 
-
+    real_start_mass = start_mass
 
     current_time = int(datetime.datetime.now().timestamp())
     dictionary_to_append = {}
@@ -246,6 +244,7 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,log_filename,convertio
 
 
 
+    do_simplex, do_emit_sound, do_logging = ar.GetParameters()
 
     if doliveabnormalitycheck:
 
@@ -258,7 +257,9 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,log_filename,convertio
                     control_metadata = json.loads(line)
         controlspectrum_handle.close()
 
-        ar.FindAbnormalityInSpectrum(array_to_append,controlspectrum,current_time,True,filename,log_filename,start_mass,step,do_emit_sound=False,simplex=True)
+
+
+        ar.FindAbnormalityInSpectrum(array_to_append,controlspectrum,current_time,True,filename,abnorm_log_filename,start_mass,step,do_emit_sound=do_emit_sound,simplex=do_simplex,do_logging=do_logging)
 
 
 
@@ -269,19 +270,11 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,log_filename,convertio
     handle.write(json.dumps(dictionary_to_append))
     handle.close()
 
+    if do_logging:
+        Logging.MakeLogEntry(f"Scan for Minit = {real_start_mass}, step={step}, amt.of steps = {amount_of_scans} completed")
 
 
-def OpenMassFlowController():
 
-    client = ModbusTcpClient('',502)
-    client.connect()
-
-    client.write_coil(1, True)
-    result = client.read_coils(1,1)
-    result2 = client.readwrite_registers(read_adress="0x00")
-    print(result.bits[0])
-    print(result2)
-    client.close()
 
 
 

@@ -1,2 +1,3 @@
-{"class":"simplex-username","username":"UraniaClient"}
+{"class":"user_notifications","simplex_username":"UraniaClient","do_simplex":"True","do_sound":"False","do_logging":"True"}
 {"class":"tasks","TaskList":"TaskList","TaskData":"TaskData"}
+{"class":"log","MainLog":"MainLog"}

@@ -1,0 +1,9 @@
+sudo apt install python3-pip
+
+pip install streamlit
+pip install pandas
+pip install matplotlib
+
+curl -o- https://raw.githubusercontent.com/simplex-chat/simplex-chat/stable/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/simplex-chat/simplex-chat/stable/install.sh | bash
+

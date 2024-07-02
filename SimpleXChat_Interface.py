@@ -2,13 +2,8 @@ import json
 
 
 import os
-import subprocess
-import sys
-import time
-import pythonmonkey
-import websocket
-from websockets.sync.client import connect
-import pyautogui as pg
+
+
 
 
 #JSONConfigFilename = 'MainConfig'
@@ -16,12 +11,12 @@ def GetUsername(JSONConfigFilename):
     handle = open(JSONConfigFilename,'r')
     for line in handle:
         interpreted_line = json.loads(line)
-        if interpreted_line["class"] == "simplex-username":
-            Username = interpreted_line["username"]
+        if interpreted_line["class"] == "user_notifications":
+            Username = interpreted_line["simplex_username"]
             break
     return Username
 
-def SendCommandToUser(Message,ConfigName = 'MainConfig'):
+def SendMessageToUser(Message,ConfigName = 'MainConfig'):
 
     ClientName = GetUsername(ConfigName)
 
@@ -45,11 +40,3 @@ def SendCommandToUser(Message,ConfigName = 'MainConfig'):
     os.system(f'simplex-chat -e "@{ClientName} {Message}"')
 
 
-def SendCommandWithSubprocess():
-    simplex = subprocess.Popen("simplex-chat", stdin=subprocess.PIPE)  # , input=bytes(f"@{Username} {Message}",'ascii'))
-    #simplex.stdin(f"@UraniaClient Hello")
-    # subprocess.(f"@{Username} {Message}")
-
-SendCommandWithSubprocess()
-
-#SendCommandToUser('123aaa')
