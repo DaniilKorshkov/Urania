@@ -1,5 +1,6 @@
 import json
 import datetime
+import JSONoperators as js
 
 
 
@@ -22,6 +23,7 @@ def GetLogSettings(config="MainConfig"):  #function to get log name from main co
 
 def MakeLogEntry(message,config="MainConfig"):  #function to make log entry
     log_name = GetLogSettings(config)
+    js.assert_file_exists(log_name)
     handle = open(log_name,"a")
     handle.write("\n\n")
 

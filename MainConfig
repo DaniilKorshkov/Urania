@@ -1,3 +1,4 @@
 {"class":"user_notifications","simplex_username":"UraniaClient","do_simplex":"True","do_sound":"False","do_logging":"True"}
-{"class":"tasks","TaskList":"TaskList","TaskData":"TaskData"}
+{"class":"tasks","TaskList":"TaskList","DefaultTaskList":"DefaultTaskList"}
 {"class":"log","MainLog":"MainLog"}
+{"class":"spectrometer_parameters","default_spectrum_image":"default_spectrum","default_controlspectrum_image":"default_control_spectrum"}

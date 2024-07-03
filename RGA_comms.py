@@ -5,11 +5,14 @@ import json
 import JSONoperators as js
 import AbnormalityReaction as ar
 import Logging
+import os
+import SimpleXChat_Interface as sxci
 
 
 
 def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
     HOST, PORT = ip_adress, 10014   #default IP and port of RGA, change later???
+    ErrorMessage = None
 
     data_list = list()
 
@@ -39,6 +42,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
 
                     if "ERROR" in received:
                         sock.send(bytes("Release", "ascii") + bytes([10]))
+                        ErrorMessage = received
                         raise ValueError("ERROR keyword in output")
 
 
@@ -58,6 +62,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
 
                                 if "ERROR" in received:
                                     sock.send(bytes("Release", "ascii") + bytes([10]))
+                                    ErrorMessage = received
                                     raise ValueError("ERROR keyword in output")
 
 
@@ -83,6 +88,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
 
                 if "ERROR" in received:
                     sock.send(bytes("Release", "ascii") + bytes([10]))
+                    ErrorMessage = received
                     raise ValueError("ERROR keyword in output")
 
 
@@ -94,7 +100,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
 
 
 
-        return(received_list)
+        return received_list, ErrorMessage
 
 
 '''def GetMassSpectrum(convertion_coefficient=1,amount_of_scans=100,ip_adress="169.254.198.174"):
@@ -142,6 +148,8 @@ def AppendSpectrumJSON(filename,convertion_coefficient,ip_adress="169.254.198.17
 
 
 def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,accuracy=5,ip_adress="169.254.198.174"):
+
+
     packages_list = ['Control  "MyProgram" "1.0"' , 'FilamentControl On']
     for i in range(int(amount_of_scans)):
         packages_list.append(f'AddSinglePeak SinglePeak{i} {start_mass+i*step} {accuracy} 0 0 0')
@@ -153,7 +161,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
 
 
-    RawInput = SendPacketsToRGA(packages_list,ip_adress)
+    RawInput, ErrorMessage = SendPacketsToRGA(packages_list,ip_adress)
 
 
     Spectrum = list()  # spectrum is a list of PPM's corresponding to integer molar masses
@@ -174,7 +182,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
                                     0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
             Spectrum[ int((float(split_line[MassReadingPosition+1])-float(start_mass))/float(step)) ] = end_result
-    return Spectrum
+    return Spectrum, ErrorMessage
 
 
 
@@ -205,6 +213,8 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
 def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,ip_adress="169.254.198.174",doliveabnormalitycheck=False):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
 
+    flash_default_images(filename,control_spectrum_filename, abnorm_log_filename)
+
     handle = open(filename, "r")
     for line in handle:
         translated_line = json.loads(line)
@@ -223,10 +233,12 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 
     array_to_append = []
 
+    ErrorMessage = None
 
 
 
-    while amount_of_scans > 0:
+
+    while amount_of_scans > 0 and ErrorMessage == None:
 
         if amount_of_scans > 128:
             temp_amount_of_scans = 128
@@ -236,7 +248,7 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
             amount_of_scans = 0
 
 
-        Spectrum = GetMassSpectrum(convertion_coefficient, start_mass, temp_amount_of_scans, step, accuracy, ip_adress)
+        Spectrum, ErrorMessage = GetMassSpectrum(convertion_coefficient, start_mass, temp_amount_of_scans, step, accuracy, ip_adress)
         for element in Spectrum:
                 array_to_append.append(element)
 
@@ -265,17 +277,40 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 
     dictionary_to_append["array"] = array_to_append
 
-    handle = open(filename, "a")
-    handle.write("\n")
-    handle.write(json.dumps(dictionary_to_append))
-    handle.close()
+
+    if ErrorMessage == None:
+        handle = open(filename, "a")
+        handle.write("\n")
+        handle.write(json.dumps(dictionary_to_append))
+        handle.close()
+
+    else:
+        if do_logging:
+            Logging.MakeLogEntry(f"Following error was encountered: {ErrorMessage}")
+        if do_emit_sound:
+            for i in range(5):
+                os.system('play -nq -t alsa synth {} sine {}'.format(0.1, (440+100*(i&2))))
+        if do_simplex:
+            sxci.SendMessageToUser(f"Following error was encountered: {ErrorMessage}")
 
     if do_logging:
         Logging.MakeLogEntry(f"Scan for Minit = {real_start_mass}, step={step}, amt.of steps = {amount_of_scans} completed")
 
 
+def flash_default_images(spectrum_filename,control_spectrum_filename,abnorm_log_filename,MainConfig="MainConfig"):
+    handle = open(MainConfig,"r")
+    for line in handle:
+        dict_line = json.loads(line)
+        if dict_line["class"] == "spectrometer_parameters":
+            spectrum_image_name = dict_line["default_spectrum_image"]
+            controlspectrum_image_filename = dict_line["default_controlspectrum_image"]
+
+    js.assert_file_exists(spectrum_filename,spectrum_image_name)
+    js.assert_file_exists(control_spectrum_filename,controlspectrum_image_filename)
+    js.assert_file_exists(abnorm_log_filename,None)
 
 
+#flash_default_images("spectrum123","controlspectrum456","log789")
 
 
 #AppendGreatSpectrumJSON('FullScan',1,5,"169.254.198.174")

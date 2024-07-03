@@ -127,46 +127,25 @@ def read_all_page_numbers(filename):   # function to read all page numbers from 
     return page_numbers
 
 
+def assert_file_exists(filename,default_image_filename=None):
+    try:
+        handle = open(filename,"r")
+        handle.close()
+    except:
+        os.system(f"touch {filename}")
+
+        if default_image_filename != None:
+
+            handle = open(default_image_filename,"r")
+            copy = []
+            for line in handle:
+                copy.append(line)
+            handle.close()
+
+            handle = open(filename,"w")
+            for line in copy:
+                handle.write(line)
+            handle.close()
 
 
-
-
-
-'''def save_to_json(planetlist, spaceshiplist, filename, metadata):  # function from different project used as reference
-    handle = open(filename,"w")
-
-    newstring = json.dumps(metadata)
-    handle.write(newstring+"\n")
-
-    for planet in planetlist:
-
-        tempdict = {"class": "planet",
-                    "name": planet.name,
-                   "mass": planet.mass,
-                    "effective_planet_list": planet.effective_planet_list,
-                    "current_position": planet.current_position,
-                    "current_velocity": planet.current_velocity,
-                   "colour": planet.colour,
-                   "display_size": planet.display_size}
-
-
-        newstring = json.dumps(tempdict)
-        handle.write(newstring+"\n")
-
-
-    for spaceship in spaceshiplist:
-
-        tempdict = {"class": "planet",
-                    "name": spaceship.name,
-                   "mass": spaceship.mass,
-                    "max_thrust": spaceship.max_thrust,
-                    "current_position": spaceship.current_position,
-                    "current_velocity": spaceship.current_velocity,
-                   "colour": spaceship.colour,
-                   "display_size": spaceship.display_size}
-
-        newstring = json.dumps(tempdict)
-        handle.write(newstring + "\n")
-
-    handle.close()'''
 

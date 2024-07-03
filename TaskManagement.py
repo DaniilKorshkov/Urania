@@ -1,7 +1,7 @@
 import json
 import datetime
 import Logging as lg
-
+import JSONoperators as js
 
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
     tasklist_name = None
@@ -12,9 +12,10 @@ def GetTasklistName(config="MainConfig"):  #function to get name of task list fr
         dict_line = json.loads(line)
         if dict_line["class"] == "tasks":
             tasklist_name = dict_line["TaskList"]
+            default_tasklist_name = dict_line["DefaultTaskList"]
             break
     handle.close()
-    return tasklist_name
+    return tasklist_name, default_tasklist_name
 
 def UpdateTaskList(tasklist_name,text_to_append):
 
@@ -29,7 +30,8 @@ def UpdateTaskList(tasklist_name,text_to_append):
         handle.close()
 
 def CheckForEmergencyTasks(config="MainConfig"):  #function that reads task list for emergency tasks. Returns True,task_name or False,None
-    tasklist_name = GetTasklistName(config)
+    tasklist_name, placeholder = GetTasklistName(config)
+
     if tasklist_name == None:
         raise NameError("Task List is not specified in Main Config")
 
@@ -66,7 +68,7 @@ def CheckForEmergencyTasks(config="MainConfig"):  #function that reads task list
 
 def CheckForScheduledTasks(config="MainConfig"): #function that reads task list for scheduled tasks. Returns True,task_name or False,None
 
-    tasklist_name = GetTasklistName(config)
+    tasklist_name, placeholder = GetTasklistName(config)
 
     if tasklist_name == None:
         raise NameError("Task List is not specified in Main Config")
@@ -98,7 +100,7 @@ def CheckForScheduledTasks(config="MainConfig"): #function that reads task list 
 
 def GetAmountOfASAPTasks(config="MainConfig"):  # function to get amount of regular tasks
 
-    tasklist_name = GetTasklistName(config)
+    tasklist_name, placeholder = GetTasklistName(config)
     if tasklist_name == None:
         raise NameError("Task List is not specified in Main Config")
 
@@ -119,7 +121,7 @@ def GetRegularTask(config="MainConfig"):  #function to get regular task name
 
     text_copy = []
 
-    tasklist_name = GetTasklistName(config)
+    tasklist_name, placeholder = GetTasklistName(config)
     if tasklist_name == None:
         raise NameError("Task List is not specified in Main Config")
     task_amount = GetAmountOfASAPTasks(config)
@@ -154,6 +156,10 @@ def GetRegularTask(config="MainConfig"):  #function to get regular task name
 
 
 def GetTask(config="MainConfig",do_logging=True):  # function that checks for emergency tasks; for scheduled tasks, for regular tasks and returns name of required task
+
+    tasklist_name,default_tasklist_name = GetTasklistName(config)
+    js.assert_file_exists(tasklist_name, default_tasklist_name)
+
     ifemergencytasks, taskname = CheckForEmergencyTasks(config)
     if not ifemergencytasks:
         ifscheduledtasks, taskname = CheckForScheduledTasks(config)
@@ -165,7 +171,8 @@ def GetTask(config="MainConfig",do_logging=True):  # function that checks for em
 
     return taskname
 
-ret = GetTask()
-print(ret)
+#ret = GetTask()
+#print(ret)
+
 
 

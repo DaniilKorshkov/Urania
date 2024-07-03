@@ -2,7 +2,7 @@ import json
 
 
 import os
-
+import subprocess
 
 
 
@@ -40,3 +40,5 @@ def SendMessageToUser(Message,ConfigName = 'MainConfig'):
     os.system(f'simplex-chat -e "@{ClientName} {Message}"')
 
 
+
+#SendCommandToUser('123aaa')
