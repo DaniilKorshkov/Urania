@@ -12,6 +12,10 @@ import Logging
 def AnalyseSpectrum(spectrum_filename,control_spectrum_filename,log_filename,do_report_to_log):
     controlspectrum_handle = open(control_spectrum_filename, "r")
     for line in controlspectrum_handle:
+
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
+
         match json.loads(line)["class"]:
             case "control_spectrum":
                 controlspectrum = json.loads(line)

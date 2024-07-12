@@ -11,7 +11,11 @@ def reset_to_default(settings_filename,default_settings_filename):  # function t
     Settings_List = []  # new settings list is a list of strings of old GUI_settings config to be modified later
 
     handle = open(default_settings_filename, "r")
-    for line in handle:  # copy of factory default confing is made to Settings_List
+    for line in handle: # copy of factory default confing is made to Settings_List
+
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
+
         Settings_List.append(line)
     handle.close()
 
@@ -34,7 +38,11 @@ def apply_page_settings(settings_filename,New_Settings):      # function to chan
 
     handle = open(settings_filename, "r")
 
-    for line in handle:  # old JSON file is copied to New_Settings_List. Old file is to be erased later
+    for line in handle: # old JSON file is copied to New_Settings_List. Old file is to be erased later
+
+            if line == "" or line == "\n" or line[0] == "#":
+                continue
+
             if str(New_Settings["page_name"]) == str((json.loads(line))["page_name"]):
                 New_Settings_List.append(json.dumps(New_Settings))  # if page_number in the line of old config equals to page_number in new line, the line is replaced
             else:

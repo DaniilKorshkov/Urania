@@ -17,6 +17,8 @@ def read_spectrum_json(filename):   #function to read array of spectrums from JS
     handle = open(filename, "r")
 
     for line in handle:
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
         #print(line)
         tempdict = json.loads(line)
         match tempdict["class"]:
@@ -61,6 +63,9 @@ def read_GUI_page_settings(filename, self_name):   #function to read settings fo
     handle = open(filename, "r")
 
     for line in handle:
+
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
 
         try:
             tempdict = json.loads(line)
@@ -119,6 +124,10 @@ def read_all_page_numbers(filename):   # function to read all page numbers from 
     handle = open(filename, "r")
 
     for line in handle:
+
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
+
         tempdict = json.loads(line)
         page_numbers.append(tempdict["page_name"])
 
@@ -148,4 +157,20 @@ def assert_file_exists(filename,default_image_filename=None):
             handle.close()
 
 
+def ReadJSONConfig(linename,entryname,config="MainConfig"):
+    handle = open(config, "r")
+    for line in handle:
 
+        if line == "" or line == "\n" or line[0] == "#" or line == None:
+            continue
+
+        dict_line = json.loads(line)
+        if dict_line["class"] == linename:
+            entry = dict_line[entryname]
+            break
+    handle.close()
+
+    if entry == None:
+        raise LookupError(f"{entryname} entry was not found in {linename} line in {config} config")
+
+    return entry

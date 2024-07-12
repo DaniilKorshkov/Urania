@@ -136,7 +136,7 @@ def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic):  
             display_range = []
             for element in spectrum_list[str(given_time)]:
                 if element < 0:
-                    element = element*(-1)
+                    element = 0-element
                 element += 1
 
                 display_range.append(math.log(element,10))
@@ -176,7 +176,7 @@ def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic):  
 
 
 
-def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, step):  # function to display plots for constant masses with time on X axis and PPM on Y axis
+def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, step, islogarithmic):  # function to display plots for constant masses with time on X axis and PPM on Y axis
 
 
     st.write(f"Enter desired molar masses separated by comma: (default: {default_mass_string}) ")
@@ -190,6 +190,11 @@ def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, ste
         for element in temp_mass_list:
 
                 mass_list.append(float(element.strip()))
+
+
+
+
+
 
         placeholder = st.empty()
         with placeholder.container():
@@ -207,7 +212,23 @@ def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, ste
                     y = fn.plot_mass(spectrum_list, mass_number)
                 except:
                     pass
-                ax.plot(x_converted, y, label=f"M: {given_mass}")
+
+                if islogarithmic == "True":
+                    display_range = []
+                    for element in y:
+                        if element < 0:
+                            element = 0 - element
+                        element += 1
+
+                        display_range.append(math.log(element, 10))
+                    ylabel = 'log10 PP(M???)'
+                else:
+                    display_range = y
+                    ylabel = 'PP(M???)'
+
+
+                ax.plot(x_converted, display_range, label=f"M: {given_mass}")
+                ax.set_ylabel(ylabel)
                 mass_dictionary[f"M = {str(given_mass)}"] = y
 
             ax.set_xlabel(f'Time')
@@ -301,18 +322,20 @@ def display_one_sample_data(settings_filename,self_name):           # function t
                     constant_time_spectrum(spectrum_list, initial_value, step)
             if Settings["do_display_const_mass"] == "True":
                 with col[2]:
-                    constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step)
+                    islogarithmic2 = st.radio(f"Do display logarithmic scale2?", ["True", "False"])
+                    constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step, islogarithmic2)
 
     else:
             if Settings["do_display_3d"] == "True":
                 three_dimentional_spectrum(spectrum_list, initial_value, step)
 
             if Settings["do_display_const_time"] == "True":
-                islogarithmic = st.radio(f"Do display logarithmic scale?", ["True", "False"])
+                islogarithmic = st.radio(f"Do display logarithmic scalе?", ["True", "False"])
                 constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic)
 
             if Settings["do_display_const_mass"] == "True":
-                constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step)
+                islogarithmic2 = st.radio(f"Do display logarithmic scale2?", ["True", "False"])
+                constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step, islogarithmic2)
 
             find_abnormalities = st.button("Find abnormalities")
             if find_abnormalities:

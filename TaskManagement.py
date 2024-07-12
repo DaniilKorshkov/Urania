@@ -7,8 +7,10 @@ def GetTasklistName(config="MainConfig"):  #function to get name of task list fr
     tasklist_name = None
     handle = open(config, "r")
     for line in handle:
-        if line == None or line == "\n":
+
+        if line == "" or line == "\n" or line[0] == "#":
             continue
+
         dict_line = json.loads(line)
         if dict_line["class"] == "tasks":
             tasklist_name = dict_line["TaskList"]
@@ -30,7 +32,7 @@ def UpdateTaskList(tasklist_name,text_to_append):
         handle.close()
 
 def CheckForEmergencyTasks(config="MainConfig"):  #function that reads task list for emergency tasks. Returns True,task_name or False,None
-    tasklist_name, placeholder = GetTasklistName(config)
+    tasklist_name = js.ReadJSONConfig("tasks","TaskList")
 
     if tasklist_name == None:
         raise NameError("Task List is not specified in Main Config")
@@ -41,6 +43,10 @@ def CheckForEmergencyTasks(config="MainConfig"):  #function that reads task list
 
     handle = open(tasklist_name, "r")
     for line in handle:
+
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
+
         dict_line = json.loads(line)
         if dict_line["class"] == "task" and dict_line["type"] == "emergency" and not if_task_found:
             if_task_found = True
@@ -68,7 +74,7 @@ def CheckForEmergencyTasks(config="MainConfig"):  #function that reads task list
 
 def CheckForScheduledTasks(config="MainConfig"): #function that reads task list for scheduled tasks. Returns True,task_name or False,None
 
-    tasklist_name, placeholder = GetTasklistName(config)
+    tasklist_name = js.ReadJSONConfig("tasks", "TaskList")
 
     if tasklist_name == None:
         raise NameError("Task List is not specified in Main Config")
@@ -98,33 +104,37 @@ def CheckForScheduledTasks(config="MainConfig"): #function that reads task list 
     return if_scheduled_tasks,task_to_execute
 
 
-def GetAmountOfASAPTasks(config="MainConfig"):  # function to get amount of regular tasks
+def GetAmountOfRegularTasks(config="MainConfig"):  # function to get amount of regular tasks
 
-    tasklist_name, placeholder = GetTasklistName(config)
+    tasklist_name = js.ReadJSONConfig("tasks","TaskList")
     if tasklist_name == None:
         raise NameError("Task List is not specified in Main Config")
 
     handle = open(tasklist_name)
-    asap_tasks_count = 0
+    regular_tasks_count = 0
 
     for line in handle:
+
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
+
         dict_line = json.loads(line)
         if dict_line["class"] == "task":
             if dict_line["type"] == "regular":
-                asap_tasks_count += 1
+                regular_tasks_count += 1
 
     handle.close()
-    return asap_tasks_count
+    return regular_tasks_count
 
 
 def GetRegularTask(config="MainConfig"):  #function to get regular task name
 
     text_copy = []
 
-    tasklist_name, placeholder = GetTasklistName(config)
+    tasklist_name = js.ReadJSONConfig("tasks", "TaskList")
     if tasklist_name == None:
         raise NameError("Task List is not specified in Main Config")
-    task_amount = GetAmountOfASAPTasks(config)
+    task_amount = GetAmountOfRegularTasks(config)
     handle = open(tasklist_name,'r')
     for line in handle:
         dict_line = json.loads(line)
@@ -157,7 +167,8 @@ def GetRegularTask(config="MainConfig"):  #function to get regular task name
 
 def GetTask(config="MainConfig",do_logging=True):  # function that checks for emergency tasks; for scheduled tasks, for regular tasks and returns name of required task
 
-    tasklist_name,default_tasklist_name = GetTasklistName(config)
+    tasklist_name = js.ReadJSONConfig("tasks","TaskList")
+    default_tasklist_name = js.ReadJSONConfig("tasks","DefaultTaskList")
     js.assert_file_exists(tasklist_name, default_tasklist_name)
 
     ifemergencytasks, taskname = CheckForEmergencyTasks(config)

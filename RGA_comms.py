@@ -211,8 +211,9 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     handle.close()'''
 
 
-def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,ip_adress="169.254.198.174",doliveabnormalitycheck=False):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
+def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,config="MainConfig",doliveabnormalitycheck=False):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
 
+    ip_adress = js.ReadJSONConfig("spectrometer_parameters","ip_address",config)
     flash_default_images(filename,control_spectrum_filename, abnorm_log_filename)
 
     handle = open(filename, "r")
