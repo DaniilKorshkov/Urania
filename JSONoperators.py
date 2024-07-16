@@ -157,7 +157,7 @@ def assert_file_exists(filename,default_image_filename=None):
             handle.close()
 
 
-def ReadJSONConfig(linename,entryname,config="MainConfig"):
+def ReadJSONConfig(linename,entryname,config="MainConfig"): #function to read a specific entry from specified line in config
     handle = open(config, "r")
     for line in handle:
 

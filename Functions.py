@@ -13,10 +13,20 @@ def decriment_time(current_time_tick, time_list):
     current_time_tick = (current_time_tick-1)%len(time_list)
     return current_time_tick, time_list[current_time_tick]'''
 
-def plot_mass(spectrum_list, given_index):  # look through array of spectrums to get list of PPM's for given mass over amount of time
+def plot_mass(spectrum_list, given_index,isppm):  # look through array of spectrums to get list of PPM's for given mass over amount of time
     mass_plot = []
     for time_key in spectrum_list:
-        mass_plot.append( (spectrum_list[time_key])[given_index] )
+        if isppm == "True":
+            pascal_sum = 0
+            for element in spectrum_list[time_key]:
+                pascal_sum = pascal_sum + element
+            new_range = []
+            for element in spectrum_list[time_key]:
+                new_range.append((element * 1000000) / pascal_sum)
+        else:
+            new_range = spectrum_list[time_key]
+
+        mass_plot.append( (new_range)[given_index] )
     return mass_plot
 
 

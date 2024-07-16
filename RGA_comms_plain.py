@@ -209,7 +209,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     handle.close()'''
 
 
-def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,ip_adress="169.254.198.174",doliveabnormalitycheck=False):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
+def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,ip_adress="169.254.198.174",doliveabnormalitycheck=False,convert_to_ppm=True):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
 
 
     handle = open(filename, "r")
@@ -252,7 +252,9 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
         start_mass = start_mass + 128*step
 
 
+
     dictionary_to_append["array"] = array_to_append
+
 
 
     if ErrorMessage == None:
@@ -265,11 +267,16 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 
 
 
+'''def ConvertPascalsToPPM(array):
+    pascal_sum = 0
+    for element in array:
+        pascal_sum = pascal_sum + abs(element)
+    final_array = []
+    for element in array:
+        final_array.append((element*1000000)/pascal_sum)
+    return final_array'''
 
 
-
-
-AppendSpectrumJSON('FullScan',None,None)
 
 #Output = SendPacketsToRGA( ('Control  "MyProgram" "1.0"','FilamentControl On','AddSinglePeak Peak1 37.5 5 0 0 0','scanadd Peak1','ScanStart 1','__listen__ 20 0','Release') )
 #Output = SendPacketsToRGA( ('Control  "MyProgram" "1.0"', 'FilamentControl On', 'AddSinglePeak SinglePeak0 39.0 5 0 0 0', 'scanadd SinglePeak0', 'ScanStart 1', '__wait_for_given_mass__ 39.0', 'Release'))

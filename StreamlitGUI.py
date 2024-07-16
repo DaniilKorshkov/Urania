@@ -98,7 +98,7 @@ def constant_time_spectrum_table(mass_array,ppm_array):
 
 
 
-def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic):   # function to display spectrum for given moment of time
+def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic, isppm):   # function to display spectrum for given moment of time
 
     initial_load_time = datetime.datetime.now()
     time_array = fn.get_time_list(spectrum_list)   # get all moments of time from loaded spectrums
@@ -131,19 +131,36 @@ def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic):  
             mass_range.append(initial_value+i*step)
 
         #print(mass_range)
+        display_range = spectrum_list[str(given_time)]
+        table_range = display_range
+        ylabel = "Pascal"
+
+        if isppm == "True":
+                pascal_sum = 0
+                for element in spectrum_list[str(given_time)]:
+                    pascal_sum = pascal_sum + element
+                new_range = []
+                for element in display_range:
+                    new_range.append((element * 1000000) / pascal_sum)
+
+                display_range = new_range
+                table_range = display_range
+                ylabel = "PPM"
+
+
 
         if islogarithmic == "True":
-            display_range = []
-            for element in spectrum_list[str(given_time)]:
+
+            new_range = []
+
+            for element in display_range:
                 if element < 0:
                     element = 0-element
                 element += 1
 
-                display_range.append(math.log(element,10))
-            ylabel = 'log10 PP(M???)'
-        else:
-            display_range = spectrum_list[str(given_time)]
-            ylabel = 'PP(M???)'
+                new_range.append(math.log(element, 10))
+            display_range = new_range
+            ylabel = f'log10 {ylabel}'
 
 
 
@@ -161,7 +178,7 @@ def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic):  
 
     do_display_table = st.button(label="Display table with values")
     if do_display_table:
-        constant_time_spectrum_table(mass_range, spectrum_list[str(given_time)])
+        constant_time_spectrum_table(mass_range, table_range)
 
 
 
@@ -176,7 +193,7 @@ def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic):  
 
 
 
-def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, step, islogarithmic):  # function to display plots for constant masses with time on X axis and PPM on Y axis
+def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, step, islogarithmic, isppm):  # function to display plots for constant masses with time on X axis and PPM on Y axis
 
 
     st.write(f"Enter desired molar masses separated by comma: (default: {default_mass_string}) ")
@@ -209,22 +226,30 @@ def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, ste
                 mass_number = int((given_mass-initial_value)/step)
                 #st.write(mass_number)
                 try:
-                    y = fn.plot_mass(spectrum_list, mass_number)
+                    y = fn.plot_mass(spectrum_list, mass_number,isppm)
                 except:
                     pass
 
+                display_range = y
+                ylabel = "Pascal"
+
+                if isppm == "True":
+                    ylabel = "PPM"
+                else:
+                    ylabel = "Pascal"
+
                 if islogarithmic == "True":
-                    display_range = []
-                    for element in y:
+
+                    new_range = []
+
+                    for element in display_range:
                         if element < 0:
                             element = 0 - element
                         element += 1
 
-                        display_range.append(math.log(element, 10))
-                    ylabel = 'log10 PP(M???)'
-                else:
-                    display_range = y
-                    ylabel = 'PP(M???)'
+                        new_range.append(math.log(element, 10))
+                    display_range = new_range
+                    ylabel = f'log10 {ylabel}'
 
 
                 ax.plot(x_converted, display_range, label=f"M: {given_mass}")
@@ -232,9 +257,9 @@ def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, ste
                 mass_dictionary[f"M = {str(given_mass)}"] = y
 
             ax.set_xlabel(f'Time')
-            ax.set_ylabel(f'PP(M?)')
+            ax.set_ylabel(ylabel)
             ax.legend()
-            ax.set_title(f'PPM vs time for given M')
+            ax.set_title(f'{ylabel} vs time for given M')
 
             #ax.xaxis.axis_date(tz=None)
 
@@ -331,11 +356,13 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
             if Settings["do_display_const_time"] == "True":
                 islogarithmic = st.radio(f"Do display logarithmic scalе?", ["True", "False"])
-                constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic)
+                isppm = st.radio(f"Do convert to ppm?", ["True", "False"])
+                constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic,isppm)
 
             if Settings["do_display_const_mass"] == "True":
                 islogarithmic2 = st.radio(f"Do display logarithmic scale2?", ["True", "False"])
-                constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step, islogarithmic2)
+                isppm2 = st.radio(f"Do convert to ppm2?", ["True", "False"])
+                constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step, islogarithmic2, isppm2)
 
             find_abnormalities = st.button("Find abnormalities")
             if find_abnormalities:

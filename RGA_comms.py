@@ -211,7 +211,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     handle.close()'''
 
 
-def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,config="MainConfig",doliveabnormalitycheck=False):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
+def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,config="MainConfig",doliveabnormalitycheck=False,convert_to_ppm=True):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
 
     ip_adress = js.ReadJSONConfig("spectrometer_parameters","ip_address",config)
     flash_default_images(filename,control_spectrum_filename, abnorm_log_filename)
@@ -257,6 +257,8 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 
 
 
+
+
     do_simplex, do_emit_sound, do_logging = ar.GetParameters()
 
     if doliveabnormalitycheck:
@@ -273,7 +275,6 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 
 
         ar.FindAbnormalityInSpectrum(array_to_append,controlspectrum,current_time,True,filename,abnorm_log_filename,start_mass,step,do_emit_sound=do_emit_sound,simplex=do_simplex,do_logging=do_logging)
-
 
 
     dictionary_to_append["array"] = array_to_append
@@ -296,6 +297,17 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 
     if do_logging:
         Logging.MakeLogEntry(f"Scan for Minit = {real_start_mass}, step={step}, amt.of steps = {amount_of_scans} completed")
+
+
+
+'''def ConvertPascalsToPPM(array):
+    pascal_sum = 0
+    for element in array:
+        pascal_sum = pascal_sum + abs(element)
+    final_array = []
+    for element in array:
+        final_array.append((element*1000000)/pascal_sum)
+    return final_array'''
 
 
 def flash_default_images(spectrum_filename,control_spectrum_filename,abnorm_log_filename,MainConfig="MainConfig"):
