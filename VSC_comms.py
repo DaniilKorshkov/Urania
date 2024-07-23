@@ -5,6 +5,7 @@ import time
 import subprocess
 import os
 import serial
+from JSONoperators import ReadJSONConfig
 
 
 def SendCommandToVSC(command):
@@ -96,7 +97,7 @@ PORT = '/dev/ttyUSB0'  #"COM7"
 MKS_ADDRESS = "253"
 
 
-def SendCommand(MKS_ADRESS,command):
+def SendCommand(MKS_ADDRESS,PORT,command):
     ser = serial.Serial(
         port=PORT,
         timeout=10.0,
@@ -115,19 +116,41 @@ def SendCommand(MKS_ADRESS,command):
 
     ser.write(bytes(f"@{MKS_ADDRESS}{command}?;FF", "ascii"))
 
-    print("data sent !!!")
+    #print("data sent !!!")
 
     time.sleep(1)
 
     result = ser.read_until(b"FF")
 
-    print(f"result is: {result}")
+    return result
 
-    ser.close()
 
-    '''if 'NAK160' in str(result):
-        raise AssertionError('NAK Error keyword in output')'''
+def ReadMFMFlowRate(MainConfig="MainConfig"):
+    address = ReadJSONConfig("vcs","address",MainConfig)
+    vcs_serial_port = ReadJSONConfig("vcs","vcs_serial_port")
+    mfm_port = ReadJSONConfig("vcs","mfm_port",MainConfig)
+    raw_flowrate = str(SendCommand(address,vcs_serial_port,f"FR{mfm_port}"))
+    #print(raw_flowrate)
+    if "ACK" in raw_flowrate:
+        k_position = raw_flowrate.find("K")
+        e_position = raw_flowrate.find("E")
+        semicolomn_position = raw_flowrate.find(";")
 
-#for i in range(6):
- #   for j in range(6):
-  #      SendCommand(f'00{i}',f'QMD{j}!Open')
+        real_part = raw_flowrate[(k_position+1):(e_position)]
+        #print(real_part)
+        power = raw_flowrate[(e_position+1):(semicolomn_position)]
+        #print(power)
+        rdy_number = float(real_part)*(10**int(power))
+
+        return rdy_number
+
+
+
+
+
+
+
+
+
+
+print(ReadMFMFlowRate())

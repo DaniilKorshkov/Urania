@@ -3,3 +3,4 @@
 {"class":"log","MainLog":"MainLog"}
 {"class":"spectrometer_parameters","default_spectrum_image":"default_spectrum","default_controlspectrum_image":"default_control_spectrum","ip_address":"169.254.198.174"}
 {"class":"vicimotor","address":"ASRL/dev/ttyUSB1::INSTR"}
+{"class":"vcs","vcs_serial_port":"/dev/ttyUSB0","address":253,"mfm_port":6}
