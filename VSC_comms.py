@@ -7,6 +7,7 @@ import os
 import serial
 from JSONoperators import ReadJSONConfig
 import math
+import datetime
 
 #PORT = '/dev/ttyUSB0'  #"COM7"
 #MKS_ADDRESS = "253"
@@ -194,4 +195,83 @@ def ConvertToEngNotation(number):  # function to convert normal number to engine
         return (f"{final_number}E{final_log}")
 
 
-print(ReadPCPressure())
+
+def StabilizePressure(MainConfig="MainConfig"):
+    ChangeMFCMode("Setpoint")
+    current_pressure = ReadPCPressure(MainConfig)
+    current_flow = ReadMFCFlowRate(MainConfig)
+
+    while current_pressure < 750:
+        if current_pressure > 500:
+
+            if current_flow*0.9 > 20:
+                ChangeMFCFlowRate(current_flow*0.9)
+            time.sleep(5)
+            current_pressure = ReadPCPressure(MainConfig)
+            current_flow = ReadMFCFlowRate(MainConfig)
+
+            if current_flow < 25:
+                ChangeMFCMode("Close")
+                break
+
+        else:
+
+            if current_flow*0.8>20:
+                ChangeMFCFlowRate(current_flow * 0.8)
+            time.sleep(2.5)
+            current_pressure = ReadPCPressure(MainConfig)
+            current_flow = ReadMFCFlowRate(MainConfig)
+            if current_flow < 25:
+                ChangeMFCMode("Close")
+                break
+
+
+
+def IncreaseFlowRate(MainConfig="MainConfig"):
+    ChangeMFCMode("Setpoint")
+    theoretical_flow = ReadMFCFlowRate(MainConfig)
+
+    while True:
+        current_flow = ReadMFCFlowRate(MainConfig)
+        theoretical_flow = theoretical_flow*1.05
+        if theoretical_flow < 20:
+            theoretical_flow = 20
+        ChangeMFCFlowRate(theoretical_flow)
+        time.sleep(7.5)
+        current_pressure = ReadPCPressure(MainConfig)
+        if current_pressure < 755:
+            if current_flow > 20:
+                ChangeMFCFlowRate(theoretical_flow*0.952)
+            else:
+                ChangeMFCMode("Close")
+            break
+
+
+def StabilityWatcher():
+    last_stabilize = datetime.datetime.now().timestamp()
+    last_increase = datetime.datetime.now().timestamp()
+
+    while True:
+
+        try:
+
+            if datetime.datetime.now().timestamp() - last_stabilize > 1:
+                current_pressure = ReadPCPressure()
+                if current_pressure < 750:
+
+                    StabilizePressure()
+                    print("Stabilized!!!")
+                    time.sleep(10)
+                    IncreaseFlowRate()
+
+            if datetime.datetime.now().timestamp() - last_increase > 60:
+
+                IncreaseFlowRate()
+
+        except:
+            pass
+
+
+
+
+StabilityWatcher()
