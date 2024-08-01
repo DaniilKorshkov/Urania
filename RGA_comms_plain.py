@@ -87,7 +87,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                 if "ERROR" in received:
                     sock.send(bytes("Release", "ascii") + bytes([10]))
                     ErrorMessage = received
-                    raise ValueError("ERROR keyword in output")
+                    raise ValueError(f"ERROR keyword in output: {ErrorMessage}")
 
 
                 if show_live_feed:
@@ -291,3 +291,4 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 #TestSpectrum = GetMassSpectrum(1)
 #print(TestSpectrum)
 
+AppendSpectrumJSON("Pipe1scan",None,None)

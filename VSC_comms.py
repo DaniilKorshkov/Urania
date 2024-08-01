@@ -273,5 +273,14 @@ def StabilityWatcher():
 
 
 
+def SmartCloseMFC(MainConfig="MainConfig"):
+    CurrentFlow = ReadMFCFlowRate(MainConfig)
+    FlowToSet = 2.341*CurrentFlow - 1241
+    if FlowToSet < 20:
+        ChangeMFCMode("Close")
+    else:
+        ChangeMFCMode("Setpoint")
+        ChangeMFCFlowRate(FlowToSet)
 
-StabilityWatcher()
+
+#StabilityWatcher()
