@@ -98,7 +98,9 @@ def constant_time_spectrum_table(mass_array,ppm_array):
 
 
 
-def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic, isppm):   # function to display spectrum for given moment of time
+def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islogarithmic, isppm):   # function to display spectrum for given moment of time
+
+
 
     initial_load_time = datetime.datetime.now()
     time_array = fn.get_time_list(spectrum_list)   # get all moments of time from loaded spectrums
@@ -130,8 +132,13 @@ def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic, is
         for i in range(len(spectrum_list[str(given_time)])):
             mass_range.append(initial_value+i*step)
 
+
+
         #print(mass_range)
         display_range = spectrum_list[str(given_time)]
+        oxygen = oxygen_list[str(given_time)]
+        print(oxygen)
+        oxygen_label = "Oxygen ppm"
         table_range = display_range
         ylabel = "Pascal"
 
@@ -154,13 +161,13 @@ def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic, is
             new_range = []
 
             for element in display_range:
-                if element < 0:
-                    element = 0-element
-                element += 1
+                element = abs(element) + 1
 
                 new_range.append(math.log(element, 10))
             display_range = new_range
+            oxygen = math.log( (abs(oxygen) + 1), 10 )
             ylabel = f'log10 {ylabel}'
+            oxygen_label = "log10 oxygen ppm"
 
 
 
@@ -175,6 +182,7 @@ def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic, is
         ax.set_title(f'Spectrum for time: {dt.datetime.fromtimestamp(given_time)}')
 
         st.pyplot(fig)
+        st.write(f"{oxygen_label}: {oxygen}")
 
     do_display_table = st.button(label="Display table with values")
     if do_display_table:
@@ -193,36 +201,49 @@ def constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic, is
 
 
 
-def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, step, islogarithmic, isppm):  # function to display plots for constant masses with time on X axis and PPM on Y axis
+def constant_mass_spectrum(spectrum_list,oxygen_list,default_mass_string, initial_value, step, islogarithmic, isppm):  # function to display plots for constant masses with time on X axis and PPM on Y axis
 
 
     st.write(f"Enter desired molar masses separated by comma: (default: {default_mass_string}) ")
-    mass_string = st.text_input(label="Enter desired molar masses separated by comma: ")
+    mass_string = st.text_input(label="Enter desired molar masses (or 'ox') separated by comma: ")
     if mass_string == "":
         mass_string = default_mass_string  # user is promted to input list of desired masses as string. If nothing is inputed, default list is used
 
-    try:
-        temp_mass_list = (mass_string.strip()).split(",")
-        mass_list=[]  # list of desired molar masses to be displayed on graph
-        for element in temp_mass_list:
 
-                mass_list.append(float(element.strip()))
+    temp_mass_list = (mass_string.strip()).split(",")
+    mass_list=[]  # list of desired molar masses to be displayed on graph
+    for element in temp_mass_list:
+
+        if element.strip() == "ox":
+            mass_list.append("ox")
+
+        else:
+            mass_list.append(float(element.strip()))
 
 
 
 
 
 
-        placeholder = st.empty()
-        with placeholder.container():
-            fig, ax = plt.subplots()
-            x = fn.get_time_list(spectrum_list)
-            x_converted = [dt.datetime.fromtimestamp(element) for element in x]  # convert date and time from computer format to human readable format
+    placeholder = st.empty()
+    with placeholder.container():
+        fig, ax = plt.subplots()
+        x = fn.get_time_list(spectrum_list)
+        x_converted = [dt.datetime.fromtimestamp(element) for element in x]  # convert date and time from computer format to human readable format
 
-            mass_dictionary = {}  # dictionaty to be displayed in table with numerical values
-            mass_dictionary[f"Time:"] = x_converted   # first column is time moments of measurements
+        mass_dictionary = {}  # dictionaty to be displayed in table with numerical values
+        mass_dictionary[f"Time:"] = x_converted   # first column is time moments of measurements
 
-            for given_mass in mass_list:
+        for given_mass in mass_list:
+
+            if given_mass == "ox":
+                y = []
+                for key in oxygen_list:
+                    print(oxygen_list[key])
+                    y.append(oxygen_list[key])
+
+
+            else:
                 mass_number = int((given_mass-initial_value)/step)
                 #st.write(mass_number)
                 try:
@@ -230,15 +251,15 @@ def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, ste
                 except:
                     pass
 
-                display_range = y
+            display_range = y
+
+
+            if isppm == "True" or given_mass == "ox":
+                ylabel = "PPM"
+            else:
                 ylabel = "Pascal"
 
-                if isppm == "True":
-                    ylabel = "PPM"
-                else:
-                    ylabel = "Pascal"
-
-                if islogarithmic == "True":
+            if islogarithmic == "True":
 
                     new_range = []
 
@@ -252,26 +273,25 @@ def constant_mass_spectrum(spectrum_list,default_mass_string, initial_value, ste
                     ylabel = f'log10 {ylabel}'
 
 
-                ax.plot(x_converted, display_range, label=f"M: {given_mass}")
-                ax.set_ylabel(ylabel)
-                mass_dictionary[f"M = {str(given_mass)}"] = y
-
-            ax.set_xlabel(f'Time')
+            ax.plot(x_converted, display_range, label=f"M: {given_mass}")
             ax.set_ylabel(ylabel)
-            ax.legend()
-            ax.set_title(f'{ylabel} vs time for given M')
+            mass_dictionary[f"M = {str(given_mass)}"] = y
 
-            #ax.xaxis.axis_date(tz=None)
+        ax.set_xlabel(f'Time')
+        ax.set_ylabel(ylabel)
+        ax.legend()
+        ax.set_title(f'{ylabel} vs time for given M')
 
-            st.pyplot(fig)
+        #ax.xaxis.axis_date(tz=None)
 
-            do_display_table = st.button(label="display table with values")  # optionally display table with numerical values
-            if do_display_table:
-                st.write(pd.DataFrame(mass_dictionary))
+        st.pyplot(fig)
+
+        do_display_table = st.button(label="display table with values")  # optionally display table with numerical values
+        if do_display_table:
+            st.write(pd.DataFrame(mass_dictionary))
 
 
-    except:
-        st.write("Bad input in mass selection line!!!")
+
 
 
 
@@ -322,9 +342,9 @@ def display_one_sample_data(settings_filename,self_name):           # function t
     assert howmuchspectrums > 0
 
     if Settings["parsing_mode"] == "last":
-            metadata, spectrum_list = js.read_last_spectrums(Settings["spectrum_filename"], howmuchspectrums)   # most recent spectrums are imported from JSON file
-    if Settings["parsing_mode"] == "search":
-            metadata, spectrum_list = js.read_period_of_time(Settings["spectrum_filename"],howmuchspectrums,time_moment)
+            metadata, spectrum_list, oxygen_list = js.read_last_spectrums(Settings["spectrum_filename"], howmuchspectrums)   # most recent spectrums are imported from JSON file
+    else:
+            metadata, spectrum_list, oxygen_list = js.read_period_of_time(Settings["spectrum_filename"],howmuchspectrums,time_moment)
 
     if metadata["is_a_spectrum"] != "True":   # verification that provided file is a spectrum
             st.write("Imported file is not valid!")
@@ -333,39 +353,22 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
 
 
-    if Settings["orientation"] == "horizontal":   # select horizontal or vertical layout of page; and display widgets accordingly
-
-            #st.set_page_config(layout="wide")
-            col = st.columns((1, 1, 1), gap='medium')
 
 
-            if Settings["do_display_3d"] == "True":
-                with col[0]:
-                    three_dimentional_spectrum(spectrum_list, initial_value, step)
-            if Settings["do_display_const_time"] == "True":
-                with col[1]:
-                    constant_time_spectrum(spectrum_list, initial_value, step)
-            if Settings["do_display_const_mass"] == "True":
-                with col[2]:
-                    islogarithmic2 = st.radio(f"Do display logarithmic scale2?", ["True", "False"])
-                    constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step, islogarithmic2)
 
-    else:
-            if Settings["do_display_3d"] == "True":
-                three_dimentional_spectrum(spectrum_list, initial_value, step)
 
-            if Settings["do_display_const_time"] == "True":
+    if Settings["do_display_const_time"] == "True":
                 islogarithmic = st.radio(f"Do display logarithmic scalе?", ["True", "False"])
                 isppm = st.radio(f"Do convert to ppm?", ["True", "False"])
-                constant_time_spectrum(spectrum_list, initial_value, step, islogarithmic,isppm)
+                constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islogarithmic,isppm)
 
-            if Settings["do_display_const_mass"] == "True":
+    if Settings["do_display_const_mass"] == "True":
                 islogarithmic2 = st.radio(f"Do display logarithmic scale2?", ["True", "False"])
                 isppm2 = st.radio(f"Do convert to ppm2?", ["True", "False"])
-                constant_mass_spectrum(spectrum_list,Settings["default_masses"], initial_value, step, islogarithmic2, isppm2)
+                constant_mass_spectrum(spectrum_list,oxygen_list,Settings["default_masses"], initial_value, step, islogarithmic2, isppm2)
 
-            find_abnormalities = st.button("Find abnormalities")
-            if find_abnormalities:
+    find_abnormalities = st.button("Find abnormalities")
+    if find_abnormalities:
                 control_spectrum_filename = Settings["control_spectrum_filename"]
                 spectrum_filename = Settings["spectrum_filename"]
                 ar.AnalyseSpectrum(spectrum_filename,control_spectrum_filename,None,False)

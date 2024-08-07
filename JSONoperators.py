@@ -13,6 +13,7 @@ def read_spectrum_json(filename):   #function to read array of spectrums from JS
 
     metadata = {}
     spectrum_list = {}            #array of spectrums is presented as dictionaty with time used as key and list of PPM's for each mass used as respective value
+    oxygen_list = {}
 
     handle = open(filename, "r")
 
@@ -28,18 +29,23 @@ def read_spectrum_json(filename):   #function to read array of spectrums from JS
             case "spectrum":
                 time = tempdict["time"]
                 spectrum_array = tempdict["array"]
+                try:
+                    oxygen = tempdict["oxygen"]
+                except:
+                    oxygen = 0
 
                 spectrum_list[str(time)] = spectrum_array
+                oxygen_list[str(time)] = oxygen
 
     handle.close()
-    return metadata, spectrum_list
+    return metadata, spectrum_list, oxygen_list
 
 
 
 def read_last_spectrums(filename, howmuchspectrums):   # function to get X most recent spectrums from full array
 
 
-    metadata, spectrum_list = read_spectrum_json(filename)
+    metadata, spectrum_list, oxygen_list = read_spectrum_json(filename)
     time_list = fn.get_time_list(spectrum_list)  # list of all time moments of spectrums in full array of spectrums
     lng = len(spectrum_list)
     time_list.sort()
@@ -49,11 +55,13 @@ def read_last_spectrums(filename, howmuchspectrums):   # function to get X most 
         howmuchspectrums = lng
 
 
-    new_spectrum_list = {}            # only spectrums corresponding to X latest moments of time are appended to new_spectrum_list
+    new_spectrum_list = {}
+    new_oxygen_list = {} # only spectrums corresponding to X latest moments of time are appended to new_spectrum_list
     for i in range(howmuchspectrums):
         new_spectrum_list[str(time_list[lng-i-1])] = spectrum_list[str(time_list[lng-i-1])]
+        new_oxygen_list[str(time_list[lng-i-1])] = oxygen_list[str(time_list[lng-i-1])]
 
-    return metadata, new_spectrum_list      #new_spectrum_list is returned
+    return metadata, new_spectrum_list, new_oxygen_list      #new_spectrum_list is returned
 
 
 def read_GUI_page_settings(filename, self_name):   #function to read settings for given page for GUI from JSON format
@@ -80,7 +88,7 @@ def read_GUI_page_settings(filename, self_name):   #function to read settings fo
 
 def read_period_of_time(filename, howmuchspectrums, desired_time):  #function to read X spectrums starting from given moment of time
 
-    metadata, spectrum_list = read_spectrum_json(filename)
+    metadata, spectrum_list, oxygen_list = read_spectrum_json(filename)
     time_list = fn.get_time_list(spectrum_list)  # list of all time moments of spectrums in full array of spectrums
 
 
@@ -100,18 +108,23 @@ def read_period_of_time(filename, howmuchspectrums, desired_time):  #function to
 
 
     if time_found:
-        new_spectrum_list = {}            # only spectrums corresponding to desired time boundaries are added to new_spectrum_list
+        new_spectrum_list = {}
+        new_oxygen_list = {} # only spectrums corresponding to desired time boundaries are added to new_spectrum_list
         for i in range(howmuchspectrums):
                 try:
                     new_spectrum_list[str(time_list[t+i])] = spectrum_list[str(time_list[t+i])]
+                    new_oxygen_list[str(time_list[t + i])] = oxygen_list[str(time_list[t + i])]
+
                 except:
                     pass
-    else: # in desired time is bigger than most recent spectrum, only last spectrum is added to new_spectrum_list
+    else: # in desired time is bigger than most recent spectrum, only single last spectrum is added to new_spectrum_list
         new_spectrum_list = {}
+        new_oxygen_list = {}
         new_spectrum_list[str(time_list[t-1])] = spectrum_list[str(time_list[t-1])]
+        new_oxygen_list[str(time_list[t - 1])] = oxygen_list[str(time_list[t - 1])]
 
 
-    return metadata, new_spectrum_list
+    return metadata, new_spectrum_list, new_oxygen_list
 
 
 

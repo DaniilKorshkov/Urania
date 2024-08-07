@@ -23,7 +23,7 @@ def AnalyseSpectrum(spectrum_filename,control_spectrum_filename,log_filename,do_
                 control_metadata = json.loads(line)
     controlspectrum_handle.close()
 
-    spectrum_metadata, spectrum_list = js.read_spectrum_json(spectrum_filename)
+    spectrum_metadata, spectrum_list, oxygen_list = js.read_spectrum_json(spectrum_filename)
 
     for time_key in spectrum_list:
         FindAbnormalityInSpectrum(spectrum_list[time_key], controlspectrum, time_key,
