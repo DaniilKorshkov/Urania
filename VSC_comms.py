@@ -82,6 +82,19 @@ def ReadMFCFlowRate(MainConfig="MainConfig"):  # Function to read flow rate (ml/
     return ret
 
 
+def ReadMFCSetpoint(MainConfig="MainConfig"):  # Function to read flow rate (ml/min) from Mass Flow Controller
+    address = ReadJSONConfig("vsc","address",MainConfig)
+    vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
+    mfc_port = ReadJSONConfig("vsc","mfc_port",MainConfig)
+
+    raw_flowrate = str(SendCommand(address,vsc_serial_port,f"QSP{mfc_port}?"))
+    #print(raw_flowrate)
+
+    ret = ConvertEngineerNotation(raw_flowrate)
+
+    return ret
+
+
 
 
 def ChangeMFCMode(mode,MainConfig="MainConfig"):  # Function to change mode of Mass Flow Controller (open/close/setpoint)
@@ -94,6 +107,23 @@ def ChangeMFCMode(mode,MainConfig="MainConfig"):  # Function to change mode of M
     void = SendCommand(address,vsc_serial_port,f"QMD{mfc_port}!{mode}")
     print(f"QMD{mfc_port}!{mode}")
     print(void)
+
+
+def ReadMFCMode(MainConfig="MainConfig"):  # Function to read flow rate (ml/min) from Mass Flow Controller
+    address = ReadJSONConfig("vsc","address",MainConfig)
+    vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
+    mfc_port = ReadJSONConfig("vsc","mfc_port",MainConfig)
+
+    mode = str(SendCommand(address,vsc_serial_port,f"QMD{mfc_port}?"))
+
+    if "OPEN" in str(mode):
+        ret = "Open"
+    if "CLOSE" in str(mode):
+        ret = "Closed"
+    if "SETPOINT" in str(mode):
+        ret = "Setpoint"
+
+    return ret
 
 
 def ChangeMFCFlowRate(newflowrate,MainConfig="MainConfig"):   # Change flow rate of Mass Flow Controller
@@ -152,6 +182,37 @@ def ReadPCPressure(MainConfig="MainConfig"):  # Read pressure from pressure cont
 
 
     ret = ConvertEngineerNotation(raw_pressure)
+
+    return ret
+
+
+def ReadPCSetpoint(MainConfig="MainConfig"):  # Function to read flow rate (ml/min) from Mass Flow Controller
+    address = ReadJSONConfig("vsc","address",MainConfig)
+    vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
+    mfc_port = ReadJSONConfig("vsc","mfc_port",MainConfig)
+
+    raw_flowrate = str(SendCommand(address,vsc_serial_port,f"QSP{mfc_port}?"))
+    #print(raw_flowrate)
+
+    ret = ConvertEngineerNotation(raw_flowrate)
+
+    return ret
+
+
+def ReadPCMode(MainConfig="MainConfig"):   # Change mode of pressure controller (open/close/setpoint)
+    address = ReadJSONConfig("vsc", "address", MainConfig)
+    vsc_serial_port = ReadJSONConfig("vsc", "vsc_serial_port")
+    pc_port = ReadJSONConfig("vsc", "pressure_controller_port", MainConfig)
+
+
+
+    mode = SendCommand(address, vsc_serial_port, f"QMD{pc_port}?")
+    if "OPEN" in str(mode):
+        ret = "Open"
+    if "CLOSE" in str(mode):
+        ret = "Closed"
+    if "SETPOINT" in str(mode):
+        ret = "Setpoint"
 
     return ret
 
@@ -283,4 +344,54 @@ def SmartCloseMFC(MainConfig="MainConfig"):
         ChangeMFCFlowRate(FlowToSet)
 
 
+
+
+def FullQuery(MainConfig="MainConfig"):
+    pg_port = ReadJSONConfig("vsc", "pressure_gauge_port")
+    pc_port = ReadJSONConfig("vsc", "pressure_controller_port")
+    mfc_port = ReadJSONConfig("vsc", "mfc_port")
+    mfm_port = ReadJSONConfig("vsc", "mfm_port")
+
+    print(f"\n")
+    print(f"Make sure that pressure meter is connected to port {pg_port}, pressure controller to {pc_port}, mfc to {mfc_port}, mfm to {mfm_port}")
+    print(f"\n")
+
+
+    print(f"Pressure Meter Data: ")
+    pressure = ReadPressureGauge(MainConfig)
+    print(f"Current pressure at common line: {pressure}")
+
+    print(f"\n")
+
+    print(f"Mass Flow Controller Data: ")
+    mass_flow = ReadMFCFlowRate(MainConfig)
+    mode = ReadMFCMode(MainConfig)
+    setpoint = ReadMFCSetpoint()
+    print(f"Current mode: {mode}")
+    print(f"Current mass flow: {mass_flow}")
+    print(f"Current setpoint: {setpoint}")
+
+    print(f"\n")
+
+    print(f"Pressure Controller Data: ")
+    pressure = ReadPCPressure(MainConfig)
+    mode = ReadPCMode(MainConfig)
+    setpoint = ReadPCSetpoint()
+    print(f"Current mode: {mode}")
+    print(f"Current pressure: {pressure}")
+    print(f"Current setpoint: {setpoint}")
+
+    print(f"\n")
+
+    print(f"Mass Flow Meter Data: ")
+    mass_flow = ReadMFMFlowRate(MainConfig)
+    print(f"Current mass flow: {mass_flow}")
+
+    print(f"\n")
+
+
+
+
+
 #StabilityWatcher()
+
