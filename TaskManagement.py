@@ -4,6 +4,7 @@ import Logging as lg
 import JSONoperators as js
 import servo_motor
 import RGA_comms
+import VSC_comms as vsc
 import time
 
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
@@ -168,7 +169,7 @@ def GetRegularTask(config="MainConfig"):  #function to get regular task name
 
 
 
-def GetTask(config="MainConfig",do_logging=True):  # function that checks for emergency tasks; for scheduled tasks, for regular tasks and returns name of required task
+def GetTask(config="MainConfig",do_logging=False):  # function that checks for emergency tasks; for scheduled tasks, for regular tasks and returns name of required task
 
     tasklist_name = js.ReadJSONConfig("tasks","TaskList")
     default_tasklist_name = js.ReadJSONConfig("tasks","DefaultTaskList")
@@ -205,15 +206,21 @@ def GetTaskData(taskname, config="MainConfig"):
 
 
 
-def MakeScan(filename,valve_number,purging_time=600):
+def MakeScan(filename,valve_number,amount_of_scans,purging_time=600,stabilize_time=60):
     servo_motor.switch_valve_position(valve_number)
+    vsc.ChangeMFCMode("Open")
     time.sleep(purging_time)
-    RGA_comms.AppendSpectrumJSON(filename,"default_control_spectrum","AbnormalityLog")
+    vsc.ChangeMFCMode("Close")
+    time.sleep(stabilize_time)
+    for i in range(amount_of_scans):
+        RGA_comms.AppendSpectrumJSON(filename,"default_control_spectrum","AbnormalityLog")
 
 
 def DoTask(config="MainConfig"):
     taskname =GetTask(config,do_logging=False)
     spectrum_filename, amount_of_scans, valve_position = GetTaskData(taskname,config)
-    for i in range(amount_of_scans):
-        MakeScan(spectrum_filename, valve_position)
+    MakeScan(spectrum_filename, valve_position, amount_of_scans)
+
+
+
 
