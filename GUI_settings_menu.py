@@ -279,18 +279,18 @@ def Settings_Menu(settings_file, default_settings_file):                        
     modify_default_time_moment(Settings, settings_file)
     for i in range(6):
         st.markdown("")
-    modify_orientation(Settings,settings_file)
+    '''modify_orientation(Settings,settings_file)
     for i in range(6):
-        st.markdown("")
+        st.markdown("")'''
     modify_default_amount_of_spectrums(Settings,settings_file)
     for i in range(6):
         st.markdown("")
     modify_default_mass_list(Settings,settings_file)
     for i in range(6):
         st.markdown("")
-    modify_do_display_3d(Settings,settings_file)
+    '''modify_do_display_3d(Settings,settings_file)
     for i in range(6):
-        st.markdown("")
+        st.markdown("")'''
     modify_do_display_const_mass(Settings,settings_file)
     for i in range(6):
         st.markdown("")
