@@ -7,10 +7,14 @@ import AbnormalityReaction as ar
 import Logging
 import os
 import SimpleXChat_Interface as sxci
+import netdiscover
 
 
 
 def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
+
+    ip_adress = js.ReadJSONConfig("spectrometer_parameters","ip_address")
+
     HOST, PORT = ip_adress, 10014   #default IP and port of RGA, change later???
     ErrorMessage = None
 
@@ -341,3 +345,63 @@ def flash_default_images(spectrum_filename,control_spectrum_filename,abnorm_log_
 #TestSpectrum = GetMassSpectrum(1)
 #print(TestSpectrum)
 
+def control_pump(status,MainConfig="MainConfig"):
+    match status.lower():
+        case "on":
+            SendPacketsToRGA(["CirrusPump True"])
+        case "off":
+            SendPacketsToRGA(["CirrusPump False"])
+
+
+
+def control_heater(status,MainConfig="MainConfig"):
+    match status.lower():
+        case "off":
+            SendPacketsToRGA(["CirrusHeater Off"])
+        case "warm":
+            SendPacketsToRGA(["CirrusHeater Warm"])
+        case "bake":
+            SendPacketsToRGA(["CirrusHeater Bake"])
+
+
+def control_capillary_heater(status,MainConfig="MainConfig"):
+    match status.lower():
+        case "off":
+            SendPacketsToRGA(["CirrusCapillaryHeater False"])
+        case "on":
+            SendPacketsToRGA(["CirrusCapillaryHeater True"])
+
+
+def cirrus_info(MainConfig="MainConfig"):
+    ret = SendPacketsToRGA(["CirrusInfo"])
+    return ret
+
+
+def change_rga_ip(MainConfig="MainConfig"):
+    disc = netdiscover.Discover()
+    mac = js.ReadJSONConfig("spectrometer_parameters","mac_address")
+    ret = js.ReadJSONConfig("spectrometer_parameters","ip_address")
+    scan = disc.scan(ip_range="192.168.0.0/24")
+    for element in scan:
+        if element["mac"] == mac:
+            ret = element["ip"]
+
+    handle = open("MainConfig","r")
+    newconfig = []
+    for line in handle:
+                try:
+                    dictline = json.loads(line)
+                    if dictline["class"] == "spectrometer_parameters":
+                        dictline["ip_address"] = ret
+                        newline = json.dumps(dictline)
+                        newconfig.append(newline+"\n")
+                    else:
+                        newconfig.append(line)
+                except:
+                    pass
+    handle.close()
+
+    handle = open("MainConfig","w")
+    for line in newconfig:
+                handle.write(line)
+    handle.close()
