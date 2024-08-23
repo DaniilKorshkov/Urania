@@ -1,6 +1,6 @@
 {"class":"user_notifications","simplex_username":"UraniaClient","do_simplex":"True","do_sound":"False","do_logging":"True"}
 {"class":"tasks","TaskList":"TaskList","DefaultTaskList":"DefaultTaskList"}
 {"class":"log","MainLog":"MainLog"}
-{"class":"spectrometer_parameters","default_spectrum_image":"default_spectrum","default_controlspectrum_image":"default_control_spectrum","ip_address":"169.254.198.174"}
+{"class":"spectrometer_parameters","default_spectrum_image":"default_spectrum","default_controlspectrum_image":"default_control_spectrum","ip_address":"192.168.0.128","mac_address":"00:05:51:08:8b:54"}
 {"class":"vicimotor","address":"ASRL/dev/ttyUSB1::INSTR"}
 {"class":"vsc","vsc_serial_port":"/dev/ttyUSB0","address":253,"mfm_port":6,"mfc_port":5,"pressure_gauge_port":1,"pressure_controller_port":3}
