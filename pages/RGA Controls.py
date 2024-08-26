@@ -1,14 +1,25 @@
+from duplicity.config import timeout
+
 import RGA_comms as rga
 import streamlit as st
 
+
+
+
+heatstat, capheatstat, pumpstat = rga.heating_info("MainConfig")
+
+
+
+st.write(f"Pump status: {pumpstat}")
 col1,col2 = st.columns(2)
+
 with col1:
     pumpoff = st.button("Pump Off")
 with col2:
     pumpon = st.button("Pump On")
 
 
-
+st.write(f"Capillary heater status: {capheatstat}")
 col1,col2 = st.columns(2)
 with col1:
     choff = st.button("Capillary Heater Off")
@@ -17,7 +28,7 @@ with col2:
 
 
 
-
+st.write(f"Heater status: {heatstat}")
 col1,col2,col3 = st.columns(3)
 with col1:
     heatoff = st.button("Heater Off")
@@ -25,9 +36,6 @@ with col2:
     heatwarm = st.button("Heater On")
 with col3:
     heatbake = st.button("Heater Bake")
-
-
-cirrusinfo = st.button("Cirrus Info")
 
 
 
@@ -49,9 +57,17 @@ if choff:
 
 
 
+data_type = st.radio("Select data type to inquire: ",["Info","EGains","InletInfo","RFInfo","MultiplierInfo","SourceInfo","DetectorInfo","FilamentInfo","TotalPressureInfo","AnalogInputInfo","AnalogOutputInfo","DigitalInfo","RolloverInfo","RVCInfo","CirrusInfo"])
+inquire = st.button("Inquire")
+if inquire:
+    ret, void = rga.SendPacketsToRGA([data_type])
+    splitret = ret[0].split("\n")
+    for element in splitret:
+        st.write(element)
 
 
 
-cirrus_info = rga.cirrus_info()
-for line in cirrus_info:
-    st.write(line)
+
+
+
+
