@@ -26,7 +26,7 @@ def if_file_is_spectrum(filename):
 
 
 def FindAllSpectrums(MainConfig="MainConfig"):
-    scans_folder = ReadJSONConfig("storage","scans_folder",MainConfig)
+    
 
     ret = str((subprocess.run(f"ls",capture_output=True)).stdout)
 

@@ -2,13 +2,22 @@ import socket
 import time
 import datetime
 import json
-
+try:
+    import JSONoperators as js
+except:
+    pass
 
 import os
 
 
 
 def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
+
+    try:
+        ip_adress = js.ReadJSONConfig("spectrometer_parameters", "ip_address")
+    except:
+        pass
+
     HOST, PORT = ip_adress, 10014   #default IP and port of RGA, change later???
     ErrorMessage = None
 

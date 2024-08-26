@@ -348,33 +348,63 @@ def flash_default_images(spectrum_filename,control_spectrum_filename,abnorm_log_
 def control_pump(status,MainConfig="MainConfig"):
     match status.lower():
         case "on":
-            SendPacketsToRGA(["CirrusPump True"])
+            SendPacketsToRGA(['Control  "MyProgram" "1.0"' ,"CirrusPump True", "Release"])
         case "off":
-            SendPacketsToRGA(["CirrusPump False"])
+            SendPacketsToRGA(['Control  "MyProgram" "1.0"' ,"CirrusPump False", "Release"])
 
 
 
 def control_heater(status,MainConfig="MainConfig"):
     match status.lower():
         case "off":
-            SendPacketsToRGA(["CirrusHeater Off"])
+            SendPacketsToRGA(['Control  "MyProgram" "1.0"' ,"CirrusHeater Off", "Release"])
         case "warm":
-            SendPacketsToRGA(["CirrusHeater Warm"])
+            SendPacketsToRGA(['Control  "MyProgram" "1.0"' ,"CirrusHeater Warm", "Release"])
         case "bake":
-            SendPacketsToRGA(["CirrusHeater Bake"])
+            SendPacketsToRGA(['Control  "MyProgram" "1.0"' ,"CirrusHeater Bake", "Release"])
 
 
 def control_capillary_heater(status,MainConfig="MainConfig"):
     match status.lower():
-        case "off":
-            SendPacketsToRGA(["CirrusCapillaryHeater False"])
         case "on":
-            SendPacketsToRGA(["CirrusCapillaryHeater True"])
+            SendPacketsToRGA(['Control  "MyProgram" "1.0"' ,"CirrusCapillaryHeater True", "Release"])
+        case "off":
+            SendPacketsToRGA(['Control  "MyProgram" "1.0"' ,"CirrusCapillaryHeater False", "Release"])
 
 
-def cirrus_info(MainConfig="MainConfig"):
-    ret = SendPacketsToRGA(["CirrusInfo"])
-    return ret
+
+def heating_info(MainConfig="MainConfig"):
+
+    ret,void = SendPacketsToRGA(["CirrusInfo"])
+    splitret = ret[0].split("\n")
+    print("ret="+splitret[0])
+
+    heatstat = None
+    pumpstat = None
+    capheatstat = None
+
+    for element in splitret:
+        elementsplit = element.split()
+
+
+
+        if "HeaterStatus" in elementsplit:
+
+            position = elementsplit.index("HeaterStatus")
+
+            heatstat = elementsplit[position+1]
+
+        if "CapillaryHeaterStatus" in elementsplit:
+
+            position = elementsplit.index("CapillaryHeaterStatus")
+            capheatstat = elementsplit[position + 1]
+        if "PumpStatus" in elementsplit:
+
+            position = elementsplit.index("PumpStatus")
+            pumpstat = elementsplit[position + 1]
+
+
+    return heatstat, capheatstat, pumpstat
 
 
 def change_rga_ip(MainConfig="MainConfig"):
@@ -405,3 +435,8 @@ def change_rga_ip(MainConfig="MainConfig"):
     for line in newconfig:
                 handle.write(line)
     handle.close()
+
+
+
+
+
