@@ -6,11 +6,11 @@ import streamlit as st
 
 
 
-heatstat, capheatstat, pumpstat = rga.heating_info("MainConfig")
+heatstat, capheatstat, pumpstat = rga.heating_info("MainConfig")  # query RGA for capillary heater status, heater status and pump status
 
 
 
-st.write(f"Pump status: {pumpstat}")
+st.write(f"Pump status: {pumpstat}")   # menu that displays pump status and prompts user to change it
 col1,col2 = st.columns(2)
 
 with col1:
@@ -19,7 +19,7 @@ with col2:
     pumpon = st.button("Pump On")
 
 
-st.write(f"Capillary heater status: {capheatstat}")
+st.write(f"Capillary heater status: {capheatstat}")  # menu that displays capillary heater status and prompts user to change it
 col1,col2 = st.columns(2)
 with col1:
     choff = st.button("Capillary Heater Off")
@@ -28,7 +28,7 @@ with col2:
 
 
 
-st.write(f"Heater status: {heatstat}")
+st.write(f"Heater status: {heatstat}")  # menu that displays heater status and prompts user to change it
 col1,col2,col3 = st.columns(3)
 with col1:
     heatoff = st.button("Heater Off")
@@ -40,7 +40,7 @@ with col3:
 
 
 
-if pumpoff:
+if pumpoff:                          # link streamlit buttons to respective RGA functions
     rga.control_pump("off")
 if pumpon:
     rga.control_pump("on")
@@ -55,7 +55,11 @@ if chon:
 if choff:
     rga.control_capillary_heater("off")
 
+for i in range(4):
+    st.markdown("")
 
+
+# function to inquire different types of data from RGA (have no idea what it all means)
 
 data_type = st.radio("Select data type to inquire: ",["Info","EGains","InletInfo","RFInfo","MultiplierInfo","SourceInfo","DetectorInfo","FilamentInfo","TotalPressureInfo","AnalogInputInfo","AnalogOutputInfo","DigitalInfo","RolloverInfo","RVCInfo","CirrusInfo"])
 inquire = st.button("Inquire")
