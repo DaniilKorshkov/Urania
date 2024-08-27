@@ -8,7 +8,7 @@ import Logging
 import os
 import SimpleXChat_Interface as sxci
 import netdiscover
-
+import oxygen_analyzer as oxa
 
 
 def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
@@ -282,6 +282,7 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 
 
     dictionary_to_append["array"] = array_to_append
+    dictionary_to_append["oxygen"] = oxa.GetOxygenData("MainConfig")
 
 
     if ErrorMessage == None:
