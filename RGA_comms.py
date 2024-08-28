@@ -93,6 +93,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                 if "ERROR" in received:
                     sock.send(bytes("Release", "ascii") + bytes([10]))
                     ErrorMessage = received
+                    print(ErrorMessage)
                     raise ValueError(f"ERROR keyword in output: {ErrorMessage}")
 
 
@@ -215,10 +216,10 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     handle.close()'''
 
 
-def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,config="MainConfig",doliveabnormalitycheck=True,convert_to_ppm=True):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
+def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,config="MainConfig",doliveabnormalitycheck=False,convert_to_ppm=True):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
 
     ip_adress = js.ReadJSONConfig("spectrometer_parameters","ip_address",config)
-    flash_default_images(filename,control_spectrum_filename, abnorm_log_filename)
+    #flash_default_images(filename,control_spectrum_filename, abnorm_log_filename)
 
     handle = open(filename, "r")
     for line in handle:
@@ -265,37 +266,24 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 
     do_simplex, do_emit_sound, do_logging = ar.GetParameters()
 
-
     if doliveabnormalitycheck:
 
-        try:
-
-            controlspectrum_handle = open(control_spectrum_filename, "r")  #required data loaded from control spectrum
-            for line in controlspectrum_handle:
-                match json.loads(line)["class"]:
-                    case "control_spectrum":
-                        controlspectrum = json.loads(line)
-                    case "metadata":
-                        control_metadata = json.loads(line)
-            controlspectrum_handle.close()
+        controlspectrum_handle = open(control_spectrum_filename, "r")  #required data loaded from control spectrum
+        for line in controlspectrum_handle:
+            match json.loads(line)["class"]:
+                case "control_spectrum":
+                    controlspectrum = json.loads(line)
+                case "metadata":
+                    control_metadata = json.loads(line)
+        controlspectrum_handle.close()
 
 
 
-
-
-            ar.FindAbnormalityInSpectrum(array_to_append,controlspectrum,current_time,True,filename,abnorm_log_filename,start_mass,step,do_emit_sound=False,simplex=False,do_logging=False)
-
-
-        except:
-            pass
+        ar.FindAbnormalityInSpectrum(array_to_append,controlspectrum,current_time,True,filename,abnorm_log_filename,start_mass,step,do_emit_sound=do_emit_sound,simplex=do_simplex,do_logging=do_logging)
 
 
     dictionary_to_append["array"] = array_to_append
-
-    try:  # try to append data from oxygen analyzer to data entry
-        dictionary_to_append["oxygen"] = oxa.GetOxygenData("MainConfig")
-    except:
-        pass
+    dictionary_to_append["oxygen"] = oxa.GetOxygenData("MainConfig")
 
 
     if ErrorMessage == None:
@@ -421,7 +409,7 @@ def heating_info(MainConfig="MainConfig"):
     return heatstat, capheatstat, pumpstat
 
 
-def change_rga_ip(MainConfig="MainConfig"):  # function to ping all devices in local network and find IP of RGA according to it's MAC address
+def change_rga_ip(MainConfig="MainConfig"):
     disc = netdiscover.Discover()
     mac = js.ReadJSONConfig("spectrometer_parameters","mac_address")
     ret = js.ReadJSONConfig("spectrometer_parameters","ip_address")

@@ -5,10 +5,6 @@ from JSONoperators import ReadJSONConfig
 import asyncio
 import servo_motor as sm
 
-
-# those functions display data from 5 different devices (pm,pc,mfm.mfc,miv) and prompt user to change it
-
-
 def pressure_meter_gui(MainConfig="MainConfig"):
     try:
         pressure = vscc.ReadPressureGauge(MainConfig)
@@ -131,7 +127,7 @@ def vicivalve_gui(MainConfig="MainConfig"):
 
 
 
-# all previous functions go into 1 function. It is copied to "Pages" folder
+
 
 def VSC_Gui(MainConfig="MainConfig"):
     pressure_meter_gui(MainConfig)

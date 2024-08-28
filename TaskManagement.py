@@ -195,11 +195,14 @@ def GetTaskData(taskname, config="MainConfig"):
     handle = open(tasklist_name)
     for line in handle:
         dict_line = json.loads(line)
-        if dict_line["name"] == taskname:
-            spectrum_filename = dict_line["filename"]
-            amount_of_scans = dict_line["scans"]
-            valve_position = dict_line["valve_position"]
-            break
+        try:
+            if dict_line["name"] == taskname:
+                spectrum_filename = dict_line["filename"]
+                amount_of_scans = dict_line["scans"]
+                valve_position = dict_line["valve_position"]
+                break
+        except:
+            pass
     handle.close()
 
     return spectrum_filename,amount_of_scans, valve_position

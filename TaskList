@@ -1,3 +1,2 @@
-{"class": "regular_log", "last_executed": 1}
-{"class": "task", "name": "pipe1", "type": "regular", "valve_position":1, "filename": "Pipe1scan","scans": 10}
-{"class": "task", "name": "pipe7", "type": "regular", "valve_position":7, "filename": "Pipe7scan","scans": 10}
+{"class": "regular_log", "last_executed": 0}
+{"class": "task", "name": "28augpipe1", "type": "regular", "valve_position": 1, "filename": "28augpipe1", "scans": 10}

@@ -47,32 +47,37 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
 
     return ret
 
-# Message is formatted as following: ST, 1.234  ppm
 
-def GetOxygenData(MainConfig):
+
+def GetOxygenData(MainConfig="MainConfig"):
     port = js.ReadJSONConfig("ox_an","port",MainConfig)
 
 
-    while True:  # there is +- 5% chance that output is not formatted properly. If so, the message is discarded
+    while True:
         raw_output = SendCommand(port)
         split_output = raw_output.split(",")
         if split_output[0] == "ST":
             break
 
 
-    # split_output[0] is ST, split_output[1] is 1.234 ppm
+
+
 
     st_position = split_output.index("ST")
 
 
+
+
     value = (split_output[st_position+1])
-    ret = value.split()[0]  # split_output[1] is splitted into numerical value and PPM(or %)
+    ret = value.split()[0]
+    ret = float(ret)
 
     if value.split()[1] == "ppm":
         pass
     else:
-        ret = ret * 10000  # if value is not in ppm, %'s are converted to ppm
+        ret = ret * 10000
     return ret
+
 
 
 

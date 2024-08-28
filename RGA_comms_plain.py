@@ -2,22 +2,13 @@ import socket
 import time
 import datetime
 import json
-try:
-    import JSONoperators as js
-except:
-    pass
+
 
 import os
 
 
 
-def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
-
-    try:
-        ip_adress = js.ReadJSONConfig("spectrometer_parameters", "ip_address")
-    except:
-        pass
-
+def SendPacketsToRGA(packages_list,ip_adress="192.168.0.128",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
     HOST, PORT = ip_adress, 10014   #default IP and port of RGA, change later???
     ErrorMessage = None
 
@@ -70,7 +61,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                                 if "ERROR" in received:
                                     sock.send(bytes("Release", "ascii") + bytes([10]))
                                     ErrorMessage = received
-                                    raise ValueError("ERROR keyword in output")
+                                    raise ValueError(f"ERROR keyword in output {ErrorMessage}")
 
 
                                 received_list.append(received)
@@ -300,4 +291,4 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 #TestSpectrum = GetMassSpectrum(1)
 #print(TestSpectrum)
 
-AppendSpectrumJSON("Pipe1scan",None,None)
+SendPacketsToRGA(["CirrusPump True"])

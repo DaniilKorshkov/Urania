@@ -87,11 +87,6 @@ def three_dimentional_spectrum(spectrum_list, initial_value, step):  # function 
 
 
 
-def constant_time_spectrum_table(mass_array,ppm_array):
-    st.write(pd.DataFrame({
-        'Molar mass': mass_array,
-        'PPM': ppm_array}))
-
 
 
 
@@ -186,7 +181,10 @@ def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islo
 
     do_display_table = st.button(label="Display table with values")
     if do_display_table:
-        constant_time_spectrum_table(mass_range, table_range)
+        yylabel = ylabel.strip("log10")
+        st.write(pd.DataFrame({
+            'Molar mass': mass_range,
+            f'{yylabel}': display_range}))
 
 
 
@@ -276,6 +274,7 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,default_mass_string, initia
             ax.plot(x_converted, display_range, label=f"M: {given_mass}")
             ax.set_ylabel(ylabel)
             mass_dictionary[f"M = {str(given_mass)}"] = y
+
 
         ax.set_xlabel(f'Time')
         ax.set_ylabel(ylabel)

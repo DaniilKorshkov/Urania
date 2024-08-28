@@ -76,7 +76,7 @@ def modify_filename(Settings,settings_file):   # function to change desired file
 
     if new_filename != "":  # if input us non-zero, program verifies if provided file is a spectrum
         try:
-            metadata, placeholder = js.read_spectrum_json(new_filename)
+            metadata, void1, void2 = js.read_spectrum_json(new_filename)
 
             if str(metadata["is_a_spectrum"]) == str("True"):
 
@@ -195,8 +195,10 @@ def modify_default_mass_list(Settings,settings_file):   # function to change arr
 
     try:
         placeholder_array = new_masses.split(",")
+
         for element in placeholder_array:
-            element2 = float(element)
+            if element != "ox":
+                element2 = float(element)
 
         if do_modify_masses:
             New_Settings["default_masses"] = new_masses
