@@ -3,6 +3,7 @@ import streamlit as st
 import StreamlitGUI as sg
 import json
 import datetime
+import GUI_File_Manager as fm
 
 
 
@@ -69,7 +70,7 @@ def modify_filename(Settings,settings_file):   # function to change desired file
 
     old_filename = Settings["spectrum_filename"]
 
-    new_filename = st.text_input(f"Input new filename: ")
+    new_filename = fm.SpectrumsDropdownMenu()
     st.write(f"Current filename = {old_filename}")
     do_modify_filename = st.button("Apply new filename")
 

@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from JSONoperators import ReadJSONConfig
 import json
+import GUI_File_Manager as fm
 
 
 
@@ -97,12 +98,12 @@ def display_all_tasks(MainConfig="MainConfig"):
 
 
 
-    task_type = st.radio("Select task type",["emergency","scheduled","regular"])
+    task_type = st.radio("Select task type",["regular","emergency","scheduled"])
 
     name = st.text_input("Enter task name")
-    valve = st.text_input("Enter valve number")
-    filename = st.text_input("Enter filename to record data")
-    scans = st.text_input("Enter amount of scans")
+    #valve = st.text_input("Enter valve number")
+    filename = fm.SpectrumsDropdownMenu()
+    scans = st.text_input("Enter amount of data entries for task")
 
     match task_type:
         case "emergency":
@@ -112,41 +113,91 @@ def display_all_tasks(MainConfig="MainConfig"):
         case "filename":
             pass
 
-
-    try:
-        assert not(name in name_list)
-        valve = int(valve)
-        assert (valve >=1 and valve <= 16)
-        handle = open(filename,"r")
-        for line in handle:
-            dictline = json.loads(line)
-            if dictline["class"] == "metadata":
-                assert dictline["is_a_spectrum"] == "True"
-        handle.close()
-
-        scans = int(scans)
-
-        if task_type == "emergency":
-            if executions != "inf":
-                executions = int(executions)
-                assert executions > 0
-
-        if task_type == "scheduled":
-            freq = float(freq)
+    create_task = st.button(f"Create new task")
 
 
 
-        new_task_data = {"class": "task","name":name, "type": task_type, "valve_position": valve, "filename": filename,
-                         "scans": scans}
-        if task_type == "emergency":
-            new_task_data["how_much_executions"] = executions
-        if task_type == "scheduled":
-            new_task_data["freq"] = freq
-            new_task_data["last_execution"] = 0
 
-        create_task = st.button(f"Create new task")
 
-        if create_task:
+
+    if create_task:
+        task_is_valid = True
+        try:
+            assert not(name in name_list)
+        except:
+            task_is_valid = False
+            st.write("Task name already occupied")
+
+        try:
+            scans = int(scans)
+            assert scans > 0
+        except:
+            task_is_valid = False
+            st.write("Scans amount is less or equal than zero; or nor an integer")
+
+            #valve = int(valve)
+            #assert (valve >=1 and valve <= 16)
+
+        '''try:
+            handle = open(filename,"r")
+            for line in handle:
+                dictline = json.loads(line)
+                if dictline["class"] == "metadata":
+                    assert dictline["is_a_spectrum"] == "True"
+            handle.close()
+        except:
+            st.write("Filename is not valid")'''
+
+            #scans = int(scans)
+
+        try:
+            if task_type == "emergency":
+                if executions != "inf":
+                    executions = int(executions)
+                    assert executions > 0
+        except:
+            st.write("Invalid amount of executions")
+            task_is_valid = False
+
+
+        try:
+            if task_type == "scheduled":
+
+                freq = float(freq)
+        except:
+            st.write("Invalid freq")
+            task_is_valid = False
+
+
+        if task_is_valid:
+
+            valve = None
+
+            handle = open(filename,"r")
+            for line in handle:
+                try:
+                    dictline = json.loads(line)
+                    if dictline["class"] == "metadata":
+                        valve = int(dictline["valve_number"])
+                        break
+                except:
+                    pass
+            handle.close()
+
+            if valve == None:
+                st.write("Failed to extract valve data")
+                raise ValueError("Failed to extract valve data")
+
+
+            new_task_data = {"class": "task","name":name, "type": task_type, "valve_position": valve, "filename": filename,
+                             "scans": int(scans)}
+            if task_type == "emergency":
+                new_task_data["how_much_executions"] = executions
+            if task_type == "scheduled":
+                new_task_data["freq"] = freq
+                new_task_data["last_execution"] = 0
+
+
             newfile = []
 
             handle = open("TaskList", "r")
@@ -164,12 +215,6 @@ def display_all_tasks(MainConfig="MainConfig"):
 
 
 
-    except:
-        st.write("Invalid input")
-        try:
-            handle.close()
-        except:
-            pass
 
 
 
