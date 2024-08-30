@@ -7,6 +7,7 @@ import RGA_comms
 import VSC_comms as vsc
 import time
 
+
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
     tasklist_name = None
     handle = open(config, "r")
@@ -200,29 +201,52 @@ def GetTaskData(taskname, config="MainConfig"):
                 spectrum_filename = dict_line["filename"]
                 amount_of_scans = dict_line["scans"]
                 valve_position = dict_line["valve_position"]
+
+                purging_time = dict_line["purging_time"]
+                calmdown_time = dict_line["calmdown_time"]
+                purging_mfc = dict_line["purging_mfc"]
+                calmdown_mfc = dict_line["calmdown_mfc"]
+
                 break
         except:
             pass
     handle.close()
 
-    return spectrum_filename,amount_of_scans, valve_position
+    return spectrum_filename,amount_of_scans, valve_position, purging_time, calmdown_time, purging_mfc, calmdown_mfc
 
 
 
-def MakeScan(filename,valve_number,amount_of_scans,purging_time=600,stabilize_time=60):
+def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, purging_mfc, calmdown_mfc):
     servo_motor.switch_valve_position(valve_number)
-    vsc.ChangeMFCMode("Open")
+
+    if purging_mfc == "open":
+        vsc.ChangeMFCMode("Open")
+    elif purging_mfc == "close":
+        vsc.ChangeMFCMode("Close")
+    else:
+        vsc.ChangeMFCMode("Setpoint")
+        vsc.ChangeMFCFlowRate(purging_mfc)
+
     time.sleep(purging_time)
-    vsc.ChangeMFCMode("Close")
-    time.sleep(stabilize_time)
+
+    if calmdown_mfc == "open":
+        vsc.ChangeMFCMode("Open")
+    elif calmdown_mfc == "close":
+        vsc.ChangeMFCMode("Close")
+    else:
+        vsc.ChangeMFCMode("Setpoint")
+        vsc.ChangeMFCFlowRate(purging_mfc)
+
+    time.sleep(calmdown_time)
     for i in range(amount_of_scans):
-        RGA_comms.AppendSpectrumJSON(filename,"default_control_spectrum","AbnormalityLog")
+        void = RGA_comms.AppendSpectrumJSON(filename,"default_control_spectrum","AbnormalityLog")
+
 
 
 def DoTask(config="MainConfig"):
     taskname =GetTask(config,do_logging=False)
-    spectrum_filename, amount_of_scans, valve_position = GetTaskData(taskname,config)
-    MakeScan(spectrum_filename, valve_position, amount_of_scans)
+    spectrum_filename, amount_of_scans, valve_position, purging_time, calmdown_time, purging_mfc, calmdown_mfc = GetTaskData(taskname,config)
+    MakeScan(spectrum_filename, valve_position, amount_of_scans, purging_time, calmdown_time, purging_mfc, calmdown_mfc)
 
 
 

@@ -304,6 +304,8 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
     if do_logging:
         Logging.MakeLogEntry(f"Scan for Minit = {real_start_mass}, step={step}, amt.of steps = {amount_of_scans} completed")
 
+    return dictionary_to_append
+
 
 
 '''def ConvertPascalsToPPM(array):

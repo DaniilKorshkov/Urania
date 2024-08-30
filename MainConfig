@@ -5,3 +5,4 @@
 {"class":"vicimotor","address":"ASRL/dev/ttyUSB4::INSTR"}
 {"class":"vsc","vsc_serial_port":"/dev/ttyUSB3","address":253,"mfm_port":6,"mfc_port":5,"pressure_gauge_port":1,"pressure_controller_port":3}
 {"class":"ox_an","port":"/dev/ttyUSB1"}
+{"class": "cache","default_mass_string": "28,40,44,ox", "current_spectrum_files": ["1_cache_test-30_08_2024", "2_cache_test-30_08_2024", "3_cache_test-30_08_2024", "4_cache_test-30_08_2024", "5_cache_test-30_08_2024", "6_cache_test-30_08_2024", "7_cache_test-30_08_2024", "8_cache_test-30_08_2024", "9_cache_test-30_08_2024", "10_cache_test-30_08_2024", "11_cache_test-30_08_2024", "12_cache_test-30_08_2024", "13_cache_test-30_08_2024", "14_cache_test-30_08_2024", "15_cache_test-30_08_2024", "16_cache_test-30_08_2024"]}

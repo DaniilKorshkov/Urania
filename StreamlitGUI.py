@@ -10,6 +10,7 @@ import datetime
 import streamlit.components.v1 as components
 import math
 import AbnormalityReaction as ar
+import GUI_File_Manager as fm
 
 
 
@@ -301,13 +302,20 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
     Settings = js.read_GUI_page_settings(settings_filename,self_name)   # settings are imported from JSON config
 
-    spectrum_name = Settings["spectrum_filename"]
+    how_to_get_name = st.radio("How to get spectrum filename?",["default","dropdown menu"])
+    if how_to_get_name == "default":
+        spectrum_name = Settings["spectrum_filename"]
+    else:
+        spectrum_name = fm.SpectrumsDropdownMenu()
+
     st.write(f"Reading logs from {str(spectrum_name)} source")
-    parsing_mode = Settings["parsing_mode"]
+    parsing_mode = st.selectbox("Parsing mode",["default","last","search"])
+    if parsing_mode == "default":
+        parsing_mode = Settings["parsing_mode"]
     st.write(f"{parsing_mode} mode of operation")
 
     time_moment = Settings["default_moment_of_time"]
-    if Settings["parsing_mode"] == "search":  #get desired moment of time is parsing mode is search
+    if parsing_mode == "search":  #get desired moment of time is parsing mode is search
         #time_moment = st.text_input("Moment of time to search for: ")
         #time_moment = int(date_time_input())
 
@@ -340,10 +348,10 @@ def display_one_sample_data(settings_filename,self_name):           # function t
     howmuchspectrums = int(howmuchspectrums) # assert that howmuchspectrums is int and greater than 0
     assert howmuchspectrums > 0
 
-    if Settings["parsing_mode"] == "last":
-            metadata, spectrum_list, oxygen_list = js.read_last_spectrums(Settings["spectrum_filename"], howmuchspectrums)   # most recent spectrums are imported from JSON file
+    if parsing_mode == "last":
+            metadata, spectrum_list, oxygen_list = js.read_last_spectrums(spectrum_name, howmuchspectrums)   # most recent spectrums are imported from JSON file
     else:
-            metadata, spectrum_list, oxygen_list = js.read_period_of_time(Settings["spectrum_filename"],howmuchspectrums,time_moment)
+            metadata, spectrum_list, oxygen_list = js.read_period_of_time(spectrum_name,howmuchspectrums,time_moment)
 
     if metadata["is_a_spectrum"] != "True":   # verification that provided file is a spectrum
             st.write("Imported file is not valid!")
