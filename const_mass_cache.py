@@ -60,7 +60,7 @@ def const_mass_cache():
         # time_moment = st.text_input("Moment of time to search for: ")
         # time_moment = int(date_time_input())
 
-        select_mode = st.selectbox(label="Select how to get time input: ", options=("Current", "Default", "Select"))
+        select_mode = st.selectbox(label="Select how to get time input: ", options=("Select", "Current"))
 
         match select_mode:
             case "Current":

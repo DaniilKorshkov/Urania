@@ -28,6 +28,8 @@ def display_all_tasks(MainConfig="MainConfig"):
                     case "regular":
                         regular_task_list.append(dictline)
                 name_list.append(dictline["name"])
+            if dictline["class"] == "regular_log":
+                metadata = json.loads(line)
         except:
             pass
     handle.close()
@@ -72,7 +74,7 @@ def display_all_tasks(MainConfig="MainConfig"):
         st.markdown("")
 
 
-
+    task_counter = 0
 
     st.write("Regular Tasks: ")
     for task in regular_task_list:
@@ -83,10 +85,39 @@ def display_all_tasks(MainConfig="MainConfig"):
 
         st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, scans: {scans}")
 
-        delete = st.button(f"delete {name}")
+
+        col1,col2,col3=st.columns(3)
+        with col1:
+            delete = st.button(f"delete {name}")
+        with col2:
+            move_up = st.button(f"move {name} up")
+        with col3:
+            move_down = st.button(f"move {name} down")
+
 
         if delete:
             delete_task(name)
+        if move_up:
+            try:
+                change_task_position(task_counter,"up",regular_task_list, scheduled_task_list, emergency_task_list, metadata)
+            except:
+                st.write("Cannot move this task up")
+        if move_down:
+            try:
+                change_task_position(task_counter, "down", regular_task_list, scheduled_task_list, emergency_task_list,
+                                 metadata)
+            except:
+                st.write("Cannot move this task down")
+
+
+
+
+
+
+
+
+
+        task_counter += 1
 
 
     for i in range(4):
@@ -95,7 +126,7 @@ def display_all_tasks(MainConfig="MainConfig"):
     st.write("Add new task")
 
 
-
+# -----------task creation------------------
 
 
     task_type = st.radio("Select task type",["regular","emergency","scheduled"])
@@ -211,6 +242,7 @@ def display_all_tasks(MainConfig="MainConfig"):
 
             for line in newfile:
                 handle.write(line)
+            handle.close()
 
 
 
@@ -253,4 +285,61 @@ def delete_task(taskname):
         handle.write(line)
         #if i+1 < len(newfile):
             #handle.write("\n")
+
+
+
+
+
+def change_task_position(current_position,up_or_down,regular_task_list,scheduled_task_list,emergency_task_list,metadata):
+    if current_position == 0 and up_or_down == "up":
+        raise IndexError("Cannot move this task up")
+    if current_position == len(regular_task_list) and up_or_down == "down":
+        raise IndexError("Cannot move this task down")
+
+
+    if_pass = False
+
+
+
+    new_regular_task_list = []
+    regular_task_list_len = len(regular_task_list)
+
+    i = 0
+
+    while i < regular_task_list_len:
+        if up_or_down == "up" and i == current_position-1:
+            #st.write(regular_task_list[i])
+            new_regular_task_list.append(regular_task_list[i+1])
+            new_regular_task_list.append(regular_task_list[i])
+            if_pass = True
+            i += 2
+        if up_or_down == "down" and i == current_position:
+            new_regular_task_list.append(regular_task_list[i+1])
+            new_regular_task_list.append(regular_task_list[i])
+            if_pass = True
+            i += 2
+        if not if_pass:
+            new_regular_task_list.append(regular_task_list[i])
+            i += 1
+        if if_pass:
+            if_pass = False
+
+
+
+
+
+    handle = open("TaskList","w")
+    handle.write(json.dumps(metadata))
+    handle.write("\n")
+    for line in emergency_task_list:
+        handle.write(json.dumps(line))
+        handle.write("\n")
+    for line in scheduled_task_list:
+        handle.write(json.dumps(line))
+        handle.write("\n")
+    for line in new_regular_task_list:
+        handle.write(json.dumps(line))
+        handle.write("\n")
+    handle.close()
+
 
