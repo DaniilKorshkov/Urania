@@ -64,7 +64,14 @@ def GUI_File_Info(filename,MainConfig="MainConfig"):
             init_scan = dictline["initial_value"]
             amt_of_scans = dictline["amount_of_scans"]
             step = dictline["step"]
-            return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}"
+            try:
+                purging_time = dictline["purging_time"]
+                calmdown_time = dictline["calmdown_time"]
+                purging_mfc = dictline["purging_mfc"]
+                calmdown_mfc = dictline["calmdown_mfc"]
+                return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}, purg.time:{purging_time}, purg.mfc: {purging_mfc}, calmdown time:{calmdown_time}, calmdown mfc:{calmdown_mfc}"
+            except:
+                return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}"
 
 
 def CreateSpectrum(filelist, MainConfig="MainConfig"):

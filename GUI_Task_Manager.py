@@ -1,5 +1,7 @@
 import streamlit as st
 import os
+
+import GUI_File_Manager
 from JSONoperators import ReadJSONConfig
 import json
 import GUI_File_Manager as fm
@@ -83,8 +85,13 @@ def display_all_tasks(MainConfig="MainConfig"):
         filename = task["filename"]
         scans = task["scans"]
 
-        st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, scans: {scans}")
 
+        st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, data entries per task: {scans}")
+        try:
+            file_info = GUI_File_Manager.GUI_File_Info(filename, MainConfig)
+            st.write(file_info)
+        except:
+            pass
 
         col1,col2,col3=st.columns(3)
         with col1:
@@ -233,7 +240,7 @@ def display_all_tasks(MainConfig="MainConfig"):
 
             handle = open("TaskList", "r")
             for line in handle:
-                newfile.append(line)
+                newfile.append(line+"\n")
             newfile.append(str(json.dumps(new_task_data)+"\n"))
 
             handle.close()
