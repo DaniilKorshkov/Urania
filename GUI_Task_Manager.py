@@ -2,6 +2,7 @@ import streamlit as st
 import os
 
 import GUI_File_Manager
+import JSONoperators
 from JSONoperators import ReadJSONConfig
 import json
 import GUI_File_Manager as fm
@@ -141,7 +142,11 @@ def display_all_tasks(MainConfig="MainConfig"):
     name = st.text_input("Enter task name")
     #valve = st.text_input("Enter valve number")
     filename = fm.SpectrumsDropdownMenu()
-    scans = st.text_input("Enter amount of data entries for task")
+    minutes_to_scan = st.text_input("How much minutes to scan? ")
+    M_per_minute = JSONoperators.ReadJSONConfig("spectrometer_parameters","M_per_minute")
+
+
+                                #st.text_input("Enter amount of data entries for task")
 
     match task_type:
         case "emergency":
@@ -165,6 +170,28 @@ def display_all_tasks(MainConfig="MainConfig"):
         except:
             task_is_valid = False
             st.write("Task name already occupied")
+
+
+        try:
+            handle = open(f"{filename}", "r")
+            for line in handle:
+                dictline = json.loads(line)
+                if dictline["class"] == "metadata":
+                    M_in_file = int(dictline["amount_of_scans"])
+
+                    break
+            handle.close()
+
+            scans = int(int(minutes_to_scan)*M_per_minute/M_in_file)
+            if scans < 1:
+                scans = 1
+
+
+        except:
+            task_is_valid = False
+            st.write("Failed to calculate amount of data entries")
+
+
 
         try:
             scans = int(scans)

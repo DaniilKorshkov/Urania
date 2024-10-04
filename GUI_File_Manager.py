@@ -2,6 +2,8 @@ import os
 
 import streamlit as st
 import subprocess
+
+import JSONoperators
 from JSONoperators import ReadJSONConfig
 import json
 import stat
@@ -88,7 +90,9 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
     valve = st.text_input(label="Type multi inlet valve position")
     init_m = st.text_input(label="Type initial molar mass")
     final_m = st.text_input(label="Type final molar mass")
-    spectrum_scans = st.text_input("How many data entries per task? (for mass file creation only)")
+    minutes_of_scan = st.text_input("How much minutes data is recorded? (for 16 files at a time creation only, otherwise it is specified in TaskManager)")
+    M_per_minute = JSONoperators.ReadJSONConfig("spectrometer_parameters","M_per_minute")
+    #spectrum_scans = int((M_per_minute*minutes_of_scan)/)
 
     purging_time = st.text_input("Type purging time in seconds")
     calmdown_time = st.text_input("Type calmdown time in seconds")
@@ -167,6 +171,10 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
         except:
             spectrum_is_valid = False
             st.write("Failed to calculate scan amount")
+
+
+
+
 
 
 
@@ -309,6 +317,16 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
         except:
             spectrum_is_valid = False
             st.write("Failed to calculate scan amount")
+
+
+        try:
+            M_per_minute = int(JSONoperators.ReadJSONConfig("spectrometer_parameters", "M_per_minute"))
+
+            spectrum_scans = int((M_per_minute * int(minutes_of_scan)) /scans)
+        except:
+            spectrum_is_valid = False
+            st.write("Failed to calculate required amount of scans")
+
 
 
 
