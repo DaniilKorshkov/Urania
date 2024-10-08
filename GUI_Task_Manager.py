@@ -178,6 +178,11 @@ def display_all_tasks(MainConfig="MainConfig"):
                 dictline = json.loads(line)
                 if dictline["class"] == "metadata":
                     M_in_file = int(dictline["amount_of_scans"])
+                    purging_time = dictline["purging_time"]
+                    calmdown_time = dictline["calmdown_time"]
+                    purging_mfc = dictline["purging_mfc"]
+                    calmdown_mfc = dictline["calmdown_mfc"]
+
 
                     break
             handle.close()
@@ -255,7 +260,7 @@ def display_all_tasks(MainConfig="MainConfig"):
 
 
             new_task_data = {"class": "task","name":name, "type": task_type, "valve_position": valve, "filename": filename,
-                             "scans": int(scans)}
+                             "scans": int(scans), "purging_time": purging_time,"calmdown_time": calmdown_time, "purging_mfc": purging_mfc, "calmdown_mfc": calmdown_mfc}
             if task_type == "emergency":
                 new_task_data["how_much_executions"] = executions
             if task_type == "scheduled":

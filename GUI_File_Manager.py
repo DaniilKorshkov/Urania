@@ -427,9 +427,11 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
 
 
 
-                new_task_data = {"class": "task", "name": newname, "type": "regular", "valve_position": valve,
+                new_task_data = {"class": "task", "name": newname, "type": "regular", "valve_position": i+1,
                                  "filename": filename,
-                                 "scans": spectrum_scans}
+                                 "scans": spectrum_scans,
+                                 "purging_time": purging_time,"calmdown_time": calmdown_time, "purging_mfc": purging_mfc, "calmdown_mfc": calmdown_mfc}
+
 
 
                 newfile = []

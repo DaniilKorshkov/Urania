@@ -202,6 +202,7 @@ def GetTaskData(taskname, config="MainConfig"):
                 amount_of_scans = dict_line["scans"]
                 valve_position = dict_line["valve_position"]
 
+
                 purging_time = dict_line["purging_time"]
                 calmdown_time = dict_line["calmdown_time"]
                 purging_mfc = dict_line["purging_mfc"]
