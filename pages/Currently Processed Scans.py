@@ -31,7 +31,7 @@ def GetFileList():
             if dictline["class"] == "task":
 
                 filename = dictline["filename"]
-                st.write(filename)
+                #st.write(filename)
                 if not (filename in FileList):
                     FileList.append(filename)
 

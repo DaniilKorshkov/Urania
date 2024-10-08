@@ -154,8 +154,9 @@ def AppendSpectrumJSON(filename,convertion_coefficient,ip_adress="169.254.198.17
 
 def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,accuracy=5,ip_adress="169.254.198.174"):
 
-
-    packages_list = ['Control  "MyProgram" "1.0"' , 'FilamentControl On']
+    MultiplierMode = js.ReadJSONConfig("spectrometer_parameters","MultiplierMode")
+    #assert MultiplierMode in range(4)
+    packages_list = ['Control  "MyProgram" "1.0"' , 'FilamentControl On',f"MeasurementDetectorIndex {MultiplierMode}"]
     for i in range(int(amount_of_scans)):
         packages_list.append(f'AddSinglePeak SinglePeak{i} {start_mass+i*step} {accuracy} 0 0 0')
         packages_list.append(f'scanadd SinglePeak{i}')

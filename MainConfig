@@ -1,8 +1,8 @@
 {"class":"user_notifications","simplex_username":"UraniaClient","do_simplex":"True","do_sound":"False","do_logging":"True"}
 {"class":"tasks","TaskList":"TaskList","DefaultTaskList":"DefaultTaskList"}
 {"class":"log","MainLog":"MainLog"}
-{"class": "spectrometer_parameters", "default_spectrum_image": "default_spectrum", "default_controlspectrum_image": "default_control_spectrum", "ip_address": "192.168.0.128", "mac_address": "00:05:51:08:8b:54", "M_per_minute":133}
+{"class": "spectrometer_parameters", "default_spectrum_image": "default_spectrum", "default_controlspectrum_image": "default_control_spectrum", "ip_address": "192.168.0.128", "mac_address": "00:05:51:08:8b:54", "M_per_minute": 133, "MultiplierMode": 1}
 {"class":"vicimotor","address":"ASRL/dev/ttyUSB4::INSTR"}
 {"class":"vsc","vsc_serial_port":"/dev/ttyUSB3","address":253,"mfm_port":6,"mfc_port":5,"pressure_gauge_port":1,"pressure_controller_port":3}
 {"class":"ox_an","port":"/dev/ttyUSB1"}
-{"class": "cache", "default_mass_string": "28,40,44,ox", "current_spectrum_files": ["1_mass_creation-04_10_2024", "2_mass_creation-04_10_2024", "3_mass_creation-04_10_2024", "4_mass_creation-04_10_2024", "5_mass_creation-04_10_2024", "6_mass_creation-04_10_2024", "7_mass_creation-04_10_2024", "8_mass_creation-04_10_2024", "9_mass_creation-04_10_2024", "10_mass_creation-04_10_2024", "11_mass_creation-04_10_2024", "12_mass_creation-04_10_2024", "13_mass_creation-04_10_2024", "14_mass_creation-04_10_2024", "15_mass_creation-04_10_2024", "16_mass_creation-04_10_2024"]}
+{"class": "cache", "default_mass_string": "28,40,44,ox", "current_spectrum_files": ["1_123-04_10_2024", "2_123-04_10_2024", "3_123-04_10_2024", "4_123-04_10_2024", "5_123-04_10_2024", "6_123-04_10_2024", "7_123-04_10_2024", "8_123-04_10_2024", "9_123-04_10_2024", "10_123-04_10_2024", "11_123-04_10_2024", "12_123-04_10_2024", "13_123-04_10_2024", "14_123-04_10_2024", "15_123-04_10_2024", "16_123-04_10_2024"]}
