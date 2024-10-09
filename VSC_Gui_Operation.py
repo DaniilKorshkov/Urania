@@ -20,7 +20,7 @@ def pressure_controller_gui(MainConfig="MainConfig"):
         mode = vscc.ReadPCMode(MainConfig)
         current_sp = vscc.ReadPCSetpoint(MainConfig)
 
-        st.write(f"Pressure Controller pressure: {pressure}")
+        st.write(f"Pressure Controller pressure: {pressure} torr")
         st.write(f"Pressure Controller mode: {mode}")
         st.write(f"Pressure Controller setpoint: {current_sp}")
 
@@ -62,7 +62,7 @@ def pressure_controller_gui(MainConfig="MainConfig"):
 def mfm_gui(MainConfig="MainConfig"):
     try:
         flow = vscc.ReadMFMFlowRate(MainConfig)
-        st.write(f"MFM flow rate: {flow} torr")
+        st.write(f"MFM flow rate: {flow} cm3 / min")
     except:
         mfm_port = ReadJSONConfig("vsc", "mfm_port")
         st.write(f"Failed to connect to MFM. Make sure it is connected to port {mfm_port}")
@@ -76,7 +76,7 @@ def mfc_gui(MainConfig="MainConfig"):
         mode = vscc.ReadMFCMode(MainConfig)
         current_sp = vscc.ReadMFCSetpoint(MainConfig)
 
-        st.write(f"MFC flow rate: {flow}")
+        st.write(f"MFC flow rate: {flow} cm3 / min")
         st.write(f"Pressure Controller mod: {mode}")
         st.write(f"Pressure Controller setpoint: {current_sp}")
 

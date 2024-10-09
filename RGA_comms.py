@@ -418,9 +418,11 @@ def change_rga_ip(MainConfig="MainConfig"):
     mac = js.ReadJSONConfig("spectrometer_parameters","mac_address")
     ret = js.ReadJSONConfig("spectrometer_parameters","ip_address")
     scan = disc.scan(ip_range="192.168.0.0/24")
+    if_success = False
     for element in scan:
         if element["mac"] == mac:
             ret = element["ip"]
+            if_success = True
 
     handle = open("MainConfig","r")
     newconfig = []
@@ -441,6 +443,8 @@ def change_rga_ip(MainConfig="MainConfig"):
     for line in newconfig:
                 handle.write(line)
     handle.close()
+
+    return if_success, ret
 
 
 
