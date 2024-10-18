@@ -413,6 +413,109 @@ def heating_info(MainConfig="MainConfig"):
     return heatstat, capheatstat, pumpstat
 
 
+
+def rga_filament_info(MainConfig="MainConfig"):
+    ret, void = SendPacketsToRGA(["FilamentInfo"])
+    splitret = ret[0].split("\n")
+    print("ret=" + splitret[0])
+
+    filamentstatus = None
+    activefilament = None
+
+    for element in splitret:
+        elementsplit = element.split()
+
+        if "SummaryState" in elementsplit:
+
+            position = elementsplit.index("SummaryState")
+
+            filamentstatus = elementsplit[position+1]
+
+        if "ActiveFilament" in elementsplit:
+            position = elementsplit.index("ActiveFilament")
+
+            activefilament = elementsplit[position + 1]
+
+
+
+
+    return filamentstatus, activefilament
+
+
+
+def rga_filament_select(value, MainConfig="MainConfig"):
+    SendPacketsToRGA([f"FilamentSelect {value}"])
+
+
+def rga_filament_control(status, MainConfig = "MainConfig"):
+    SendPacketsToRGA([f"FilamentSelect {status}"])
+
+
+def rga_multiplier_info(MainConfig="MainConfig"):
+    ret, void = SendPacketsToRGA(["MultiplierInfo"])
+    splitret = ret[0].split("\n")
+    print("ret=" + splitret[0])
+
+    multiplier_status = None
+
+
+    for element in splitret:
+        elementsplit = element.split()
+
+        if "MultiplierOn" in elementsplit:
+            position = elementsplit.index("MultiplierOn")
+
+            multiplier_status = elementsplit[position + 1]
+
+            break
+
+
+
+    return multiplier_status
+
+
+
+def rga_multiplier_status(MainConfig="MainConfig"):
+    ret, void = SendPacketsToRGA(["MultiplierInfo"])
+    splitret = ret[0].split("\n")
+    print("ret=" + splitret[0])
+
+    multiplier_status = None
+
+    for element in splitret:
+        elementsplit = element.split()
+
+        if "MultiplierOn" in elementsplit:
+            position = elementsplit.index("MultiplierOn")
+
+            multiplier_status = elementsplit[position + 1]
+
+            break
+
+    return multiplier_status
+
+
+'''def rga_detector_type(MainConfig="MainConfig"):
+    ret, void = SendPacketsToRGA(["Info"])
+    splitret = ret[0].split("\n")
+    print("ret=" + splitret[0])
+
+    multiplier_status = None
+
+    for element in splitret:
+        elementsplit = element.split()
+
+        if "MultiplierOn" in elementsplit:
+            position = elementsplit.index("MultiplierOn")
+
+            multiplier_status = elementsplit[position + 1]
+
+            break
+
+    return multiplier_status'''
+
+
+
 def change_rga_ip(MainConfig="MainConfig"):
     disc = netdiscover.Discover()
     mac = js.ReadJSONConfig("spectrometer_parameters","mac_address")

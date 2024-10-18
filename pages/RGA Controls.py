@@ -7,6 +7,7 @@ import streamlit as st
 
 
 heatstat, capheatstat, pumpstat = rga.heating_info("MainConfig")  # query RGA for capillary heater status, heater status and pump status
+filamentstatus, activefilament = rga.rga_filament_info("MainConfig")
 
 
 
@@ -38,6 +39,21 @@ with col3:
     heatbake = st.button("Heater Bake")
 
 
+st.write(f"Active filament {activefilament}, filament status: {filamentstatus}")
+col1,col2 = st.columns(2)
+with col1:
+    selectfilament1 = st.button("Select filament 1")
+    selectfilament2 = st.button("Select filament 2")
+with col2:
+    turnonfilament = st.button("Turn on filament")
+    turnofffilament = st.button("Turn off filament")
+
+
+
+
+
+
+
 
 
 if pumpoff:                          # link streamlit buttons to respective RGA functions
@@ -54,6 +70,21 @@ if chon:
     rga.control_capillary_heater("on")
 if choff:
     rga.control_capillary_heater("off")
+if selectfilament1:
+    rga.rga_filament_select("1")
+if selectfilament2:
+    rga.rga_filament_select("2")
+if turnonfilament:
+    rga.rga_filament_control("On")
+if turnofffilament:
+    rga.rga_filament_control("Off")
+
+
+
+
+
+
+
 
 for i in range(4):
     st.markdown("")
