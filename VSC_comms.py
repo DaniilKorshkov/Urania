@@ -8,6 +8,8 @@ import serial
 from JSONoperators import ReadJSONConfig
 import math
 import datetime
+import json
+import datetime
 
 #PORT = '/dev/ttyUSB0'  #"COM7"
 #MKS_ADDRESS = "253"
@@ -366,7 +368,7 @@ def FullQuery(MainConfig="MainConfig"):
     print(f"Mass Flow Controller Data: ")
     mass_flow = ReadMFCFlowRate(MainConfig)
     mode = ReadMFCMode(MainConfig)
-    setpoint = ReadMFCSetpoint()
+    setpoint = ReadMFCSetpoint(MainConfig)
     print(f"Current mode: {mode}")
     print(f"Current mass flow: {mass_flow}")
     print(f"Current setpoint: {setpoint}")
@@ -390,7 +392,53 @@ def FullQuery(MainConfig="MainConfig"):
     print(f"\n")
 
 
-
+def LogVSCData(MainConfig="MainConfig"):
+    #pg_port = ReadJSONConfig("vsc", "pressure_gauge_port")
+    #pc_port = ReadJSONConfig("vsc", "pressure_controller_port")
+    #mfc_port = ReadJSONConfig("vsc", "mfc_port")
+    #mfm_port = ReadJSONConfig("vsc", "mfm_port")
+    filename = ReadJSONConfig("vsc","vsc_log_name")
+    
+    pg_pressure = ReadPressureGauge(MainConfig)
+    
+    mfc_flow = ReadMFCFlowRate(MainConfig)
+    mfc_mode = ReadMFCMode(MainConfig)
+    mfc_setpoint = ReadMFCSetpoint(MainConfig)
+    
+    pc_pressure = ReadPCPressure(MainConfig)
+    pc_mode = ReadPCMode(MainConfig)
+    pc_setpoint = ReadPCSetpoint(MainConfig)
+    
+    mfm_flow = ReadMFMFlowRate(MainConfig)
+    
+    
+    current_time = int(datetime.datetime.now().timestamp())
+    dictionary_to_append = {}
+    dictionary_to_append["time"] = current_time
+    
+    dictionary_to_append["pg_pressure"]
+    
+    dictionary_to_append["mfc_flow"]
+    dictionary_to_append["mfc_mode"]
+    dictionary_to_append["mfc_setpoint"]
+    
+    dictionary_to_append["pc_pressure"]
+    dictionary_to_append["pc_mode"]
+    dictionary_to_append["pc_setpoint"]
+    
+    dictionary_to_append["mfm_flow"]
+    
+    
+    
+    handle = open(filename, "a")
+    handle.write("\n")
+    handle.write(json.dumps(dictionary_to_append))
+    handle.close()
+    
+    
+    
+    
+    
 
 
 #StabilityWatcher()
