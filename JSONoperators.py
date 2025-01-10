@@ -187,3 +187,89 @@ def ReadJSONConfig(linename,entryname,config="MainConfig"): #function to read a 
         raise LookupError(f"{entryname} entry was not found in {linename} line in {config} config")
 
     return entry
+
+
+
+
+
+
+def read_vsc_log(filename="VSC_log"):   #function to read vaccuum system log from file
+
+    log_dictionary = {}  # log is presented as dictionary w. time used as key
+
+    handle = open(filename, "r")
+
+    for line in handle:
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
+        #print(line)
+        tempdict = json.loads(line)
+        time = tempdict["time"]
+        log_array = tempdict
+                
+
+        log_dictionary[str(time)] = log_array
+
+    handle.close()
+    return log_dictionary
+
+def read_last_vsc_entries(howmuchspectrums, filename="VSC_log"):   # function to get X most recent spectrums from full array
+
+
+    log_dictionary = read_vsc_log(filename)
+    time_list = fn.get_time_list(log_dictionary)  # list of all time moments of spectrums in full array of spectrums
+    lng = len(log_dictionary)
+    time_list.sort()
+
+
+    if howmuchspectrums > lng:
+        howmuchspectrums = lng
+
+
+    new_log_dictionary = {}
+     # only spectrums corresponding to X latest moments of time are appended to new_spectrum_list
+    for i in range(howmuchspectrums):
+        new_spectrum_list[str(time_list[lng-i-1])] = log_dictionary[str(time_list[lng-i-1])]
+        
+
+    return new_spectrum_list      #new_spectrum_list is returned
+
+
+def read_vsc_period_of_time(howmuchspectrums, desired_time, filename="VSC_log"):  #function to read X spectrums starting from given moment of time
+
+    log_dictionary = read_vsc_log(filename)
+    time_list = fn.get_time_list(log_dictionary)  # list of all time moments of spectrums in full array of spectrums
+
+
+    lng = len(log_dictionary)
+    time_list.sort()
+
+    t = 0  # counter for finding desired time
+
+    time_found = False #error handler if desired time is bigger than last measurement
+
+    for element in time_list:
+        if element >= desired_time: #ineffective search algorithm, fix later?
+            time_found = True # finding closest match to desired time
+            break
+        else:
+            t += 1
+
+
+    if time_found:
+        new_log_dictionary = {}
+        for i in range(howmuchspectrums):
+                try:
+                    new_log_dictionary[str(time_list[t+i])] = log_dictionary[str(time_list[t+i])]
+
+                except:
+                    pass
+    else: # in desired time is bigger than most recent spectrum, only single last spectrum is added to new_spectrum_list
+        new_log_dictionary = {}
+        new_log_dictionary[str(time_list[t-1])] = log_dictionary[str(time_list[t-1])]
+        
+
+
+    return new_log_dictionary
+
+
