@@ -416,17 +416,17 @@ def LogVSCData(MainConfig="MainConfig"):
     dictionary_to_append = {}
     dictionary_to_append["time"] = current_time
     
-    dictionary_to_append["pg_pressure"]
+    dictionary_to_append["pg_pressure"] = pg_pressure
     
-    dictionary_to_append["mfc_flow"]
-    dictionary_to_append["mfc_mode"]
-    dictionary_to_append["mfc_setpoint"]
+    dictionary_to_append["mfc_flow"] = mfc_flow
+    dictionary_to_append["mfc_mode"] = mfc_mode
+    dictionary_to_append["mfc_setpoint"] = mfc_setpoint
     
-    dictionary_to_append["pc_pressure"]
-    dictionary_to_append["pc_mode"]
-    dictionary_to_append["pc_setpoint"]
+    dictionary_to_append["pc_pressure"] = pc_pressure
+    dictionary_to_append["pc_mode"] = pc_mode
+    dictionary_to_append["pc_setpoint"] = pc_setpoint
     
-    dictionary_to_append["mfm_flow"]
+    dictionary_to_append["mfm_flow"] = mfm_flow
     
     
     
