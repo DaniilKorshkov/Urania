@@ -45,41 +45,65 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
     placeholder = st.empty()
     with placeholder.container():
-        fig, ax = plt.subplots()
+        fig1, ax1 = plt.subplots()
+        fig2, ax2 = plt.subplots()
+        fig3, ax3 = plt.subplots()
+        fig4, ax4 = plt.subplots()
 
         #mass_dictionary = {}  # dictionaty to be displayed in table with numerical values
         #mass_dictionary[f"Time:"] = x_converted   # first column is time moments of measurements
         
         
-        x = fn.get_time_list(spectrum_list)
+        x = fn.get_time_list(log_dictionary)
+
         x_converted = [dt.datetime.fromtimestamp(element) for element in x]
+
         y_mfc_flow = []
+        y_mfm_flow = []
+        y_pg_pressure = []
+        y_pc_pressure = []
 
         for key in x:
 
-            y_mfc_flow.append(log_dictionary[str(key)])
+            y_mfc_flow.append((log_dictionary[f"{str(key)}"])["mfc_flow"])
+            y_mfm_flow.append((log_dictionary[f"{str(key)}"])["mfm_flow"])
+            y_pg_pressure.append((log_dictionary[f"{str(key)}"])["pg_pressure"])
+            y_pc_pressure.append((log_dictionary[f"{str(key)}"])["pc_pressure"])
 
 
-    
 
+        ax1.plot(x_converted, y_mfc_flow)
+        ax1.set_xlabel(f'Time')
+        ax1.set_ylabel("MFC flow")
+        ax1.set_title(f'MFC flow vs time for given M')
+        st.pyplot(fig1)
 
-        ax.plot(x_converted, y_mfc_flow, label=f"M: {given_mass}")
-        ax.set_ylabel(ylabel)
-        mass_dictionary[f"M = {str(given_mass)}"] = y
+        ax2.plot(x_converted, y_mfm_flow)
+        ax2.set_xlabel(f'Time')
+        ax2.set_ylabel("MFM flow")
+        ax2.set_title(f'MFM flow vs time for given M')
+        st.pyplot(fig2)
 
+        ax3.plot(x_converted, y_pg_pressure)
+        ax3.set_xlabel(f'Time')
+        ax3.set_ylabel("PG pressure")
+        ax3.set_title(f'PG pressure vs time for given M')
+        st.pyplot(fig3)
 
-        ax.set_xlabel(f'Time')
-        ax.set_ylabel("MFC flow")
-        ax.legend()
-        ax.set_title(f'MFC flow vs time for given M')
-
-        #ax.xaxis.axis_date(tz=None)
-
-        st.pyplot(fig)
+        ax4.plot(x_converted, y_pc_pressure)
+        ax4.set_xlabel(f'Time')
+        ax4.set_ylabel("PC pressure")
+        ax4.set_title(f'PC pressure vs time for given M')
+        st.pyplot(fig4)
 
         do_display_table = st.button(label="display table with values")  # optionally display table with numerical values
         if do_display_table:
-            st.write(pd.DataFrame(log_dictionary))
+
+            converted_log_dictionary = {}
+            for key in log_dictionary:
+                converted_log_dictionary[dt.datetime.fromtimestamp(int(key))] = log_dictionary[key]
+
+            st.write(pd.DataFrame(converted_log_dictionary))
             
             
 
@@ -93,7 +117,7 @@ def display_data():
         #time_moment = st.text_input("Moment of time to search for: ")
         #time_moment = int(date_time_input())
 
-        select_mode = st.selectbox(label="Select how to get time input: ",options=("Current","Default","Select"))
+        select_mode = st.selectbox(label="Select how to get time input: ",options=("Current","Select"))
 
         match select_mode:
             case "Current":
@@ -106,7 +130,7 @@ def display_data():
         st.write(f"Time = {dt.datetime.fromtimestamp(time_moment)}")
         
     
-    howmuchspectrums = st.text_input(label="How much spectrums to display: ")  # user is prompted to override amount of displayed spectrums
+    howmuchspectrums = st.text_input(label="How much data entries to display: ")  # user is prompted to override amount of displayed spectrums
     if howmuchspectrums == "":
         howmuchspectrums = 10
     
@@ -118,7 +142,7 @@ def display_data():
     else:
             log_dictionary = js.read_vsc_period_of_time(howmuchspectrums,time_moment)
     
-    vsc_graph(log_dictionary)
+    vsc_graphs(log_dictionary)
     
     
 display_data()

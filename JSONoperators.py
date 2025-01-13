@@ -229,10 +229,10 @@ def read_last_vsc_entries(howmuchspectrums, filename="VSC_log"):   # function to
     new_log_dictionary = {}
      # only spectrums corresponding to X latest moments of time are appended to new_spectrum_list
     for i in range(howmuchspectrums):
-        new_spectrum_list[str(time_list[lng-i-1])] = log_dictionary[str(time_list[lng-i-1])]
+        new_log_dictionary[str(time_list[lng-i-1])] = log_dictionary[str(time_list[lng-i-1])]
         
 
-    return new_spectrum_list      #new_spectrum_list is returned
+    return new_log_dictionary      #new_spectrum_list is returned
 
 
 def read_vsc_period_of_time(howmuchspectrums, desired_time, filename="VSC_log"):  #function to read X spectrums starting from given moment of time
