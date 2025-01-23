@@ -2,6 +2,7 @@ import json
 import datetime
 import Logging as lg
 import JSONoperators as js
+import VSC_comms
 import servo_motor
 import RGA_comms
 import VSC_comms as vsc
@@ -219,6 +220,8 @@ def GetTaskData(taskname, config="MainConfig"):
 
 def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, purging_mfc, calmdown_mfc):
     servo_motor.switch_valve_position(valve_number)
+    intitial_moment_of_time = datetime.datetime.now().timestamp()
+    total_wait_time = purging_time+calmdown_time
 
     if purging_mfc == "open":
         vsc.ChangeMFCMode("Open")
@@ -228,7 +231,11 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
         vsc.ChangeMFCMode("Setpoint")
         vsc.ChangeMFCFlowRate(purging_mfc)
 
-    time.sleep(purging_time)
+    while True:
+        if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= purging_time:
+            break
+        else:
+            VSC_comms.LogVSCData("MainConfig")
 
     if calmdown_mfc == "open":
         vsc.ChangeMFCMode("Open")
@@ -238,10 +245,16 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
         vsc.ChangeMFCMode("Setpoint")
         vsc.ChangeMFCFlowRate(purging_mfc)
 
-    time.sleep(calmdown_time)
+    while True:
+        if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= total_wait_time:
+            break
+        else:
+            VSC_comms.LogVSCData("MainConfig")
+
+
     for i in range(amount_of_scans):
         void = RGA_comms.AppendSpectrumJSON(filename,"default_control_spectrum","AbnormalityLog")
-
+        VSC_comms.LogVSCData("MainConfig")
 
 
 def DoTask(config="MainConfig"):
