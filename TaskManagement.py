@@ -241,7 +241,10 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
         if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= purging_time:
             break
         else:
-            VSC_comms.LogVSCData("MainConfig")
+            try:
+                VSC_comms.LogVSCData("MainConfig")
+            except:
+                pass
 
     if calmdown_mfc == "open":
         vsc.ChangeMFCMode("Open")
@@ -255,7 +258,10 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
         if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= total_wait_time:
             break
         else:
-            VSC_comms.LogVSCData("MainConfig")
+            try:
+                VSC_comms.LogVSCData("MainConfig")
+            except:
+                pass
 
 
     for i in range(amount_of_scans):
