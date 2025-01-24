@@ -143,6 +143,8 @@ def GetRegularTask(config="MainConfig"):  #function to get regular task name
     task_amount = GetAmountOfRegularTasks(config)
     handle = open(tasklist_name,'r')
     for line in handle:
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
         dict_line = json.loads(line)
         if dict_line["class"] == "regular_log":
             current_task_number = (dict_line["last_executed"] + 1) % task_amount  #number of previously executed task updated
@@ -196,6 +198,10 @@ def GetTaskData(taskname, config="MainConfig"):
 
     handle = open(tasklist_name)
     for line in handle:
+    	
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
+    	
         dict_line = json.loads(line)
         try:
             if dict_line["name"] == taskname:

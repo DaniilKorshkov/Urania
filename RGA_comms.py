@@ -154,7 +154,8 @@ def AppendSpectrumJSON(filename,convertion_coefficient,ip_adress="169.254.198.17
 
 def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,accuracy=5,ip_adress="169.254.198.174"):
 
-    MultiplierMode = js.ReadJSONConfig("spectrometer_parameters","MultiplierMode")
+    MultiplierMode = 0
+    #MultiplierMode = js.ReadJSONConfig("spectrometer_parameters","MultiplierMode")
     #assert MultiplierMode in range(4)
     packages_list = ['Control  "MyProgram" "1.0"' , 'FilamentControl On']
     for i in range(int(amount_of_scans)):
@@ -285,7 +286,10 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 
 
     dictionary_to_append["array"] = array_to_append
-    dictionary_to_append["oxygen"] = oxa.GetOxygenData("MainConfig")
+    try:
+        dictionary_to_append["oxygen"] = oxa.GetOxygenData("MainConfig")
+    except:
+        pass
 
 
     if ErrorMessage == None:
@@ -444,11 +448,11 @@ def rga_filament_info(MainConfig="MainConfig"):
 
 
 def rga_filament_select(value, MainConfig="MainConfig"):
-    SendPacketsToRGA([f"FilamentSelect {value}"])
+    SendPacketsToRGA(['Control  "MyProgram" "1.0"' , 'FilamentControl On', f"FilamentSelect {value}", "Release"])
 
 
 def rga_filament_control(status, MainConfig = "MainConfig"):
-    SendPacketsToRGA([f"FilamentSelect {status}"])
+    SendPacketsToRGA(['Control  "MyProgram" "1.0"' , 'FilamentControl On',f"FilamentSelect {status}","Release"])
 
 
 def rga_multiplier_info(MainConfig="MainConfig"):
