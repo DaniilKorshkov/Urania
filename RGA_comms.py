@@ -160,12 +160,12 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     #MultiplierMode = js.ReadJSONConfig("spectrometer_parameters","MultiplierMode")
     #assert MultiplierMode in range(4)
     packages_list = ['Control  "MyProgram" "1.0"' , 'FilamentControl On']
-    packages_list.append(f"MeasurementDetectorIndex {0}")
     for i in range(int(amount_of_scans)):
 
 
         packages_list.append(f'AddSinglePeak SinglePeak{i} {start_mass+i*step} {0} 0 0 0')
         packages_list.append(f'scanadd SinglePeak{i}')
+    packages_list.append(f"MeasurementDetectorIndex {0}")
     packages_list.append('ScanStart 1')
     packages_list.append(f'__wait_for_given_mass__ {start_mass+step*(amount_of_scans-1)}')
     packages_list.append( 'Release')
@@ -214,14 +214,14 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
 
     packages_list = ['Control  "MyProgram" "1.0"', 'FilamentControl On']
-    packages_list.append(f"MeasurementDetectorIndex {0}")
     i = 0
     for MolarMass in FaradayCupMasses:
         packages_list.append(f'AddSinglePeak SinglePeak{i} {MolarMass} {accuracy} 0 0 0')
         packages_list.append(f'scanadd SinglePeak{i}')
         i += 1
+    packages_list.append(f"MeasurementDetectorIndex {0}")
     packages_list.append('ScanStart 1')
-    packages_list.append(f'__wait_for_given_mass__ {FaradayCupMasses[len(FaradayCupMasses)]}')
+    packages_list.append(f'__wait_for_given_mass__ {FaradayCupMasses[(len(FaradayCupMasses)-1)]}')
     packages_list.append('Release')
 
     RawInput, ErrorMessage = SendPacketsToRGA(packages_list, ip_adress)
@@ -242,14 +242,14 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
 
     packages_list = ['Control  "MyProgram" "1.0"', 'FilamentControl On']
-    packages_list.append(f"MeasurementDetectorIndex {1}")
     i = 0
     for MolarMass in MultiplierMasses:
         packages_list.append(f'AddSinglePeak SinglePeak{i} {MolarMass} {accuracy} 0 0 0')
         packages_list.append(f'scanadd SinglePeak{i}')
         i += 1
+    packages_list.append(f"MeasurementDetectorIndex {1}")
     packages_list.append('ScanStart 1')
-    packages_list.append(f'__wait_for_given_mass__ {FaradayCupMasses[len(FaradayCupMasses)]}')
+    packages_list.append(f'__wait_for_given_mass__ {MultiplierMasses[(len(MultiplierMasses)-1)]}')
     packages_list.append('Release')
 
     RawInput, ErrorMessage = SendPacketsToRGA(packages_list, ip_adress)
