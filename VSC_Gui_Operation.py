@@ -130,18 +130,27 @@ def vicivalve_gui(MainConfig="MainConfig"):
 
 
 def VSC_Gui(MainConfig="MainConfig"):
-    pressure_meter_gui(MainConfig)
-    for i in range(6):
-        st.markdown("")
-    pressure_controller_gui(MainConfig)
-    for i in range(6):
-        st.markdown("")
-    mfc_gui(MainConfig)
-    for i in range(6):
-        st.markdown("")
-    mfm_gui(MainConfig)
-    for i in range(6):
-        st.markdown("")
-    vicivalve_gui(MainConfig)
+
+    try:
+        handle = open(".VSCINUSE","r")
+        handle.close()
+        st.write("VSC currently in use")
+
+    except:
+
+
+        pressure_meter_gui(MainConfig)
+        for i in range(6):
+            st.markdown("")
+        pressure_controller_gui(MainConfig)
+        for i in range(6):
+            st.markdown("")
+        mfc_gui(MainConfig)
+        for i in range(6):
+            st.markdown("")
+        mfm_gui(MainConfig)
+        for i in range(6):
+            st.markdown("")
+        vicivalve_gui(MainConfig)
 
 
