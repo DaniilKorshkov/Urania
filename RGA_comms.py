@@ -9,6 +9,7 @@ import os
 import SimpleXChat_Interface as sxci
 import netdiscover
 import oxygen_analyzer as oxa
+from JSONoperators import ReadJSONConfig
 
 
 def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
@@ -154,14 +155,17 @@ def AppendSpectrumJSON(filename,convertion_coefficient,ip_adress="169.254.198.17
 
 def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,accuracy=5,ip_adress="169.254.198.174"):
 
+    MaxMultiplierIntensity = ReadJSONConfig("spectrometer_parameters","MaxMultiplierIntensity")
     MultiplierMode = 0
     #MultiplierMode = js.ReadJSONConfig("spectrometer_parameters","MultiplierMode")
     #assert MultiplierMode in range(4)
     packages_list = ['Control  "MyProgram" "1.0"' , 'FilamentControl On']
+    packages_list.append(f"MeasurementDetectorIndex {0}")
     for i in range(int(amount_of_scans)):
-        packages_list.append(f'AddSinglePeak SinglePeak{i} {start_mass+i*step} {accuracy} 0 0 0')
+
+
+        packages_list.append(f'AddSinglePeak SinglePeak{i} {start_mass+i*step} {0} 0 0 0')
         packages_list.append(f'scanadd SinglePeak{i}')
-    packages_list.append(f"MeasurementDetectorIndex {MultiplierMode}")
     packages_list.append('ScanStart 1')
     packages_list.append(f'__wait_for_given_mass__ {start_mass+step*(amount_of_scans-1)}')
     packages_list.append( 'Release')
@@ -172,9 +176,9 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     RawInput, ErrorMessage = SendPacketsToRGA(packages_list,ip_adress)
 
 
-    Spectrum = list()  # spectrum is a list of PPM's corresponding to integer molar masses
+    ReconSpectrum = list()  # spectrum is a list of PPM's corresponding to integer molar masses
     for i in range(amount_of_scans):
-        Spectrum.append(0)
+        ReconSpectrum.append(0)
 
     for line in RawInput:
         # print(line)
@@ -186,37 +190,96 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
             power = 10 ** (int(split_eng_notation[1]))
 
+            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+
+            ReconSpectrum[ int((float(split_line[MassReadingPosition+1])-float(start_mass))/float(step)) ] = end_result
+
+    FaradayCupMasses = list()
+    MultiplierMasses = list()
+
+    Spectrum = list()
+    for i in range(amount_of_scans):
+        Spectrum.append(0)
+
+    i = 0
+    for element in ReconSpectrum:
+        if element > MaxMultiplierIntensity:
+            FaradayCupMasses.append(start_mass+i*step)
+        else:
+            MultiplierMasses.append(start_mass+i*step)
+
+        i += 1
+
+
+
+
+    packages_list = ['Control  "MyProgram" "1.0"', 'FilamentControl On']
+    packages_list.append(f"MeasurementDetectorIndex {0}")
+    i = 0
+    for MolarMass in FaradayCupMasses:
+        packages_list.append(f'AddSinglePeak SinglePeak{i} {MolarMass} {accuracy} 0 0 0')
+        packages_list.append(f'scanadd SinglePeak{i}')
+        i += 1
+    packages_list.append('ScanStart 1')
+    packages_list.append(f'__wait_for_given_mass__ {FaradayCupMasses[len(FaradayCupMasses)]}')
+    packages_list.append('Release')
+
+    RawInput, ErrorMessage = SendPacketsToRGA(packages_list, ip_adress)
+
+    for line in RawInput:
+        # print(line)
+        split_line = line.split()
+        if "MassReading" in line:
+            #print(line)
+            MassReadingPosition = split_line.index("MassReading")
+            split_eng_notation = (split_line[MassReadingPosition+2]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
+
+            power = 10 ** (int(split_eng_notation[1]))
+
+            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+
+            Spectrum[ int((float(split_line[MassReadingPosition+1])-float(start_mass))/float(step)) ] = end_result
+
+
+    packages_list = ['Control  "MyProgram" "1.0"', 'FilamentControl On']
+    packages_list.append(f"MeasurementDetectorIndex {1}")
+    i = 0
+    for MolarMass in MultiplierMasses:
+        packages_list.append(f'AddSinglePeak SinglePeak{i} {MolarMass} {accuracy} 0 0 0')
+        packages_list.append(f'scanadd SinglePeak{i}')
+        i += 1
+    packages_list.append('ScanStart 1')
+    packages_list.append(f'__wait_for_given_mass__ {FaradayCupMasses[len(FaradayCupMasses)]}')
+    packages_list.append('Release')
+
+    RawInput, ErrorMessage = SendPacketsToRGA(packages_list, ip_adress)
+
+    for line in RawInput:
+        # print(line)
+        split_line = line.split()
+        if "MassReading" in line:
+            # print(line)
+            MassReadingPosition = split_line.index("MassReading")
+            split_eng_notation = (split_line[MassReadingPosition + 2]).split(
+                "e")  # output is given as engineering notation and need to be interpreted to readable form
+
+            power = 10 ** (int(split_eng_notation[1]))
+
             end_result = (float(split_eng_notation[
                                     0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
-            Spectrum[ int((float(split_line[MassReadingPosition+1])-float(start_mass))/float(step)) ] = end_result
+            Spectrum[int((float(split_line[MassReadingPosition + 1]) - float(start_mass)) / float(step))] = end_result
+
+
+
+
+
+
+
     return Spectrum, ErrorMessage
 
 
 
-
-'''def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,ip_adress="169.254.198.174"):  # function to get spectrum from spectrometer and append it to given JSON file
-
-    handle = open(filename,"r")
-    for line in handle:
-        translated_line = json.loads(line)
-        if translated_line["class"] == "metadata":
-            start_mass, step, amount_of_scans = float(translated_line["initial_value"]), float(translated_line["step"]), int(translated_line["amount_of_scans"])
-            break
-    handle.close()
-
-    Spectrum = GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step,accuracy,ip_adress)  # spectrum is obtained by making request to mass spectrometer
-
-
-    handle = open(filename,"a")
-
-    current_time = int(datetime.datetime.now().timestamp())
-    line_to_append = {"class":"spectrum","time":current_time,"array":Spectrum}
-    formatted_line = json.dumps(line_to_append)  # current time in computer format and array of PPM's are recorded into JSON formatted line
-
-    handle.write("\n")
-    handle.write(formatted_line)
-    handle.close()'''
 
 
 def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,config="MainConfig",doliveabnormalitycheck=False,convert_to_ppm=True):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
