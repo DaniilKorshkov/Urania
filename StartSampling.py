@@ -9,13 +9,19 @@ def exit_handler():
 def kill_handler(*args):
         os.system("rm .VSCINUSE")
 
-while True:
+def Sampling():
 
         atexit.register(exit_handler)
         signal.signal(signal.SIGINT, kill_handler)
         signal.signal(signal.SIGTERM, kill_handler)
 
-        handle = open(".VSCINUSE",'w')
+        handle = open(".VSCINUSE", 'w')
         handle.close()
 
-        DoTask()
+
+        while True:
+                DoTask()
+
+
+
+Sampling()
