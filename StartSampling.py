@@ -1,19 +1,20 @@
 from TaskManagement import DoTask
-import atexit
 import signal
 import os
 
-def exit_handler():
-        os.system("rm .VSCINUSE")
+def signal_handler(signal, frame):
+        global interrupted
+        interrupted = True
 
-def kill_handler(*args):
-        os.system("rm .VSCINUSE")
 
 def Sampling():
 
-        atexit.register(exit_handler)
-        signal.signal(signal.SIGINT, kill_handler)
-        signal.signal(signal.SIGTERM, kill_handler)
+
+        global interrupted
+        interrupted = False
+        signal.signal(signal.SIGINT, signal_handler)
+
+
 
         handle = open(".VSCINUSE", 'w')
         handle.close()
@@ -21,6 +22,12 @@ def Sampling():
 
         while True:
                 DoTask()
+
+
+                if interrupted:
+                        print("Exiting sampling program")
+                        os.system("rm .VSCINUSE")
+                        break
 
 
 
