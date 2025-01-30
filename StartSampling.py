@@ -5,6 +5,7 @@ import os
 def signal_handler(signal, frame):
         global interrupted
         interrupted = True
+        print(f"Interruption request received. Sampling will be terminated soon")
 
 
 def Sampling():
@@ -25,7 +26,7 @@ def Sampling():
 
 
                 if interrupted:
-                        print("Exiting sampling program")
+                        print(f"Sampling process terminated")
                         os.system("rm .VSCINUSE")
                         break
 
