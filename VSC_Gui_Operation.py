@@ -138,8 +138,7 @@ def VSC_Gui(MainConfig="MainConfig"):
 
     except:
 
-
-        pressure_meter_gui(MainConfig)
+        vicivalve_gui(MainConfig)
         for i in range(6):
             st.markdown("")
         pressure_controller_gui(MainConfig)
@@ -151,6 +150,6 @@ def VSC_Gui(MainConfig="MainConfig"):
         mfm_gui(MainConfig)
         for i in range(6):
             st.markdown("")
-        vicivalve_gui(MainConfig)
+        pressure_meter_gui(MainConfig)
 
 
