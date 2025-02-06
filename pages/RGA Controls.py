@@ -10,6 +10,18 @@ heatstat, capheatstat, pumpstat = rga.heating_info("MainConfig")  # query RGA fo
 filamentstatus, activefilament = rga.rga_filament_info("MainConfig")
 
 
+try:
+    handle = open("__currenttaskname__","r")
+    for line in handle:
+        st.wrtie(f"Currently processed task: {line}")
+    handle.close()
+except:
+    st.write(f"No tasks currently processed")
+
+
+
+for i in range(4):
+    st.markdown("")
 
 st.write(f"Pump status: {pumpstat}")   # menu that displays pump status and prompts user to change it
 col1,col2 = st.columns(2)
@@ -40,13 +52,13 @@ with col3:
 
 
 st.write(f"Active filament {activefilament}, filament status: {filamentstatus}")
-#col1,col2 = st.columns(2)
-#with col1:
-selectfilament1 = st.button("Select filament 1")
-selectfilament2 = st.button("Select filament 2")
-#with col2:
-    #turnonfilament = st.button("Turn on filament")
-    #turnofffilament = st.button("Turn off filament")
+col1,col2 = st.columns(2)
+with col1:
+    selectfilament1 = st.button("Select filament 1")
+    selectfilament2 = st.button("Select filament 2")
+with col2:
+    turnonfilament = st.button("Turn on filament")
+    turnofffilament = st.button("Turn off filament")
 
 
 
@@ -74,10 +86,10 @@ if selectfilament1:
     rga.rga_filament_select("1")
 if selectfilament2:
     rga.rga_filament_select("2")
-#if turnonfilament:
-    #rga.rga_filament_control("On")
-#if turnofffilament:
-    #rga.rga_filament_control("Off")
+if turnonfilament:
+    rga.rga_filament_control("On")
+if turnofffilament:
+    rga.rga_filament_control("Off")
 
 
 
@@ -92,7 +104,7 @@ for i in range(4):
 
 # function to inquire different types of data from RGA (have no idea what it all means)
 
-data_type = st.radio("Select data type to inquire: ",["Info","EGains","InletInfo","RFInfo","MultiplierInfo","SourceInfo","DetectorInfo","FilamentInfo","TotalPressureInfo","AnalogInputInfo","AnalogOutputInfo","DigitalInfo","RolloverInfo","RVCInfo","CirrusInfo","SourceAlignmentInfo","SourceResolutionInfo","SourceTuningInfo","DiagnosticInputInfo"])
+data_type = st.radio("Select data type to inquire: ",["Info","EGains","InletInfo","RFInfo","MultiplierInfo","SourceInfo","DetectorInfo","FilamentInfo","TotalPressureInfo","AnalogInputInfo","AnalogOutputInfo","DigitalInfo","RolloverInfo","RVCInfo","CirrusInfo","SourceAlignmentInfo 0","SourceResolutionInfo 0","SourceAlignmentInfo 1","SourceResolutionInfo 1","SourceAlignmentInfo 2","SourceResolutionInfo 2","SourceTuningInfo","DiagnosticInputInfo"])
 inquire = st.button("Inquire")
 if inquire:
     ret, void = rga.SendPacketsToRGA([data_type])

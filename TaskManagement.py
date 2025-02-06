@@ -7,6 +7,7 @@ import servo_motor
 import RGA_comms
 import VSC_comms as vsc
 import time
+import os
 
 
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
@@ -270,9 +271,16 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
 
 
 def DoTask(config="MainConfig"):
-    taskname =GetTask(config,do_logging=False)
+    taskname = GetTask(config,do_logging=False)
+
+    handle = open("__currenttaskname__","w")
+    handle.write(taskname)
+    handle.close()
+
     spectrum_filename, amount_of_scans, valve_position, purging_time, calmdown_time, purging_mfc, calmdown_mfc = GetTaskData(taskname,config)
     MakeScan(spectrum_filename, valve_position, amount_of_scans, purging_time, calmdown_time, purging_mfc, calmdown_mfc)
+
+    os.system("rm __currenttaskname__")
 
 
 

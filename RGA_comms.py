@@ -511,11 +511,11 @@ def rga_filament_info(MainConfig="MainConfig"):
 
 
 def rga_filament_select(value, MainConfig="MainConfig"):
-    SendPacketsToRGA(['Control  "MyProgram" "1.0"' , 'FilamentControl On', f"FilamentSelect {value}", "Release"])
+    SendPacketsToRGA(['Control  "MyProgram" "1.0"' , f"FilamentSelect {value}", "Release"])
 
 
 def rga_filament_control(status, MainConfig = "MainConfig"):
-    SendPacketsToRGA(['Control  "MyProgram" "1.0"' , 'FilamentControl On',f"FilamentSelect {status}","Release"])
+    SendPacketsToRGA(['Control  "MyProgram" "1.0"' ,f"FilamentControl {status}","Release"])
 
 
 def rga_multiplier_info(MainConfig="MainConfig"):
