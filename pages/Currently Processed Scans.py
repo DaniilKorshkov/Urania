@@ -16,7 +16,7 @@ import streamlit.components.v1 as components
 import math
 import AbnormalityReaction as ar
 import GUI_File_Manager as fm
-
+import matplotlib.ticker as ticker
 
 def GetFileList():
 
@@ -161,16 +161,7 @@ def DisplayCurrentScans():
                             ylabel = "Pascal"
 
                         if islogarithmic == "True":
-
-                            new_range = []
-
-                            for element in display_range:
-                                if element < 0:
-                                    element = 0 - element
-                                element += 1
-
-                                new_range.append(math.log(element, 10))
-                            display_range = new_range
+                            ax.set_yscale('log')
                             ylabel = f'log10 {ylabel}'
 
                         ax.plot(x_converted, display_range, label=f"M: {given_mass}")
@@ -179,6 +170,9 @@ def DisplayCurrentScans():
 
                     ax.set_xlabel(f'Time')
                     ax.set_ylabel(ylabel)
+                    ax.xaxis.grid(color='k', alpha=0.5, linestyle=':', linewidth=1)
+                    ax.yaxis.grid(color='k', alpha=0.5, linestyle=':', linewidth=1)
+                    ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
                     ax.legend()
                     ax.set_title(f'{ylabel} vs time for given M')
 

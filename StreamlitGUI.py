@@ -11,6 +11,7 @@ import streamlit.components.v1 as components
 import math
 import AbnormalityReaction as ar
 import GUI_File_Manager as fm
+import matplotlib.ticker as ticker
 
 
 
@@ -153,15 +154,7 @@ def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islo
 
 
         if islogarithmic == "True":
-
-            new_range = []
-
-            for element in display_range:
-                element = abs(element) + 1
-
-                new_range.append(math.log(element, 10))
-            display_range = new_range
-            oxygen = math.log( (abs(oxygen) + 1), 10 )
+            ax.set_yscale('log')
             ylabel = f'log10 {ylabel}'
             oxygen_label = "log10 oxygen ppm"
 
@@ -175,6 +168,8 @@ def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islo
 
         ax.set_xlabel(f'M')
         ax.set_ylabel(ylabel)
+        ax.xaxis.grid(color='k', alpha=0.5, linestyle=':', linewidth=1)
+        ax.yaxis.grid(color='k', alpha=0.5, linestyle=':', linewidth=1)
         ax.set_title(f'Spectrum for time: {dt.datetime.fromtimestamp(given_time)}')
 
         st.pyplot(fig)
@@ -259,17 +254,8 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,default_mass_string, initia
                 ylabel = "Pascal"
 
             if islogarithmic == "True":
-
-                    new_range = []
-
-                    for element in display_range:
-                        if element < 0:
-                            element = 0 - element
-                        element += 1
-
-                        new_range.append(math.log(element, 10))
-                    display_range = new_range
-                    ylabel = f'log10 {ylabel}'
+                ax.set_yscale('log')
+                ylabel = f'log10 {ylabel}'
 
 
             ax.plot(x_converted, display_range, label=f"M: {given_mass}")
@@ -279,6 +265,9 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,default_mass_string, initia
 
         ax.set_xlabel(f'Time')
         ax.set_ylabel(ylabel)
+        ax.xaxis.grid(color='k', alpha=0.5, linestyle=':', linewidth=1)
+        ax.yaxis.grid(color='k', alpha=0.5, linestyle=':', linewidth=1)
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax.legend()
         ax.set_title(f'{ylabel} vs time for given M')
 
