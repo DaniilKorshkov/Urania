@@ -21,8 +21,8 @@ def Sampling():
         JSONoperators.MergeJSONConfigs("MainConfig","DefaultMainConfig")
 
 
-        #failures_found = SystemCheck.SystemCheck("MainConfig")
-        failures_found = False
+        failures_found = SystemCheck.SystemCheck("MainConfig")
+        #failures_found = False
 
         if not failures_found:
 
