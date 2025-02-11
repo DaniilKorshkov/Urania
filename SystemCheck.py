@@ -4,7 +4,7 @@ import JSONoperators
 def SystemCheck(MainConfig="MainConfig"):
     heatstat, capheatstat, pumpstat = RGA_comms.heating_info()
     filament_status = RGA_comms.rga_filament_info()
-    multiplier_status = RGA_comms.rga_multiplier_info()
+    #multiplier_status = RGA_comms.rga_multiplier_info()
 
     faliures_found = False
 
@@ -61,7 +61,7 @@ def SystemCheck(MainConfig="MainConfig"):
             faliures_found = True
 
 
-    if multiplier_status != "Yes":
+    '''if multiplier_status != "Yes":
         try:
             bypass = JSONoperators.ReadJSONConfig("system_check","bypass multiplier")
         except:
@@ -71,7 +71,7 @@ def SystemCheck(MainConfig="MainConfig"):
             if manual_bypass.lower()[0] == "y":
                 bypass = True
         if not bypass:
-            faliures_found = True
+            faliures_found = True'''
 
 
 
