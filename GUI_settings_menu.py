@@ -35,7 +35,7 @@ def apply_page_settings(settings_filename,New_Settings):      # function to chan
 
 
 
-    New_Settings_List = []  #new settings list is a list of strings of old GUI_settings config to be modified later
+    '''New_Settings_List = []  #new settings list is a list of strings of old GUI_settings config to be modified later
 
     handle = open(settings_filename, "r")
 
@@ -59,6 +59,37 @@ def apply_page_settings(settings_filename,New_Settings):      # function to chan
         if i < len(New_Settings_List):
              handle.write("\n")
         i += 1
+    handle.close()'''
+
+
+
+    handle = open("MainConfig", "r")
+    newconfig = []
+
+    line_to_append = dict()
+    line_to_append["class"] = "manual_inspect_settings"
+    line_to_append["settings"] = New_Settings
+
+    for line in handle:
+        try:
+            dictline = json.loads(line)
+
+            if dictline["class"] == "manual_inspect_settings":
+                newconfig.append( (json.dumps(line_to_append)+"\n"))
+
+
+
+
+
+            else:
+                newconfig.append(line)
+        except:
+            pass
+    handle.close()
+
+    handle = open("MainConfig", "w")
+    for line in newconfig:
+        handle.write(line)
     handle.close()
 
 
@@ -258,16 +289,17 @@ def modify_do_display_const_time(Settings,settings_file): # function to turn on 
 
 
 def Settings_Menu(settings_file, default_settings_file):                          #ready to use settings menu
-    page_list = js.read_all_page_numbers(settings_file)
+    '''page_list = js.read_all_page_numbers(settings_file)
 
     if len(page_list) > 1:
         page_selection = st.slider(label="Select page to modify settings",min_value=1,max_value=(len(page_list)))
     else:
         page_selection = 1
 
-    st.write(f"Settings for page #{page_selection}")
+    st.write(f"Settings for page #{page_selection}")'''
 
-    Settings = js.read_GUI_page_settings(settings_file, str(page_selection))
+    #Settings = js.read_GUI_page_settings(settings_file, str(page_selection))
+    Settings = js.ReadJSONConfig("manual_inspect_settings","settings")
 
     modify_filename(Settings,settings_file)  # all options are displayed sequentially with 6 gaps in between
     for i in range(6):
@@ -301,9 +333,9 @@ def Settings_Menu(settings_file, default_settings_file):                        
     for i in range(6):
         st.markdown("")
 
-    reset_settings = st.button(label="reset all settings to default")
-    if reset_settings:
-        reset_to_default(settings_file,default_settings_file)
+    #reset_settings = st.button(label="reset all settings to default")
+    #if reset_settings:
+     #   reset_to_default(settings_file,default_settings_file)
 
 
 

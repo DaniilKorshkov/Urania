@@ -2,9 +2,11 @@ import streamlit as st   #main page of webapp. Right now it is effectively a pla
 
 import RGA_comms as rc
 import StreamlitGUI as sg
-import JSONoperators as js
+import JSONoperators
 import datetime
 
+
+JSONoperators.MergeJSONConfigs("MainConfig","DefaultMainConfig")
 
 st.write("Welcome to Urania sampling system graphic user interface")
 st.markdown("")

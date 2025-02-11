@@ -1,9 +1,0 @@
-{"class":"user_notifications","simplex_username":"UraniaClient","do_simplex":"True","do_sound":"False","do_logging":"True"}
-{"class":"tasks","TaskList":"TaskList","DefaultTaskList":"DefaultTaskList"}
-{"class":"log","MainLog":"MainLog"}
-{"class": "spectrometer_parameters", "default_spectrum_image": "default_spectrum", "default_controlspectrum_image": "default_control_spectrum", "ip_address": "192.168.0.128", "mac_address": "00:05:51:08:8b:54", "M_per_minute": 133, "MultiplierMode": 0, "MaxMultiplierIntensity": 1}
-{"class":"vicimotor","address":"ASRL/dev/ttyUSB4::INSTR"}
-{"class":"vsc","vsc_serial_port":"/dev/ttyUSB3","address":253,"mfm_port":6,"mfc_port":5,"pressure_gauge_port":1,"pressure_controller_port":3,"vsc_log_name":"VSC_log"}
-{"class":"ox_an","port":"/dev/ttyUSB1"}
-{"class": "cache", "default_mass_string": "28,40,44,ox", "current_spectrum_files": ["1_8oct_16_test-08_10_2024", "2_8oct_16_test-08_10_2024", "3_8oct_16_test-08_10_2024", "4_8oct_16_test-08_10_2024", "5_8oct_16_test-08_10_2024", "6_8oct_16_test-08_10_2024", "7_8oct_16_test-08_10_2024", "8_8oct_16_test-08_10_2024", "9_8oct_16_test-08_10_2024", "10_8oct_16_test-08_10_2024", "11_8oct_16_test-08_10_2024", "12_8oct_16_test-08_10_2024", "13_8oct_16_test-08_10_2024", "14_8oct_16_test-08_10_2024", "15_8oct_16_test-08_10_2024", "16_8oct_16_test-08_10_2024"]}
-{"class": "system_check"}

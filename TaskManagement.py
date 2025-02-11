@@ -94,6 +94,10 @@ def CheckForScheduledTasks(config="MainConfig"): #function that reads task list 
 
     handle = open(tasklist_name,"r")
     for line in handle:
+
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
+
         dict_line = json.loads(line)
         if dict_line["class"] == "task" and dict_line["type"] == "schedule" and (not if_scheduled_tasks):
             if int(dict_line["last_execution"])+int(dict_line["freq"]) < current_time:
@@ -160,6 +164,10 @@ def GetRegularTask(config="MainConfig"):  #function to get regular task name
 
     handle = open(tasklist_name,'r')
     for line in handle:
+
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
+
         dict_line = json.loads(line)
         if dict_line["class"] == "task":
             if dict_line["type"] == "regular":

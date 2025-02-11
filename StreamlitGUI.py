@@ -289,7 +289,7 @@ def display_one_sample_data(settings_filename,self_name):           # function t
     initial_load_time = datetime.datetime.now()
 
 
-    Settings = js.read_GUI_page_settings(settings_filename,self_name)   # settings are imported from JSON config
+    Settings = js.ReadJSONConfig("manual_inspect_settings","settings")   # settings are imported from JSON config
 
     how_to_get_name = st.radio("How to get spectrum filename?",["default","dropdown menu"])
     if how_to_get_name == "default":
