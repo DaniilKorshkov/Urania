@@ -4,6 +4,8 @@ import signal
 import os
 import SystemCheck
 import JSONoperators
+import tracemalloc
+
 
 def signal_handler(signal, frame):
         global interrupted
@@ -29,16 +31,28 @@ def Sampling():
                 handle = open(".VSCINUSE", 'w')
                 handle.close()
 
+                tracemalloc.start()
+
 
                 while True:
                         DoTask()
 
 
                         if interrupted:
+
+                                snapshot = tracemalloc.take_snapshot()
+                                statistics = snapshot.statistics('lineno')
+
+                                print("results:")
+                                for stat in statistics[:10]:
+                                        print(stat)
+
+
                                 print(f"Sampling process terminated")
                                 os.system("rm .VSCINUSE")
                                 break
-
+        else:
+                print("Faliures found")
 
 
 Sampling()
