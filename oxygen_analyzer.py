@@ -10,7 +10,7 @@ import math
 import datetime
 import JSONoperators as js
 
-PORT = "/dev/ttyUSB0"
+
 
 def SendCommand(PORT):  #function to send command to oxygen analyser via Serial port
     ser = serial.Serial(

@@ -233,55 +233,99 @@ def GetTaskData(taskname, config="MainConfig"):
 
 
 def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, purging_mfc, calmdown_mfc):
-    servo_motor.switch_valve_position(valve_number)
-    lg.MakeLogEntry(f"Multi inlet valved switched to position {valve_number}")
-    intitial_moment_of_time = datetime.datetime.now().timestamp()
-    total_wait_time = purging_time+calmdown_time
 
-    if purging_mfc == "open":
-        vsc.ChangeMFCMode("Open")
-    elif purging_mfc == "close":
-        vsc.ChangeMFCMode("Close")
-    else:
-        vsc.ChangeMFCMode("Setpoint")
-        vsc.ChangeMFCFlowRate(purging_mfc)
+    #global interrupted
+    critical_errors = False
 
-    lg.MakeLogEntry(f"MFC mode changed to {purging_mfc} for purging")
 
-    while True:
-        if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= purging_time:
-            break
-        else:
+    try:
+        servo_motor.switch_valve_position(valve_number)
+        lg.MakeLogEntry(f"Multi inlet valved switched to position {valve_number}")
+    except:
+        critical_errors = True
+        #interrupted = True
+        lg.MakeLogEntry(f"Sampling terminated as multi inlet valve is not responding")
+
+    if not critical_errors:
+
+        intitial_moment_of_time = datetime.datetime.now().timestamp()
+        total_wait_time = purging_time+calmdown_time
+
+
+        try:
+            if purging_mfc == "open":
+                vsc.ChangeMFCMode("Open")
+            elif purging_mfc == "close":
+                vsc.ChangeMFCMode("Close")
+            else:
+                vsc.ChangeMFCMode("Setpoint")
+                vsc.ChangeMFCFlowRate(purging_mfc)
+
+
+            lg.MakeLogEntry(f"Purge initiated")
+            lg.MakeLogEntry(f"MFC mode changed to {purging_mfc} for purge for {purging_time} seconds")
+
+        except:
+            critical_errors = True
+            #interrupted = True
+            lg.MakeLogEntry(f"Sampling terminated as mass flow controller is not responding")
+
+        if not critical_errors:
+
+            while True:
+                if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= purging_time:
+                    break
+                else:
+                    try:
+                        VSC_comms.LogVSCData("MainConfig")
+                        time.sleep(1)
+                    except:
+                        pass
+
             try:
-                VSC_comms.LogVSCData("MainConfig")
+
+                if calmdown_mfc == "open":
+                    vsc.ChangeMFCMode("Open")
+                elif calmdown_mfc == "close":
+                    vsc.ChangeMFCMode("Close")
+                else:
+                    vsc.ChangeMFCMode("Setpoint")
+                    vsc.ChangeMFCFlowRate(calmdown_mfc)
+
+                lg.MakeLogEntry(f"MFC mode changed to {calmdown_mfc} for {calmdown_time} seconds to finalize purge")
+
             except:
-                pass
+                critical_errors = True
+                #interrupted = True
+                lg.MakeLogEntry(f"Sampling terminated as mass flow controller is not responding")
 
-    if calmdown_mfc == "open":
-        vsc.ChangeMFCMode("Open")
-    elif calmdown_mfc == "close":
-        vsc.ChangeMFCMode("Close")
-    else:
-        vsc.ChangeMFCMode("Setpoint")
-        vsc.ChangeMFCFlowRate(calmdown_mfc)
+            if not critical_errors:
 
-    lg.MakeLogEntry(f"MFC mode changed to {calmdown_mfc} for finalizing the purge")
-
-    while True:
-        if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= total_wait_time:
-            break
-        else:
-            try:
-                VSC_comms.LogVSCData("MainConfig")
-            except:
-                pass
+                while True:
+                    if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= total_wait_time:
+                        break
+                    else:
+                        try:
+                            VSC_comms.LogVSCData("MainConfig")
+                            time.sleep(1)
+                        except:
+                            pass
 
 
-    lg.MakeLogEntry(f"Purging finalized")
+                lg.MakeLogEntry(f"Purge finalized")
 
-    for i in range(amount_of_scans):
-        void = RGA_comms.AppendSpectrumJSON(filename,"default_control_spectrum","AbnormalityLog")
-        VSC_comms.LogVSCData("MainConfig")
+                for i in range(amount_of_scans):
+                    try:
+                        void = RGA_comms.AppendSpectrumJSON(filename,"default_control_spectrum","AbnormalityLog")
+                    except:
+                        critical_errors = True
+                        #interrupted = True
+                        lg.MakeLogEntry(f"Sampling terminated due to RGA error")
+                        break
+
+                    VSC_comms.LogVSCData("MainConfig")
+
+                return critical_errors
 
 
 
@@ -294,11 +338,16 @@ def DoTask(config="MainConfig"):
     handle.close()
 
     spectrum_filename, amount_of_scans, valve_position, purging_time, calmdown_time, purging_mfc, calmdown_mfc = GetTaskData(taskname,config)
-    MakeScan(spectrum_filename, valve_position, amount_of_scans, purging_time, calmdown_time, purging_mfc, calmdown_mfc)
+    critical_errors = MakeScan(spectrum_filename, valve_position, amount_of_scans, purging_time, calmdown_time, purging_mfc, calmdown_mfc)
 
     os.system("rm __currenttaskname__")
-    lg.MakeLogEntry(f"Task {taskname} finished\n")
 
+    if not critical_errors:
+        lg.MakeLogEntry(f"Task {taskname} finished without errors\n")
+    else:
+        lg.MakeLogEntry(f"Task {taskname} finished with error\n")
+
+    return critical_errors
 
 
 

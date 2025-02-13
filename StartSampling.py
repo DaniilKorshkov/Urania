@@ -12,6 +12,7 @@ def signal_handler(signal, frame):
         global interrupted
         interrupted = True
         print(f"Interruption request received. Sampling will be terminated soon")
+        Logging.MakeLogEntry("Termination request received from user")
 
 
 def Sampling():
@@ -37,7 +38,9 @@ def Sampling():
 
 
                 while True:
-                        DoTask()
+                        critical_errors = DoTask()
+                        if critical_errors:
+                                interrupted = True
 
 
 
@@ -53,12 +56,17 @@ def Sampling():
 
                                 print(f"Sampling process terminated")
                                 os.system("rm .VSCINUSE")
-                                Logging.MakeLogEntry("Sampling terminated by user")
-                                break
+                                if not critical_errors:
+                                        Logging.MakeLogEntry("Sampling terminated by user\n")
+                                        break
+                                else:
+                                        Logging.MakeLogEntry("Sampling terminated due to error\n")
+                                        break
+
 
         else:
                 print(f"Failures found")
-                Logging.MakeLogEntry("Sampling terminated by user due to SystemCheck recommendation")
+                #Logging.MakeLogEntry("Sampling terminated by user due to SystemCheck recommendation")
 
 
 
