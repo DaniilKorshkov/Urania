@@ -1,3 +1,0 @@
-import const_mass_cache
-
-const_mass_cache.const_mass_cache()
