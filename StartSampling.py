@@ -5,6 +5,7 @@ import os
 import SystemCheck
 import JSONoperators
 import tracemalloc
+import Logging
 
 
 def signal_handler(signal, frame):
@@ -21,6 +22,7 @@ def Sampling():
         signal.signal(signal.SIGINT, signal_handler)
 
         JSONoperators.MergeJSONConfigs("MainConfig","DefaultMainConfig")
+        Logging.MakeLogEntry("Sampling initiated by user")
 
 
         failures_found = SystemCheck.SystemCheck("MainConfig")
@@ -36,6 +38,7 @@ def Sampling():
 
                 while True:
                         DoTask()
+                        Logging.MakeLogEntry("\n")
 
 
                         if interrupted:
@@ -50,9 +53,13 @@ def Sampling():
 
                                 print(f"Sampling process terminated")
                                 os.system("rm .VSCINUSE")
+                                Logging.MakeLogEntry("Sampling terminated by user")
                                 break
+
         else:
-                print("Faliures found")
+                print(f"Failures found")
+                Logging.MakeLogEntry("Sampling terminated by user due to SystemCheck recommendation")
+
 
 
 Sampling()

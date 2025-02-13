@@ -284,6 +284,8 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
 def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,config="MainConfig",doliveabnormalitycheck=False,convert_to_ppm=True):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
 
+
+
     ip_adress = js.ReadJSONConfig("spectrometer_parameters","ip_address",config)
     #flash_default_images(filename,control_spectrum_filename, abnorm_log_filename)
 
@@ -306,6 +308,8 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
     array_to_append = []
 
     ErrorMessage = None
+
+    Logging.MakeLogEntry(f"RGA scan for Filename = {filename}, Minit = {real_start_mass}, step={step}, amt.of steps = {amount_of_scans} initiated")
 
 
 
@@ -351,8 +355,10 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
     dictionary_to_append["array"] = array_to_append
     try:
         dictionary_to_append["oxygen"] = oxa.GetOxygenData("MainConfig")
+        Logging.MakeLogEntry(f"Received oxygen data for RGA scan: {filename}")
     except:
-        pass
+        Logging.MakeLogEntry(f"Failed to get oxygen data for RGA scan: {filename}")
+        dictionary_to_append["oxygen"] = 0
 
 
     if ErrorMessage == None:
@@ -360,18 +366,18 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
         handle.write("\n")
         handle.write(json.dumps(dictionary_to_append))
         handle.close()
+        Logging.MakeLogEntry(f"RGA scan for Filename = {filename}, Minit = {real_start_mass}, step={step}, amt.of steps = {amount_of_scans} completed without errors")
 
     else:
-        if do_logging:
-            Logging.MakeLogEntry(f"Following error was encountered: {ErrorMessage}")
-        if do_emit_sound:
+        Logging.MakeLogEntry(f"Following error was encountered during RGA scan: {ErrorMessage}")
+        Logging.MakeLogEntry(f"RGA scan for Filename = {filename}, Minit = {real_start_mass}, step={step}, amt.of steps = {amount_of_scans} completed with error")
+        '''if do_emit_sound:
             for i in range(5):
                 os.system('play -nq -t alsa synth {} sine {}'.format(0.1, (440+100*(i&2))))
         if do_simplex:
-            sxci.SendMessageToUser(f"Following error was encountered: {ErrorMessage}")
+            sxci.SendMessageToUser(f"Following error was encountered: {ErrorMessage}")'''
 
-    if do_logging:
-        Logging.MakeLogEntry(f"Scan for Minit = {real_start_mass}, step={step}, amt.of steps = {amount_of_scans} completed")
+
 
     return dictionary_to_append
 

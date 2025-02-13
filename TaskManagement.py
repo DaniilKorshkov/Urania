@@ -182,7 +182,7 @@ def GetRegularTask(config="MainConfig"):  #function to get regular task name
 
 
 
-def GetTask(config="MainConfig",do_logging=False):  # function that checks for emergency tasks; for scheduled tasks, for regular tasks and returns name of required task
+def GetTask(config="MainConfig"):  # function that checks for emergency tasks; for scheduled tasks, for regular tasks and returns name of required task
 
     tasklist_name = js.ReadJSONConfig("tasks","TaskList")
     default_tasklist_name = js.ReadJSONConfig("tasks","DefaultTaskList")
@@ -194,8 +194,7 @@ def GetTask(config="MainConfig",do_logging=False):  # function that checks for e
         if not ifscheduledtasks:
             taskname = GetRegularTask(config)
 
-    if do_logging:
-        lg.MakeLogEntry(f"{taskname} initiated")
+
 
     return taskname
 
@@ -235,6 +234,7 @@ def GetTaskData(taskname, config="MainConfig"):
 
 def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, purging_mfc, calmdown_mfc):
     servo_motor.switch_valve_position(valve_number)
+    lg.MakeLogEntry(f"Multi inlet valved switched to position {valve_number}")
     intitial_moment_of_time = datetime.datetime.now().timestamp()
     total_wait_time = purging_time+calmdown_time
 
@@ -245,6 +245,8 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
     else:
         vsc.ChangeMFCMode("Setpoint")
         vsc.ChangeMFCFlowRate(purging_mfc)
+
+    lg.MakeLogEntry(f"MFC mode changed to {purging_mfc} for purging")
 
     while True:
         if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= purging_time:
@@ -261,7 +263,9 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
         vsc.ChangeMFCMode("Close")
     else:
         vsc.ChangeMFCMode("Setpoint")
-        vsc.ChangeMFCFlowRate(purging_mfc)
+        vsc.ChangeMFCFlowRate(calmdown_mfc)
+
+    lg.MakeLogEntry(f"MFC mode changed to {calmdown_mfc} for finalizing the purge")
 
     while True:
         if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= total_wait_time:
@@ -273,13 +277,17 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                 pass
 
 
+    lg.MakeLogEntry(f"Purging finalized")
+
     for i in range(amount_of_scans):
         void = RGA_comms.AppendSpectrumJSON(filename,"default_control_spectrum","AbnormalityLog")
         VSC_comms.LogVSCData("MainConfig")
 
 
+
 def DoTask(config="MainConfig"):
-    taskname = GetTask(config,do_logging=False)
+    taskname = GetTask(config)
+    lg.MakeLogEntry(f"{taskname} initiated")
 
     handle = open("__currenttaskname__","w")
     handle.write(taskname)
@@ -289,6 +297,7 @@ def DoTask(config="MainConfig"):
     MakeScan(spectrum_filename, valve_position, amount_of_scans, purging_time, calmdown_time, purging_mfc, calmdown_mfc)
 
     os.system("rm __currenttaskname__")
+    lg.MakeLogEntry(f"{taskname} finished")
 
 
 
