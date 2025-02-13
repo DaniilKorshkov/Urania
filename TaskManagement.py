@@ -287,7 +287,7 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
 
 def DoTask(config="MainConfig"):
     taskname = GetTask(config)
-    lg.MakeLogEntry(f"{taskname} initiated")
+    lg.MakeLogEntry(f"Task {taskname} initiated")
 
     handle = open("__currenttaskname__","w")
     handle.write(taskname)
@@ -297,7 +297,7 @@ def DoTask(config="MainConfig"):
     MakeScan(spectrum_filename, valve_position, amount_of_scans, purging_time, calmdown_time, purging_mfc, calmdown_mfc)
 
     os.system("rm __currenttaskname__")
-    lg.MakeLogEntry(f"{taskname} finished")
+    lg.MakeLogEntry(f"Task {taskname} finished\n")
 
 
 

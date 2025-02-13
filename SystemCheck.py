@@ -48,7 +48,7 @@ def SystemCheck(MainConfig="MainConfig"):
 
 
 
-    if filament_status != "ON":
+    if filament_status[0] != "ON":
         try:
             bypass = JSONoperators.ReadJSONConfig("system_check","bypass filament")
         except:

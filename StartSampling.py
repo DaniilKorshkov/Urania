@@ -38,7 +38,7 @@ def Sampling():
 
                 while True:
                         DoTask()
-                        Logging.MakeLogEntry("\n")
+
 
 
                         if interrupted:
