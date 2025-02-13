@@ -13,10 +13,13 @@ import GUI_File_Manager as fm
 
 def display_all_tasks(MainConfig="MainConfig"):
 
+
     emergency_task_list = []
     scheduled_task_list = []
     regular_task_list = []
     name_list = []
+
+    JSONoperators.assert_file_exists("TaskList","DefaultTaskList")
 
     handle = open("TaskList","r")
     for line in handle:

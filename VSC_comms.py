@@ -6,6 +6,7 @@ import subprocess
 import os
 import serial
 from JSONoperators import ReadJSONConfig
+from JSONoperators import assert_file_exists
 import math
 import datetime
 import json
@@ -398,7 +399,9 @@ def LogVSCData(MainConfig="MainConfig"):
     #mfc_port = ReadJSONConfig("vsc", "mfc_port")
     #mfm_port = ReadJSONConfig("vsc", "mfm_port")
     filename = ReadJSONConfig("vsc","vsc_log_name")
-    
+
+    assert_file_exists("VSC_log")
+
     pg_pressure = ReadPressureGauge(MainConfig)
     
     mfc_flow = ReadMFCFlowRate(MainConfig)

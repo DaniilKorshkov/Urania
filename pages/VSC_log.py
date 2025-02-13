@@ -109,7 +109,9 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
 def display_data():
     
-    
+
+    js.assert_file_exists("VSC_log")
+
     parsing_mode = st.selectbox("Parsing mode",["last","search"])
     st.write(f"{parsing_mode} mode of operation")
 
