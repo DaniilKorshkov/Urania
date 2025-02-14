@@ -19,7 +19,7 @@ def plot_mass(spectrum_list, given_index,isppm):  # look through array of spectr
         if isppm == "True":
             pascal_sum = 0
             for element in spectrum_list[time_key]:
-                pascal_sum = pascal_sum + element
+                pascal_sum = pascal_sum + abs(element)
             new_range = []
             for element in spectrum_list[time_key]:
                 new_range.append((element * 1000000) / pascal_sum)

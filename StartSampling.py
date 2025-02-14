@@ -6,6 +6,7 @@ import SystemCheck
 import JSONoperators
 import tracemalloc
 import Logging
+import RGA_comms as RGA
 
 
 def signal_handler(signal, frame):
@@ -22,11 +23,23 @@ def Sampling():
         interrupted = False
         signal.signal(signal.SIGINT, signal_handler)
 
+
         JSONoperators.MergeJSONConfigs("MainConfig","DefaultMainConfig")
         Logging.MakeLogEntry("Sampling initiated by user")
 
 
-        failures_found = SystemCheck.SystemCheck("MainConfig")
+        try:
+                RGA.change_rga_ip("MainConfig")
+                RGA_working = True
+        except:
+                RGA_working = False
+                Logging.MakeLogEntry("Failed to reach RGA. Sampling is cancelled\n")
+
+        if RGA_working:
+                failures_found = SystemCheck.SystemCheck("MainConfig")
+        else:
+                failures_found = True
+
         #failures_found = False
 
         if not failures_found:

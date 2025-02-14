@@ -9,7 +9,7 @@ import Logging
 
 
 # function to analyse JSON spectrum file for abnormalities and print results to log file
-def AnalyseSpectrum(spectrum_filename,control_spectrum_filename,log_filename,do_report_to_log):
+'''def AnalyseSpectrum(spectrum_filename,control_spectrum_filename,log_filename,do_report_to_log):
     controlspectrum_handle = open(control_spectrum_filename, "r")
     for line in controlspectrum_handle:
 
@@ -31,7 +31,7 @@ def AnalyseSpectrum(spectrum_filename,control_spectrum_filename,log_filename,do_
                                   spectrum_metadata["step"])
 
 
-    '''spectrum_handle = open(spectrum_filename,"r")
+    spectrum_handle = open(spectrum_filename,"r")
 
     for line in spectrum_handle:
         match json.loads(line)["class"]:
@@ -42,7 +42,7 @@ def AnalyseSpectrum(spectrum_filename,control_spectrum_filename,log_filename,do_
 
 
 # Function to analyse single spectrum for abnormalities
-def FindAbnormalityInSpectrum(spectrum,controlspectrum,measurement_time,do_report_to_json,spectrum_filename,log_filename,initial_mass=1,step=1,emitsound=False,simplex=False,do_logging=False):
+def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step, filename):
 
 
 
@@ -51,80 +51,56 @@ def FindAbnormalityInSpectrum(spectrum,controlspectrum,measurement_time,do_repor
 
     abnormalities_detected = False
 
+    pascal_spectrum = spectrum_to_analyze["array"]
+    spectrum = []
+
+    control_spectrum = js.ReadJSONConfig("AbnormalityReaction",[f"MIV{multi_inlet_valve}"])
+
+    pascal_sum = 0
+    for element in pascal_spectrum:
+        pascal_sum = pascal_sum + abs(element)
+    for element in pascal_spectrum:
+        spectrum.append((element * 1000000) / pascal_sum)
+
+
+
+    oxygen = spectrum_to_analyze["oxygen"]
+
     for element in spectrum:
         if int(initial_mass + step*i) == float(initial_mass + step*i):  # only integer peaks are analysed
 
 
             try:  # if boundaries for specific mass are specified, those boundaries are used for comparison
-                boundaries = controlspectrum[str(f'{int(initial_mass + step * i)}')]
+                boundaries = control_spectrum[str(f'{int(initial_mass + step * i)}')]
             except:  # else, boundaries are set to default
-                boundaries = controlspectrum["default_boundaries"]
+                boundaries = control_spectrum["default"]
 
 
 
             if element > boundaries[1] or element < boundaries[0]:  # if element is smaller than minimal accepted or greater that maximal accepted:
-
-                    if emitsound and (not sound_already_emitted):  # sound notification
-                        for i in range(3):
-                            os.system('play -nq -t alsa synth {} sine {}'.format(0.1, 440))
-                        sound_already_emitted = True
-
-                    if simplex:
-                        ReportAbnormalityViaSimpleXChat(spectrum_filename, measurement_time, (initial_mass + step*i), element,boundaries)
+                abnormalities_detected = True
+                Logging.MakeLogEntry(f"Valve position {multi_inlet_valve}, Filename {filename}: PPM for M/Z = {int(initial_mass + step * i)} is {element}, while boundaries are {boundaries[0]}:{boundaries[1]}",log_name="AbnormalityLog")
 
 
 
-
-                    if do_report_to_json:  # scenario 1 - abnormality logged to JSON file
-
-                        ReportAbnormalityToTextFile(log_filename,spectrum_filename,measurement_time,(initial_mass + step*i),element,boundaries)
-
-
-
-                    else:  # scenario 2 - abnormality messages are displayed live
-                        try:
-                            boundaries = controlspectrum[str(int(initial_mass + step * i))]
-                        except:
-                            boundaries = controlspectrum['default_boundaries']
-
-                        st.write(f'{datetime.datetime.fromtimestamp(int(measurement_time))}: PP(M???) for M={initial_mass + step * i} is {element} while tolerable interval is {boundaries}')
 
         i += 1
-
-        if abnormalities_detected and do_logging:
-            Logging.MakeLogEntry(f"Abnormality detected. Please check abnormality log")
-
-
-
+    oxygen_boundaries = control_spectrum[str(f'oxygen')]
+    if oxygen > oxygen_boundaries[1] or oxygen < oxygen_boundaries[0]:
+        abnormalities_detected = True
+        Logging.MakeLogEntry(f"Valve position {multi_inlet_valve}, Filename {filename}: O2 PPM = {oxygen}, while boundaries are {oxygen_boundaries[0]}:{oxygen_boundaries[1]}", log_name="AbnormalityLog")
 
 
-def ReportAbnormalityViaSimpleXChat(spectrum_filename,measurement_time,molar_mass,abnormal_value,boundaries):
-    message = f'{datetime.datetime.fromtimestamp(int(measurement_time))}, filename - {spectrum_filename}: Molar mass at peak {molar_mass} is {abnormal_value}, while boundaries are {boundaries}'
-    #message = 'error'
-    sxci.SendMessageToUser(message)
+    return abnormalities_detected
 
 
 
 
-
-# function to append single line into abnormality log
-def ReportAbnormalityToTextFile(log_filename,spectrum_filename,measurement_time,molar_mass,abnormal_value,boundaries):
-    handle = open(log_filename, "a")
-
-    handle.write(f'\n{datetime.datetime.fromtimestamp(int(measurement_time))}, filename - {spectrum_filename}: Molar mass at peak {molar_mass} is {abnormal_value}, while boundaries are {boundaries}')
-    handle.close()
+#def MakeLogEntry()
 
 
-def GetParameters(JSONConfigFilename="MainConfig"):
-    handle = open(JSONConfigFilename,'r')
-    for line in handle:
-        interpreted_line = json.loads(line)
-        if interpreted_line["class"] == "user_notifications":
-            if_simplex = bool(interpreted_line["do_simplex"])
-            if_sound = bool(interpreted_line["do_sound"])
-            if_logging = bool(interpreted_line["do_logging"])
-            break
-    return if_simplex,if_sound,if_logging
+
+
 
 
 

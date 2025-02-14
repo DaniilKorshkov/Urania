@@ -1,5 +1,7 @@
 import json
 import datetime
+
+import Logging
 import Logging as lg
 import JSONoperators as js
 import VSC_comms
@@ -8,6 +10,7 @@ import RGA_comms
 import VSC_comms as vsc
 import time
 import os
+import AbnormalityReaction as ar
 
 
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
@@ -316,7 +319,18 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
 
                 for i in range(amount_of_scans):
                     try:
-                        void = RGA_comms.AppendSpectrumJSON(filename,"default_control_spectrum","AbnormalityLog")
+                        spectrum_to_analyze, intital_mass, step = RGA_comms.AppendSpectrumJSON(filename)
+
+                        if valve_number != 16:
+                            if_abnormalities = ar.AnalyseSingleLine(spectrum_to_analyze,valve_number,intital_mass,step)
+                            if if_abnormalities:
+                                Logging.MakeLogEntry(f"Abnormal readings were found for Filename = {filename} scan. Check AbnormalityLog for details")
+                        else:
+                            if_abnormalities = False
+
+
+
+
                     except:
                         critical_errors = True
                         #interrupted = True

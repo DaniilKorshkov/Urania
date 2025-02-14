@@ -282,12 +282,12 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
 
 
-def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,convertion_coefficient=1,accuracy=5,config="MainConfig",doliveabnormalitycheck=False,convert_to_ppm=True):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
+def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="MainConfig"):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
 
 
 
     ip_adress = js.ReadJSONConfig("spectrometer_parameters","ip_address",config)
-    #flash_default_images(filename,control_spectrum_filename, abnorm_log_filename)
+
 
     handle = open(filename, "r")
     for line in handle:
@@ -334,22 +334,6 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
 
 
 
-    do_simplex, do_emit_sound, do_logging = ar.GetParameters()
-
-    if doliveabnormalitycheck:
-
-        controlspectrum_handle = open(control_spectrum_filename, "r")  #required data loaded from control spectrum
-        for line in controlspectrum_handle:
-            match json.loads(line)["class"]:
-                case "control_spectrum":
-                    controlspectrum = json.loads(line)
-                case "metadata":
-                    control_metadata = json.loads(line)
-        controlspectrum_handle.close()
-
-
-
-        ar.FindAbnormalityInSpectrum(array_to_append,controlspectrum,current_time,True,filename,abnorm_log_filename,start_mass,step,do_emit_sound=do_emit_sound,simplex=do_simplex,do_logging=do_logging)
 
 
     dictionary_to_append["array"] = array_to_append
@@ -371,58 +355,18 @@ def AppendSpectrumJSON(filename,control_spectrum_filename,abnorm_log_filename,co
     else:
         Logging.MakeLogEntry(f"Following error was encountered during RGA scan: {ErrorMessage}")
         Logging.MakeLogEntry(f"RGA scan for Filename = {filename}, Minit = {real_start_mass}, step={step}, amt.of steps = {amount_of_scans} completed with error")
-        '''if do_emit_sound:
-            for i in range(5):
-                os.system('play -nq -t alsa synth {} sine {}'.format(0.1, (440+100*(i&2))))
-        if do_simplex:
-            sxci.SendMessageToUser(f"Following error was encountered: {ErrorMessage}")'''
 
 
 
-    return dictionary_to_append
+    return dictionary_to_append, real_start_mass, step
 
 
 
-'''def ConvertPascalsToPPM(array):
-    pascal_sum = 0
-    for element in array:
-        pascal_sum = pascal_sum + abs(element)
-    final_array = []
-    for element in array:
-        final_array.append((element*1000000)/pascal_sum)
-    return final_array'''
 
 
-def flash_default_images(spectrum_filename,control_spectrum_filename,abnorm_log_filename,MainConfig="MainConfig"):
-    handle = open(MainConfig,"r")
-    for line in handle:
-        dict_line = json.loads(line)
-        if dict_line["class"] == "spectrometer_parameters":
-            spectrum_image_name = dict_line["default_spectrum_image"]
-            controlspectrum_image_filename = dict_line["default_controlspectrum_image"]
-
-    js.assert_file_exists(spectrum_filename,spectrum_image_name)
-    js.assert_file_exists(control_spectrum_filename,controlspectrum_image_filename)
-    js.assert_file_exists(abnorm_log_filename,None)
 
 
-#flash_default_images("spectrum123","controlspectrum456","log789")
 
-
-#AppendGreatSpectrumJSON('FullScan',1,5,"169.254.198.174")
-
-#Output = SendPacketsToRGA( ('Control  "MyProgram" "1.0"','FilamentControl On','AddSinglePeak Peak1 37.5 5 0 0 0','scanadd Peak1','ScanStart 1','__listen__ 20 0','Release') )
-#Output = SendPacketsToRGA( ('Control  "MyProgram" "1.0"', 'FilamentControl On', 'AddSinglePeak SinglePeak0 39.0 5 0 0 0', 'scanadd SinglePeak0', 'ScanStart 1', '__wait_for_given_mass__ 39.0', 'Release'))
-
-
-#Output = SendPacketsToRGA( ('Control  "MyProgram" "1.0"','FilamentControl On','AddBarchart Bar1 1 100 PeakCenter 5 0 0 0','scanadd Bar1','ScanStart 1','__listen__ 100 0','Release') )
-#Output = SendPacketsToRGA( ('Control  "MyProgram" "1.0"','FilamentControl On','AddBarchart Bar1 1 100 PeakCenter 5 0 0 0','scanadd Analog1','ScanStart 1','__listen__ 100 0','Release') )
-
-#for element in Output:
- #   print(element)
-
-#TestSpectrum = GetMassSpectrum(1)
-#print(TestSpectrum)
 
 def control_pump(status,MainConfig="MainConfig"):
     match status.lower():

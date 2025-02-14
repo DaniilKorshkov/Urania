@@ -37,7 +37,7 @@ def SendCommand(MKS_ADDRESS,PORT,command):  #function to send command to VSC via
 
     #print("data sent !!!")
 
-    time.sleep(0.1)
+    time.sleep(0.01)
 
     result = ser.read_until(b"FF")
 
