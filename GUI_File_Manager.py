@@ -454,28 +454,7 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
 
 
 
-            handle = open("MainConfig", "r")
-            newconfig = []
-            for line in handle:
-                try:
-                        dictline = json.loads(line)
 
-                        if dictline["class"] == "cache":
-                            dictline["current_spectrum_files"] = filename_list
-                            newline = json.dumps(dictline)
-                            newconfig.append(newline + "\n")
-
-                        else:
-                            newconfig.append(line)
-                except:
-                        pass
-            handle.close()
-
-
-            handle = open("MainConfig", "w")
-            for line in newconfig:
-                    handle.write(line)
-            handle.close()
 
 
 

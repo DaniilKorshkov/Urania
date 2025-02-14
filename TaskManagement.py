@@ -322,9 +322,12 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                         spectrum_to_analyze, intital_mass, step = RGA_comms.AppendSpectrumJSON(filename)
 
                         if valve_number != 16:
-                            if_abnormalities = ar.AnalyseSingleLine(spectrum_to_analyze,valve_number,intital_mass,step)
-                            if if_abnormalities:
-                                Logging.MakeLogEntry(f"Abnormal readings were found for Filename = {filename} scan. Check AbnormalityLog for details")
+                            try:
+                                if_abnormalities = ar.AnalyseSingleLine(spectrum_to_analyze,valve_number,intital_mass,step,filename)
+                                if if_abnormalities:
+                                    Logging.MakeLogEntry(f"Abnormal readings were found for Filename = {filename} scan. Check AbnormalityLog for details")
+                            except:
+                                lg.MakeLogEntry(f"Abnormality scan for Filename = {filename} crashed with error")
                         else:
                             if_abnormalities = False
 

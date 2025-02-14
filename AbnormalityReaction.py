@@ -54,13 +54,13 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
     pascal_spectrum = spectrum_to_analyze["array"]
     spectrum = []
 
-    control_spectrum = js.ReadJSONConfig("AbnormalityReaction",[f"MIV{multi_inlet_valve}"])
+    control_spectrum = js.ReadJSONConfig("AbnormalityReaction",f"MIV{multi_inlet_valve}")
 
     pascal_sum = 0
     for element in pascal_spectrum:
         pascal_sum = pascal_sum + abs(element)
     for element in pascal_spectrum:
-        spectrum.append((element * 1000000) / pascal_sum)
+        spectrum.append((abs(element) * 1000000) / pascal_sum)
 
 
 
@@ -88,7 +88,7 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
     oxygen_boundaries = control_spectrum[str(f'oxygen')]
     if oxygen > oxygen_boundaries[1] or oxygen < oxygen_boundaries[0]:
         abnormalities_detected = True
-        Logging.MakeLogEntry(f"Valve position {multi_inlet_valve}, Filename {filename}: O2 PPM = {oxygen}, while boundaries are {oxygen_boundaries[0]}:{oxygen_boundaries[1]}", log_name="AbnormalityLog")
+        Logging.MakeLogEntry(f"Valve position {multi_inlet_valve}, Filename {filename}: PPM for oxygen is {oxygen}, while boundaries are {oxygen_boundaries[0]}:{oxygen_boundaries[1]}", log_name="AbnormalityLog")
 
 
     return abnormalities_detected
