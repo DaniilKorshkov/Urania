@@ -365,9 +365,13 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
     find_abnormalities = st.button("Find abnormalities")
     if find_abnormalities:
-                control_spectrum_filename = Settings["control_spectrum_filename"]
                 spectrum_filename = Settings["spectrum_filename"]
-                ar.AnalyseSpectrum(spectrum_filename,control_spectrum_filename,None,False)
+                if_abnormalities,log_entries_list = ar.AnalyseFile(spectrum_filename)
+                if if_abnormalities:
+                    for element in log_entries_list:
+                        st.write(element)
+                else:
+                    st.write("No abnormalities found in this file")
 
 
 

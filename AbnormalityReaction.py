@@ -9,40 +9,49 @@ import Logging
 
 
 # function to analyse JSON spectrum file for abnormalities and print results to log file
-'''def AnalyseSpectrum(spectrum_filename,control_spectrum_filename,log_filename,do_report_to_log):
-    controlspectrum_handle = open(control_spectrum_filename, "r")
-    for line in controlspectrum_handle:
+def AnalyseFile(spectrum_filename,MainConfig="MainConfig"):
+    handle = open(spectrum_filename, "r")
+    abnormalities_detected_in_file = False
+    all_log_entries = []
 
+    for line in handle:
         if line == "" or line == "\n" or line[0] == "#":
             continue
-
-        match json.loads(line)["class"]:
-            case "control_spectrum":
-                controlspectrum = json.loads(line)
+        # print(line)
+        tempdict = json.loads(line)
+        match tempdict["class"]:
             case "metadata":
-                control_metadata = json.loads(line)
-    controlspectrum_handle.close()
+                metadata = tempdict
+                assert metadata["is_a_spectrum"] == "True"
+            case "spectrum":
+                pass
 
-    spectrum_metadata, spectrum_list, oxygen_list = js.read_spectrum_json(spectrum_filename)
-
-    for time_key in spectrum_list:
-        FindAbnormalityInSpectrum(spectrum_list[time_key], controlspectrum, time_key,
-                                  do_report_to_log, spectrum_filename, log_filename, spectrum_metadata["initial_value"],
-                                  spectrum_metadata["step"])
+    handle.close()
+    handle = open(spectrum_filename, "r")
 
 
-    spectrum_handle = open(spectrum_filename,"r")
-
-    for line in spectrum_handle:
-        match json.loads(line)["class"]:
+    for line in handle:
+        if line == "" or line == "\n" or line[0] == "#":
+            continue
+        # print(line)
+        tempdict = json.loads(line)
+        match tempdict["class"]:
             case "metadata":
-                spectrum_metadata = json.loads(line)
-            case "spectrum":'''
+                pass
+            case "spectrum":
+                abnormalities_detected,log_entries = AnalyseSingleLine(tempdict,metadata["valve_number"],metadata["initial_value"],metadata["step"],spectrum_filename,logging=False)
+                if abnormalities_detected:
+                    abnormalities_detected_in_file = True
+                    for element in log_entries:
+                        all_log_entries.append(element)
+
+    handle.close()
+    return abnormalities_detected_in_file,all_log_entries
 
 
 
 # Function to analyse single spectrum for abnormalities
-def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step, filename):
+def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step, filename, logging=True):
 
 
 
@@ -50,6 +59,7 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
     sound_already_emitted = False
 
     abnormalities_detected = False
+    log_entries = []
 
     pascal_spectrum = spectrum_to_analyze["array"]
     spectrum = []
@@ -76,22 +86,29 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
                 boundaries = control_spectrum["default"]
 
 
-
-            if element > boundaries[1] or element < boundaries[0]:  # if element is smaller than minimal accepted or greater that maximal accepted:
-                abnormalities_detected = True
-                Logging.MakeLogEntry(f"Valve position {multi_inlet_valve}, Filename {filename}: PPM for M/Z = {int(initial_mass + step * i)} is {element}, while boundaries are {boundaries[0]}:{boundaries[1]}",log_name="AbnormalityLog")
+            if Logging:
+                if element > boundaries[1] or element < boundaries[0]:  # if element is smaller than minimal accepted or greater that maximal accepted:
+                    abnormalities_detected = True
+                    log_entry = f"Valve position {multi_inlet_valve}, Filename {filename}: PPM for M/Z = {int(initial_mass + step * i)} is {element}, while boundaries are {boundaries[0]}:{boundaries[1]}"
+                    Logging.MakeLogEntry(log_entry,log_name="AbnormalityLog")
+                    log_entries.append(log_entry)
 
 
 
 
         i += 1
+
+
+
     oxygen_boundaries = control_spectrum[str(f'oxygen')]
     if oxygen > oxygen_boundaries[1] or oxygen < oxygen_boundaries[0]:
         abnormalities_detected = True
-        Logging.MakeLogEntry(f"Valve position {multi_inlet_valve}, Filename {filename}: PPM for oxygen is {oxygen}, while boundaries are {oxygen_boundaries[0]}:{oxygen_boundaries[1]}", log_name="AbnormalityLog")
+        log_entry = f"Valve position {multi_inlet_valve}, Filename {filename}: PPM for oxygen is {oxygen}, while boundaries are {oxygen_boundaries[0]}:{oxygen_boundaries[1]}"
+        Logging.MakeLogEntry(log_entry, log_name="AbnormalityLog")
+        log_entries.append(log_entry)
 
 
-    return abnormalities_detected
+    return abnormalities_detected, log_entries
 
 
 

@@ -194,4 +194,22 @@ def DisplayCurrentScans():
             st.write(f"Can't read spectrums from {spectrum_name}")
 
 
+
+    find_abnormalities = st.button("Find abnormalities")
+    if find_abnormalities:
+        if_abnormalities_found_in_all_files = False
+        for filename in filelist:
+            spectrum_filename = filename
+            if_abnormalities, log_entries_list = ar.AnalyseFile(spectrum_filename)
+            if if_abnormalities:
+                for element in log_entries_list:
+                    st.write(element)
+                    if_abnormalities_found_in_all_files = True
+        if not if_abnormalities_found_in_all_files:
+            st.write("No abnormalities found in these files")
+
+
+
+
+
 DisplayCurrentScans()
