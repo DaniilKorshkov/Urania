@@ -89,7 +89,7 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
 
 
 
-            if element > boundaries[1] or element < boundaries[0]:  # if element is smaller than minimal accepted or greater that maximal accepted:
+            if element > float(boundaries[1]) or element < float(boundaries[0]):  # if element is smaller than minimal accepted or greater that maximal accepted:
                     abnormalities_detected = True
                     log_entry = f"Valve position {multi_inlet_valve}, Filename {filename}: PPM for M/Z = {int(initial_mass + step * i)} is {element}, while boundaries are {boundaries[0]}:{boundaries[1]}"
                     if Logging:
@@ -104,7 +104,7 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
 
 
     oxygen_boundaries = control_spectrum[str(f'oxygen')]
-    if oxygen > oxygen_boundaries[1] or oxygen < oxygen_boundaries[0]:
+    if oxygen > float(oxygen_boundaries[1]) or oxygen < float(oxygen_boundaries[0]):
         abnormalities_detected = True
         log_entry = f"Valve position {multi_inlet_valve}, Filename {filename}: PPM for oxygen is {oxygen}, while boundaries are {oxygen_boundaries[0]}:{oxygen_boundaries[1]}"
         if Logging:

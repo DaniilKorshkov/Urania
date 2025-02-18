@@ -24,7 +24,7 @@ def AbnormalitySettings():
 
                         new_line = js.ReadJSONConfig("AbnormalityReaction")
 
-                        (((new_line[f"MIV{i + 1}"])[key])[0]) = new_min_value
+                        (((new_line[f"MIV{i + 1}"])[key])[0]) = float(new_min_value)
                         str_new_line = json.dumps(new_line)
                         js.EditJSONConfig("AbnormalityReaction", str_new_line)
 
@@ -44,7 +44,7 @@ def AbnormalitySettings():
 
                         new_line = js.ReadJSONConfig("AbnormalityReaction")
 
-                        (((new_line[f"MIV{i+1}"])[key])[1]) = new_max_value
+                        (((new_line[f"MIV{i+1}"])[key])[1]) = float(new_max_value)
                         str_new_line = json.dumps(new_line)
                         js.EditJSONConfig("AbnormalityReaction",str_new_line)
 
@@ -100,7 +100,7 @@ def AbnormalitySettings():
 
                         new_line = js.ReadJSONConfig("AbnormalityReaction")
 
-                        ((new_line[f"MIV{i + 1}"])[new_molar_mass]) = [new_min_value,new_max_value]
+                        ((new_line[f"MIV{i + 1}"])[int(new_molar_mass)]) = [float(new_min_value),float(new_max_value)]
                         str_new_line = json.dumps(new_line)
                         js.EditJSONConfig("AbnormalityReaction", str_new_line)
 
