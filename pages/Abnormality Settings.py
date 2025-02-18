@@ -13,8 +13,8 @@ def AbnormalitySettings():
             with col1:
                 st.write(f"M/Z = {key}: {(control_spectrum[key])[0]} - {(control_spectrum[key])[1]}")
             with col2:
-                new_min_value = st.text_input(f"New minimal value for M/Z={key} for line {i+1}: ")
-                append_new_min_value = st.button(f"Edit min value for M/Z={key} for line {i+1}:")
+                new_min_value = st.text_input(f"New minimal PPM threshold for M/Z={key} for line {i+1}: ")
+                append_new_min_value = st.button(f"Edit min PPM threshold for M/Z={key} for line {i+1}:")
                 if append_new_min_value:
 
                     try:
@@ -34,8 +34,8 @@ def AbnormalitySettings():
 
 
             with col3:
-                new_max_value = st.text_input(f"New maximal value for M/Z={key} for line {i+1}: ")
-                append_new_max_value = st.button(f"Edit max value for M/Z={key} for line {i + 1}:")
+                new_max_value = st.text_input(f"New maximal PPM threshold for M/Z={key} for line {i+1}: ")
+                append_new_max_value = st.button(f"Edit max PPM threshold for M/Z={key} for line {i + 1}:")
                 if append_new_max_value:
 
                     try:
@@ -77,9 +77,9 @@ def AbnormalitySettings():
         with col1:
                 new_molar_mass = st.text_input(f"Enter M/Z for new line {i+1} condition")
         with col2:
-                new_min_value = st.text_input(f"Enter min value for new line {i+1} condition")
+                new_min_value = st.text_input(f"Enter min PPM threshold for new line {i+1} condition")
         with col3:
-                new_max_value = st.text_input(f"Enter max value for new line {i+1} condition")
+                new_max_value = st.text_input(f"Enter max PPM threshold for new line {i+1} condition")
         with col4:
                 create_new_entry = st.button(f"Add new condition for line {i+1} scan")
 
