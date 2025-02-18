@@ -48,7 +48,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                     if "ERROR" in received:
                         sock.send(bytes("Release", "ascii") + bytes([10]))
                         ErrorMessage = received
-                        raise ValueError("ERROR keyword in output")
+                        #raise ValueError("ERROR keyword in output")
 
 
 
@@ -68,7 +68,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                                 if "ERROR" in received:
                                     sock.send(bytes("Release", "ascii") + bytes([10]))
                                     ErrorMessage = received
-                                    raise ValueError("ERROR keyword in output")
+                                    #raise ValueError("ERROR keyword in output")
 
 
                                 received_list.append(received)
@@ -163,8 +163,8 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     for i in range(int(amount_of_scans)):
 
 
-        packages_list.append(f'AddSinglePeak SinglePeak{i} {start_mass+i*step} {0} 0 0 0')
-        packages_list.append(f'scanadd SinglePeak{i}')
+        packages_list.append(f'AddSinglePeak ReconSinglePeak{i} {start_mass+i*step} {0} 0 0 0')
+        packages_list.append(f'scanadd ReconSinglePeak{i}')
     packages_list.append(f"MeasurementDetectorIndex {0}")
     packages_list.append('ScanStart 1')
     packages_list.append(f'__wait_for_given_mass__ {start_mass+step*(amount_of_scans-1)}')
@@ -213,12 +213,12 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
 
 
-    packages_list = ['Control  "MyProgram" "1.0"', 'FilamentControl On']
-    i = 0
+    packages_list = ['Control  "MyProgram" "2.0"', 'FilamentControl On']
+    j = amount_of_scans
     for MolarMass in FaradayCupMasses:
-        packages_list.append(f'AddSinglePeak SinglePeak{i} {MolarMass} {accuracy} 0 0 0')
-        packages_list.append(f'scanadd SinglePeak{i}')
-        i += 1
+        packages_list.append(f'AddSinglePeak FaradaySinglePeak{j} {MolarMass} {accuracy} 0 0 0')
+        packages_list.append(f'scanadd FaradaySinglePeak{j}')
+        j += 1
     packages_list.append(f"MeasurementDetectorIndex {0}")
     packages_list.append('ScanStart 1')
     packages_list.append(f'__wait_for_given_mass__ {FaradayCupMasses[(len(FaradayCupMasses)-1)]}')
@@ -241,12 +241,12 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
             Spectrum[ int((float(split_line[MassReadingPosition+1])-float(start_mass))/float(step)) ] = end_result
 
 
-    packages_list = ['Control  "MyProgram" "1.0"', 'FilamentControl On']
-    i = 0
+    packages_list = ['Control  "MyProgram" "3.0"', 'FilamentControl On']
+
     for MolarMass in MultiplierMasses:
-        packages_list.append(f'AddSinglePeak SinglePeak{i} {MolarMass} {accuracy} 0 0 0')
-        packages_list.append(f'scanadd SinglePeak{i}')
-        i += 1
+        packages_list.append(f'AddSinglePeak MultiplierSinglePeak{j} {MolarMass} {accuracy} 0 0 0')
+        packages_list.append(f'scanadd MultiplierSinglePeak{j}')
+        j += 1
     packages_list.append(f"MeasurementDetectorIndex {1}")
     packages_list.append('ScanStart 1')
     packages_list.append(f'__wait_for_given_mass__ {MultiplierMasses[(len(MultiplierMasses)-1)]}')
@@ -325,6 +325,10 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
 
 
         Spectrum, ErrorMessage = GetMassSpectrum(convertion_coefficient, start_mass, temp_amount_of_scans, step, accuracy, ip_adress)
+
+        if ErrorMessage != None:
+            break
+
         for element in Spectrum:
                 array_to_append.append(element)
 
@@ -334,18 +338,17 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
 
 
 
-
-
-    dictionary_to_append["array"] = array_to_append
-    try:
-        dictionary_to_append["oxygen"] = oxa.GetOxygenData("MainConfig")
-        Logging.MakeLogEntry(f"Received oxygen data for RGA scan: {filename}")
-    except:
-        Logging.MakeLogEntry(f"Failed to get oxygen data for RGA scan: {filename}")
-        dictionary_to_append["oxygen"] = 0
-
-
     if ErrorMessage == None:
+
+        dictionary_to_append["array"] = array_to_append
+        try:
+            dictionary_to_append["oxygen"] = oxa.GetOxygenData("MainConfig")
+            Logging.MakeLogEntry(f"Received oxygen data for RGA scan: {filename}")
+        except:
+            Logging.MakeLogEntry(f"Failed to get oxygen data for RGA scan: {filename}")
+            dictionary_to_append["oxygen"] = 0
+
+
         handle = open(filename, "a")
         handle.write("\n")
         handle.write(json.dumps(dictionary_to_append))
@@ -358,7 +361,7 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
 
 
 
-    return dictionary_to_append, real_start_mass, step
+    return dictionary_to_append, real_start_mass, step, ErrorMessage
 
 
 

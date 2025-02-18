@@ -319,17 +319,24 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
 
                 for i in range(amount_of_scans):
                     try:
-                        spectrum_to_analyze, intital_mass, step = RGA_comms.AppendSpectrumJSON(filename)
+                        spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename)
 
-                        if valve_number != 16:
-                            try:
-                                if_abnormalities = ar.AnalyseSingleLine(spectrum_to_analyze,valve_number,intital_mass,step,filename)
-                                if if_abnormalities:
-                                    Logging.MakeLogEntry(f"Abnormal readings were found for Filename = {filename} scan. Check AbnormalityLog for details")
-                            except:
-                                lg.MakeLogEntry(f"Abnormality scan for Filename = {filename} crashed with error")
+                        if (ErrorMessage != None) and (not ("ERROR 204" in ErrorMessage)):
+                            critical_errors = True
+                            lg.MakeLogEntry(f"Sampling terminated due to RGA error")
+                            break
                         else:
-                            if_abnormalities = False
+
+
+                            if valve_number != 16:
+                                try:
+                                    if_abnormalities = ar.AnalyseSingleLine(spectrum_to_analyze,valve_number,intital_mass,step,filename)
+                                    if if_abnormalities:
+                                        Logging.MakeLogEntry(f"Abnormal readings were found for Filename = {filename} scan. Check AbnormalityLog for details")
+                                except:
+                                    lg.MakeLogEntry(f"Abnormality scan for Filename = {filename} crashed with error")
+                            else:
+                                if_abnormalities = False
 
 
 
