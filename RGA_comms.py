@@ -162,9 +162,9 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     packages_list = ['Control  "MyProgram" "1.0"' , 'FilamentControl On']
     for i in range(int(amount_of_scans)):
 
-
-        packages_list.append(f'AddSinglePeak ReconSinglePeak{i} {start_mass+i*step} {0} 0 0 0')
-        packages_list.append(f'scanadd ReconSinglePeak{i}')
+        timestamp = (datetime.datetime.now()).timestamp()
+        packages_list.append(f'AddSinglePeak {timestamp}ReconSinglePeak{i} {start_mass+i*step} {0} 0 0 0')
+        packages_list.append(f'scanadd {timestamp}ReconSinglePeak{i}')
     packages_list.append(f"MeasurementDetectorIndex {0}")
     packages_list.append('ScanStart 1')
     packages_list.append(f'__wait_for_given_mass__ {start_mass+step*(amount_of_scans-1)}')
@@ -216,8 +216,9 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     packages_list = ['Control  "MyProgram" "2.0"', 'FilamentControl On']
     j = amount_of_scans
     for MolarMass in FaradayCupMasses:
-        packages_list.append(f'AddSinglePeak FaradaySinglePeak{j} {MolarMass} {accuracy} 0 0 0')
-        packages_list.append(f'scanadd FaradaySinglePeak{j}')
+        timestamp = (datetime.datetime.now()).timestamp()
+        packages_list.append(f'AddSinglePeak {timestamp}FaradaySinglePeak{j} {MolarMass} {accuracy} 0 0 0')
+        packages_list.append(f'scanadd {timestamp}FaradaySinglePeak{j}')
         j += 1
     packages_list.append(f"MeasurementDetectorIndex {0}")
     packages_list.append('ScanStart 1')
@@ -244,8 +245,9 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     packages_list = ['Control  "MyProgram" "3.0"', 'FilamentControl On']
 
     for MolarMass in MultiplierMasses:
-        packages_list.append(f'AddSinglePeak MultiplierSinglePeak{j} {MolarMass} {accuracy} 0 0 0')
-        packages_list.append(f'scanadd MultiplierSinglePeak{j}')
+        timestamp = (datetime.datetime.now()).timestamp()
+        packages_list.append(f'AddSinglePeak {timestamp}MultiplierSinglePeak{j} {MolarMass} {accuracy} 0 0 0')
+        packages_list.append(f'scanadd {timestamp}MultiplierSinglePeak{j}')
         j += 1
     packages_list.append(f"MeasurementDetectorIndex {1}")
     packages_list.append('ScanStart 1')
