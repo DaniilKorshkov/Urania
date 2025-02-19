@@ -2,6 +2,9 @@ import socket
 import time
 import datetime
 import json
+
+from pyarrow import timestamp
+
 import JSONoperators as js
 import AbnormalityReaction as ar
 import Logging
@@ -10,11 +13,14 @@ import SimpleXChat_Interface as sxci
 import netdiscover
 import oxygen_analyzer as oxa
 from JSONoperators import ReadJSONConfig
+import datetime
 
 
 def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
 
     ip_adress = js.ReadJSONConfig("spectrometer_parameters","ip_address")
+    timeout_time = js.ReadJSONConfig("spectrometer_parameters","timeout_time")
+    initial_time = (datetime.datetime.now()).timestamp()
 
     HOST, PORT = ip_adress, 10014   #default IP and port of RGA, change later???
     ErrorMessage = None
@@ -33,74 +39,84 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
 
         for data in data_list:
 
-            if "__listen__" in str(data,"ascii"):  # __listen__ command is intended to be executed by this computer, not by RGA
+            if ErrorMessage == None:
+
+                if "__listen__" in str(data,"ascii"):  # __listen__ command is intended to be executed by this computer, not by RGA
 
 
 
-                data = str(data,"ascii")   # __listen__ n m waits for n amount of messages from RGA waiting m seconds between
-                data_split = data.split()
+                    data = str(data,"ascii")   # __listen__ n m waits for n amount of messages from RGA waiting m seconds between
+                    data_split = data.split()
 
 
 
-                for i in range(int(data_split[1])):
+                    for i in range(int(data_split[1])):
+                        received = str(sock.recv(1024), "ascii")
+
+                        if "ERROR" in received:
+                            sock.send(bytes("Release", "ascii") + bytes([10]))
+                            ErrorMessage = received
+                            return None, ErrorMessage
+                            #raise ValueError("ERROR keyword in output")
+
+
+
+                        #print(received)
+                        received_list.append(received)
+                        time.sleep(int(data_split[2]))
+
+                elif "__wait_for_given_mass__" in str(data,"ascii"):  #command to keep listening on port until desired mass appears (for ex., __wait_for_given_mass__ 100)
+
+                                data = str(data, "ascii")  # __listen__ n m waits for n amount of messages from RGA waiting m seconds between
+                                data_split = data.split(" ")
+                                while True:
+                                    if show_live_feed:
+                                        print(received)
+                                    received = str(sock.recv(1024), "ascii")
+
+                                    if "ERROR" in received:
+                                        sock.send(bytes("Release", "ascii") + bytes([10]))
+                                        ErrorMessage = received
+
+                                        return None, ErrorMessage
+
+
+                                    received_list.append(received)
+                                    received_split = received.split()
+
+                                    if "MassReading" in received_split:
+                                        MassReadingPosition = received_split.index("MassReading")
+                                        if float(received_split[MassReadingPosition+1]) >= float(data_split[1]):
+                                            break
+
+                                    if (datetime.datetime.now()).timestamp() > initial_time + timeout_time:
+                                        ErrorMessage = "TIMEOUT"
+
+                                        return None, ErrorMessage
+
+
+
+
+                                    #if received_split[0] == "MassReading" and float(received_split[1]) >= float(data_split[1]):
+                                        #break
+
+
+                else:
+                    sock.send(data)
+                    #print(data)
+                    #time.sleep(3)
                     received = str(sock.recv(1024), "ascii")
 
                     if "ERROR" in received:
                         sock.send(bytes("Release", "ascii") + bytes([10]))
                         ErrorMessage = received
-                        #raise ValueError("ERROR keyword in output")
+                        print(ErrorMessage)
+                        return None, ErrorMessage
 
 
-
-                    #print(received)
+                    if show_live_feed:
+                        print(received)
                     received_list.append(received)
-                    time.sleep(int(data_split[2]))
-
-            elif "__wait_for_given_mass__" in str(data,"ascii"):  #command to keep listening on port until desired mass appears (for ex., __wait_for_given_mass__ 100)
-
-                            data = str(data, "ascii")  # __listen__ n m waits for n amount of messages from RGA waiting m seconds between
-                            data_split = data.split(" ")
-                            while True:
-                                if show_live_feed:
-                                    print(received)
-                                received = str(sock.recv(1024), "ascii")
-
-                                if "ERROR" in received:
-                                    sock.send(bytes("Release", "ascii") + bytes([10]))
-                                    ErrorMessage = received
-                                    #raise ValueError("ERROR keyword in output")
-
-
-                                received_list.append(received)
-                                received_split = received.split()
-
-                                if "MassReading" in received_split:
-                                    MassReadingPosition = received_split.index("MassReading")
-                                    if float(received_split[MassReadingPosition+1]) >= float(data_split[1]):
-                                        break
-
-
-
-                                #if received_split[0] == "MassReading" and float(received_split[1]) >= float(data_split[1]):
-                                    #break
-
-
-            else:
-                sock.send(data)
-                #print(data)
-                #time.sleep(3)
-                received = str(sock.recv(1024), "ascii")
-
-                if "ERROR" in received:
-                    sock.send(bytes("Release", "ascii") + bytes([10]))
-                    ErrorMessage = received
-                    print(ErrorMessage)
-                    raise ValueError(f"ERROR keyword in output: {ErrorMessage}")
-
-
-                if show_live_feed:
-                    print(received)
-                received_list.append(received)
 
 
 
@@ -175,6 +191,9 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
     RawInput, ErrorMessage = SendPacketsToRGA(packages_list,ip_adress)
 
+    if ErrorMessage != None:
+        return None, ErrorMessage
+
 
     ReconSpectrum = list()  # spectrum is a list of PPM's corresponding to integer molar masses
     for i in range(amount_of_scans):
@@ -226,6 +245,8 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     packages_list.append('Release')
 
     RawInput, ErrorMessage = SendPacketsToRGA(packages_list, ip_adress)
+    if ErrorMessage != None:
+        return None, ErrorMessage
 
     for line in RawInput:
         # print(line)
@@ -255,6 +276,8 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     packages_list.append('Release')
 
     RawInput, ErrorMessage = SendPacketsToRGA(packages_list, ip_adress)
+    if ErrorMessage != None:
+        return None, ErrorMessage
 
     for line in RawInput:
         # print(line)
@@ -360,6 +383,8 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
     else:
         Logging.MakeLogEntry(f"Following error was encountered during RGA scan: {ErrorMessage}")
         Logging.MakeLogEntry(f"RGA scan for Filename = {filename}, Minit = {real_start_mass}, step={step}, amt.of steps = {amount_of_scans} completed with error")
+        if ErrorMessage == "TIMEOUT":
+            change_rga_ip()
 
 
 
