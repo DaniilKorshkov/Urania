@@ -8,6 +8,8 @@ import Logging
 
 
 
+
+
 # function to analyse JSON spectrum file for abnormalities and print results to log file
 def AnalyseFile(spectrum_filename,MainConfig="MainConfig"):
     handle = open(spectrum_filename, "r")
@@ -94,6 +96,10 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
                     log_entry = f"Valve position {multi_inlet_valve}, Filename {filename}: PPM for M/Z = {int(initial_mass + step * i)} is {element}, while boundaries are {boundaries[0]}:{boundaries[1]}"
                     if DoLogging:
                         Logging.MakeLogEntry(log_entry,log_name="AbnormalityLog")
+                        os.system(f'notify-send -u critical "{log_entry}"')
+
+                        
+
                     log_entries.append(log_entry)
 
 
