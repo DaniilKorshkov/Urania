@@ -321,10 +321,16 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                     try:
                         spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename)
 
-                        if (ErrorMessage != None) and (not ("ERROR 204" in ErrorMessage)):
+                        if (ErrorMessage != None) and (not ("ERROR 204" in ErrorMessage)) and (ErrorMessage != "TIMEOUT"):
                             critical_errors = True
                             lg.MakeLogEntry(f"Sampling terminated due to RGA error")
                             break
+
+                        elif ErrorMessage == "TIMEOUT":
+                            lg.MakeLogEntry(f"Sampling failed due to TIMEOUT error; repeating attempt")
+
+
+
                         else:
 
 

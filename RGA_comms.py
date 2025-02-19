@@ -386,6 +386,8 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
         if ErrorMessage == "TIMEOUT":
             change_rga_ip()
 
+        return None, None, None, ErrorMessage
+
 
 
     return dictionary_to_append, real_start_mass, step, ErrorMessage
