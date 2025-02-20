@@ -1,3 +1,5 @@
+from subprocess import STDOUT
+
 import streamlit as st
 import json
 import datetime
@@ -5,6 +7,7 @@ import os
 import JSONoperators as js
 import SimpleXChat_Interface as sxci
 import Logging
+import subprocess
 
 
 
@@ -96,7 +99,18 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
                     log_entry = f"Valve position {multi_inlet_valve}, Filename {filename}: PPM for M/Z = {int(initial_mass + step * i)} is {element}, while boundaries are {boundaries[0]}:{boundaries[1]}"
                     if DoLogging:
                         Logging.MakeLogEntry(log_entry,log_name="AbnormalityLog")
-                        os.system(f'notify-send -u critical "{log_entry}"')
+
+                        try:
+                            ret = str((subprocess.run(["pwd"], capture_output=True)).stdout)
+
+                            ret = ret.strip("b")
+                            ret = ret.strip("'")
+                            ret = ret.strip("\\n")
+
+                            os.system(f'notify-send -u critical -i {ret}/AbnormalityIcon.png "{log_entry}"')
+                        except:
+
+                            os.system(f'notify-send -u critical "{log_entry}"')
 
                         
 

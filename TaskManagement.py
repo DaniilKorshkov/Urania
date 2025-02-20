@@ -11,6 +11,7 @@ import VSC_comms as vsc
 import time
 import os
 import AbnormalityReaction as ar
+import subprocess
 
 
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
@@ -376,6 +377,20 @@ def DoTask(config="MainConfig"):
         lg.MakeLogEntry(f"Task {taskname} finished without errors\n")
     else:
         lg.MakeLogEntry(f"Task {taskname} finished with error\n")
+
+        try:
+            ret = str((subprocess.run(["pwd"], capture_output=True)).stdout)
+
+            ret = ret.strip("b")
+            ret = ret.strip("'")
+            ret = ret.strip("\\n")
+
+            os.system(f'notify-send -u critical -i {ret}/ErrorIcon.png "Sampling terminated due to error"')
+        except:
+
+            os.system(f'notify-send -u critical "Sampling terminated due to error"')
+
+
 
     return critical_errors
 
