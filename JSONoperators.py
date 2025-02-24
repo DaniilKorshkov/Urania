@@ -48,7 +48,7 @@ def read_last_spectrums(filename, howmuchspectrums):   # function to get X most 
     metadata, spectrum_list, oxygen_list = read_spectrum_json(filename)
     time_list = fn.get_time_list(spectrum_list)  # list of all time moments of spectrums in full array of spectrums
     lng = len(spectrum_list)
-    time_list.sort()
+
 
 
     if howmuchspectrums > lng:
@@ -93,7 +93,7 @@ def read_period_of_time(filename, howmuchspectrums, desired_time):  #function to
 
 
     lng = len(spectrum_list)
-    time_list.sort()
+    #time_list.sort()
 
     t = 0  # counter for finding desired time
 
@@ -322,7 +322,7 @@ def read_last_vsc_entries(howmuchspectrums, filename="VSC_log"):   # function to
     log_dictionary = read_vsc_log(filename)
     time_list = fn.get_time_list(log_dictionary)  # list of all time moments of spectrums in full array of spectrums
     lng = len(log_dictionary)
-    time_list.sort()
+    #time_list.sort()
 
 
     if howmuchspectrums > lng:
@@ -345,7 +345,7 @@ def read_vsc_period_of_time(howmuchspectrums, desired_time, filename="VSC_log"):
 
 
     lng = len(log_dictionary)
-    time_list.sort()
+    #time_list.sort()
 
     t = 0  # counter for finding desired time
 

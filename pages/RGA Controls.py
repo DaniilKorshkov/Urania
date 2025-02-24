@@ -104,7 +104,7 @@ for i in range(4):
 
 # function to inquire different types of data from RGA (have no idea what it all means)
 
-data_type = st.radio("Select data type to inquire: ",["Info","EGains","InletInfo","RFInfo","MultiplierInfo","SourceInfo","DetectorInfo","FilamentInfo","TotalPressureInfo","AnalogInputInfo","AnalogOutputInfo","DigitalInfo","RolloverInfo","RVCInfo","CirrusInfo","SourceAlignmentInfo 0","SourceResolutionInfo 0","SourceAlignmentInfo 1","SourceResolutionInfo 1","SourceAlignmentInfo 2","SourceResolutionInfo 2","SourceTuningInfo","DiagnosticInputInfo"])
+data_type = st.radio("Select data type to inquire: ",["Info","EGains","InletInfo","RFInfo","MultiplierInfo","SourceInfo 0","SourceInfo 1","SourceInfo 2","SourceInfo 3","SourceInfo 4","SourceInfo 5","DetectorInfo 0","DetectorInfo 1","DetectorInfo 2","DetectorInfo 3","DetectorInfo 4","DetectorInfo 5","FilamentInfo","TotalPressureInfo","AnalogInputInfo","AnalogOutputInfo","DigitalInfo","CirrusInfo","SourceAlignmentInfo 0","SourceResolutionInfo 0","SourceAlignmentInfo 1","SourceResolutionInfo 1","SourceAlignmentInfo 2","SourceResolutionInfo 2","SourceTuningInfo","DiagnosticInputInfo"])
 inquire = st.button("Inquire")
 if inquire:
     ret, void = rga.SendPacketsToRGA([data_type])
