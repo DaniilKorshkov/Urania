@@ -80,9 +80,9 @@ def NotifyAsRoot(message, image):
             user = user.split()
             try:
                 display_position = user.index(display)
-                username = (user[(display_position-1)])[2:(len(user[(display_position-1)])-1)]
+                username = (user[(display_position-1)])[2:(len(user[(display_position-1)]))]
             except:
-                username = (user[0])[2:(len(user[0]) - 1)]
+                username = (user[0])[2:(len(user[0]))]
 
 
 
