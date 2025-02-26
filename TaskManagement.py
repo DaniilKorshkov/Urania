@@ -328,12 +328,13 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                             lg.MakeLogEntry(f"Sampling terminated due to RGA error")
                             break
 
-                        #elif ErrorMessage == "TIMEOUT":
-                         #   lg.MakeLogEntry(f"Sampling failed due to TIMEOUT error (probable packet loss); repeating attempt")
+                        elif ErrorMessage == "TIMEOUT":
+                            lg.MakeLogEntry(f"Sampling failed due to TIMEOUT error (probable packet loss); repeating attempt")
 
 
-                        #elif "Failed to create measurement" in ErrorMessage:
-                         #   lg.MakeLogEntry(f"Sampling failed due to 500: Failed To Create Measurement error; repeating attempt")
+                        elif ErrorMessage != None:
+                            if "Failed to create measurement" in ErrorMessage:
+                                lg.MakeLogEntry(f"Sampling failed due to 500: Failed To Create Measurement error; repeating attempt")
 
 
 
