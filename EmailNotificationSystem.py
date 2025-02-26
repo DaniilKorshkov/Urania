@@ -8,7 +8,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 from email.utils import formatdate
+
+import JSONoperators
 import JSONoperators as js
+import subprocess
 
 
 
@@ -58,3 +61,43 @@ def SendEmail(header, message_text):
         imap.append('Sent', None,                                 # Добавляем наше письмо в папку Исходящие
                     imaplib.Time2Internaldate(time.time()),
                     msg.as_bytes())
+
+
+
+def NotifyAsRoot(message, image):
+
+    DoNotify = JSONoperators.ReadJSONConfig("email","live_notifications")
+    if DoNotify == "True":
+
+        display = str((subprocess.run(["ls", "/tmp/.X11-unix/"],capture_output=True)).stdout)
+        display = display.strip('b')
+        display = display.strip("'")
+        display = f":{display[1]}"
+
+        user =  str((subprocess.run(["who"],capture_output=True)).stdout)
+        user = user.split()
+        display_position = user.index(display)
+        username = user[(display_position-1)].strip("b'")
+
+
+
+        uid = (subprocess.run(["id", "-u", username],capture_output=True)).stdout.decode()
+        uid = uid.strip('b')
+        uid = uid.strip("'")
+        uid = uid.strip("\n")
+
+        try:
+            ret = str((subprocess.run(["pwd"], capture_output=True)).stdout)
+
+            ret = ret.strip("b")
+            ret = ret.strip("'")
+            ret = ret.strip("\\n")
+        except:
+            ret = "/home/coldlab/Desktop/Urania"
+
+
+
+        os.system(f'sudo -u {username} DISPLAY={display} DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/{uid}/bus notify-send -u critical -i {ret}/{image} "{message}"')
+
+
+NotifyAsRoot("test","AbnormalityIcon.png")

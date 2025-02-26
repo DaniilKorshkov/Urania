@@ -8,6 +8,7 @@ import tracemalloc
 import Logging
 import RGA_comms as RGA
 import subprocess
+from EmailNotificationSystem import NotifyAsRoot
 
 
 def signal_handler(signal, frame):
@@ -76,17 +77,9 @@ def Sampling():
                                 else:
                                         Logging.MakeLogEntry("Sampling terminated due to error\n")
 
-                                        try:
-                                                ret = str((subprocess.run(["pwd"], capture_output=True)).stdout)
+                                        NotifyAsRoot("Sampling terminated due to error","ErrorIcon.png")
 
-                                                ret = ret.strip("b")
-                                                ret = ret.strip("'")
-                                                ret = ret.strip("\\n")
 
-                                                os.system(f'notify-send -u critical -i {ret}/ErrorIcon.png "Sampling terminated due to error"')
-                                        except:
-
-                                                os.system(f'notify-send -u critical "Sampling terminated due to error"')
 
 
                                         break

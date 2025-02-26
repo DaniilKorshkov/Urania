@@ -8,6 +8,7 @@ import JSONoperators as js
 import SimpleXChat_Interface as sxci
 import Logging
 import subprocess
+from EmailNotificationSystem import NotifyAsRoot
 
 
 
@@ -100,17 +101,10 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
                     if DoLogging:
                         Logging.MakeLogEntry(log_entry,log_name="AbnormalityLog")
 
-                        try:
-                            ret = str((subprocess.run(["pwd"], capture_output=True)).stdout)
 
-                            ret = ret.strip("b")
-                            ret = ret.strip("'")
-                            ret = ret.strip("\\n")
 
-                            os.system(f'notify-send -u critical -i {ret}/AbnormalityIcon.png "{log_entry}"')
-                        except:
+                        NotifyAsRoot(log_entry,"AbnormalityIcon.png")
 
-                            os.system(f'notify-send -u critical "{log_entry}"')
 
                         
 
