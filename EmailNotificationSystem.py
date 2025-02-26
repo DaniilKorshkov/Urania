@@ -66,38 +66,45 @@ def SendEmail(header, message_text):
 
 def NotifyAsRoot(message, image):
 
-    DoNotify = JSONoperators.ReadJSONConfig("email","live_notifications")
-    if DoNotify == "True":
+    try:
 
-        display = str((subprocess.run(["ls", "/tmp/.X11-unix/"],capture_output=True)).stdout)
-        display = display.strip('b')
-        display = display.strip("'")
-        display = f":{display[1]}"
+        DoNotify = JSONoperators.ReadJSONConfig("email","live_notifications")
+        if DoNotify == "True":
 
-        user =  str((subprocess.run(["who"],capture_output=True)).stdout)
-        user = user.split()
-        display_position = user.index(display)
-        username = user[(display_position-1)].strip("b'")
+            display = str((subprocess.run(["ls", "/tmp/.X11-unix/"],capture_output=True)).stdout)
+            display = display.strip('b')
+            display = display.strip("'")
+            display = f":{display[1]}"
 
-
-
-        uid = (subprocess.run(["id", "-u", username],capture_output=True)).stdout.decode()
-        uid = uid.strip('b')
-        uid = uid.strip("'")
-        uid = uid.strip("\n")
-
-        try:
-            ret = str((subprocess.run(["pwd"], capture_output=True)).stdout)
-
-            ret = ret.strip("b")
-            ret = ret.strip("'")
-            ret = ret.strip("\\n")
-        except:
-            ret = "/home/coldlab/Desktop/Urania"
+            user =  str((subprocess.run(["who"],capture_output=True)).stdout)
+            user = user.split()
+            try:
+                display_position = user.index(display)
+                username = (user[(display_position-1)])[2:(len(user[(display_position-1)])-1)]
+            except:
+                username = (user[0])[2:(len(user[0]) - 1)]
 
 
 
-        os.system(f'sudo -u {username} DISPLAY={display} DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/{uid}/bus notify-send -u critical -i {ret}/{image} "{message}"')
+            uid = (subprocess.run(["id", "-u", username],capture_output=True)).stdout.decode()
+            uid = uid.strip('b')
+            uid = uid.strip("'")
+            uid = uid.strip("\n")
+
+            try:
+                ret = str((subprocess.run(["pwd"], capture_output=True)).stdout)
+
+                ret = ret.strip("b")
+                ret = ret.strip("'")
+                ret = ret.strip("\\n")
+            except:
+                ret = "/home/coldlab/Desktop/Urania"
 
 
-NotifyAsRoot("test","AbnormalityIcon.png")
+
+            os.system(f'sudo -u {username} DISPLAY={display} DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/{uid}/bus notify-send -u critical -i {ret}/{image} "{message}"')
+
+    except:
+        pass
+
+
