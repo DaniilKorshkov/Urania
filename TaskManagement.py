@@ -12,7 +12,7 @@ import time
 import os
 import AbnormalityReaction as ar
 import subprocess
-from EmailNotificationSystem import NotifyAsRoot
+from EmailNotificationSystem import NotifyUser
 
 
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
@@ -385,7 +385,7 @@ def DoTask(config="MainConfig"):
     else:
         lg.MakeLogEntry(f"Task {taskname} finished with error\n")
 
-        NotifyAsRoot("Sampling terminated due to error","ErrorIcon.png")
+        NotifyUser("Sampling terminated due to error",True)
 
 
 

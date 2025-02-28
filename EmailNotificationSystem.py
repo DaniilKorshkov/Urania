@@ -12,6 +12,9 @@ from email.utils import formatdate
 import JSONoperators
 import JSONoperators as js
 import subprocess
+import ssl
+import certifi
+
 
 
 
@@ -29,47 +32,65 @@ def SendEmail(header, message_text):
 
     for to_mail in user_list:
 
-        msg = MIMEMultipart()
-        msg["From"] = from_mail
-        msg['To'] = to_mail
-        msg["Subject"] = Header(header, 'utf-8')
-        msg["Date"] = formatdate(localtime=True)                  # Дата сообщения
-        msg.attach(MIMEText(message_text, 'html', 'utf-8'))  # Добавляем форматированный текст сообщения
+        try:
+            msg = MIMEMultipart()
+            msg["From"] = from_mail
+            msg['To'] = to_mail
+            msg["Subject"] = Header(header, 'utf-8')
+            msg["Date"] = formatdate(localtime=True)                  # Дата сообщения
+            msg.attach(MIMEText(message_text, 'html', 'utf-8'))  # Добавляем форматированный текст сообщения
 
-        '''
-        # Добавляем файл
-        filepath = "сертификат.pdf"                               # путь к файлу
-        part = MIMEBase('application', "octet-stream")            # Создаем объект для загрузки файла
-        part.set_payload(open(filepath,"rb").read())              # Подключаем файл
-        encoders.encode_base64(part)
-        part.add_header('Content-Disposition',
-                        f'attachment; filename="{os.path.basename(filepath)}"')
-        msg.attach(part)                                          # Добавляем файл в письмо
-        '''
+            '''
+            # Добавляем файл
+            filepath = "сертификат.pdf"                               # путь к файлу
+            part = MIMEBase('application', "octet-stream")            # Создаем объект для загрузки файла
+            part.set_payload(open(filepath,"rb").read())              # Подключаем файл
+            encoders.encode_base64(part)
+            part.add_header('Content-Disposition',
+                            f'attachment; filename="{os.path.basename(filepath)}"')
+            msg.attach(part)                                          # Добавляем файл в письмо
+            '''
 
-        smtp = smtplib.SMTP(server_adr, 25)                       # Создаем объект для отправки сообщения
-        smtp.starttls()                                           # Открываем соединение
-        smtp.ehlo()
-        smtp.login(from_mail, from_passwd)                        # Логинимся в свой ящик
-        smtp.sendmail(from_mail, to_mail, msg.as_string())        # Отправляем сообщения
-        smtp.quit()                                               # Закрываем соединение
+            '''ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH, cafile=certifi.where())
+            ssl_context.options |= ssl.OP_NO_TLSv1
+            ssl_context.options |= ssl.OP_NO_TLSv1_1
+    
+            ssl_context.load_cert_chain(os.path.join(certsdir, 'certificate.pem'), os.path.join(certsdir, 'id_rsa'))
+            ssl_context.load_dh_params(os.path.join(certsdir, 'dhparams.pem'))
+    
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE'''
 
-        # Сохраняем сообщение в исходящие
-        imap = imaplib.IMAP4(server_adr, 143)                     # Подключаемся в почтовому серверу
-        imap.login(from_mail, from_passwd)                        # Логинимся в свой ящик
-        imap.select('Sent')                                       # Переходим в папку Исходящие
-        imap.append('Sent', None,                                 # Добавляем наше письмо в папку Исходящие
-                    imaplib.Time2Internaldate(time.time()),
-                    msg.as_bytes())
+
+
+
+
+            smtp = smtplib.SMTP(f"smtp.{server_adr}", 587)
+                           # Создаем объект для отправки сообщения
+            smtp.ehlo()
+            smtp.starttls()                                           # Открываем соединение
+            smtp.ehlo()
+            smtp.login(from_mail, from_passwd)                        # Логинимся в свой ящик
+            smtp.sendmail(from_mail, to_mail, msg.as_string())        # Отправляем сообщения
+            smtp.quit()                                               # Закрываем соединение
+
+            '''# Сохраняем сообщение в исходящие
+            imap = imaplib.IMAP4(f"imap.{server_adr}", 993)                     # Подключаемся в почтовому серверу
+            imap.login(from_mail, from_passwd)                        # Логинимся в свой ящик
+            imap.select('Sent')                                       # Переходим в папку Исходящие
+            imap.append('Sent', None,                                 # Добавляем наше письмо в папку Исходящие
+                        imaplib.Time2Internaldate(time.time()),
+                        msg.as_bytes())'''
+        except:
+            pass
 
 
 
 def NotifyAsRoot(message, image):
 
-    try:
 
-        DoNotify = JSONoperators.ReadJSONConfig("email","live_notifications")
-        if DoNotify == "True":
+
+
 
             display = str((subprocess.run(["ls", "/tmp/.X11-unix/"],capture_output=True)).stdout)
             display = display.strip('b')
@@ -104,7 +125,46 @@ def NotifyAsRoot(message, image):
 
             os.system(f'sudo -u {username} DISPLAY={display} DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/{uid}/bus notify-send -u critical -i {ret}/{image} "{message}"')
 
-    except:
-        pass
 
 
+
+
+def NotifyUser(text,ifcrash):
+    email_crash = JSONoperators.ReadJSONConfig("email","email_notifications_for_crash")
+    email_abnorm = JSONoperators.ReadJSONConfig("email", "email_notifications_for_abnorm")
+    live_crash = JSONoperators.ReadJSONConfig("email", "live_notifications_for_crash")
+    live_abnorm = JSONoperators.ReadJSONConfig("email", "live_notifications_for_abnorm")
+
+    if ifcrash:
+        try:
+            if email_crash == "True":
+                SendEmail("Sampling system failure", text)
+        except:
+            pass
+
+        try:
+            if live_crash == "True":
+                NotifyAsRoot(text, "ErrorIcon.png")
+        except:
+            pass
+
+
+
+    else:
+        try:
+            if email_abnorm == "True":
+                SendEmail("Abnormal readings detected", text)
+        except:
+            pass
+
+        try:
+            if live_abnorm == "True":
+                NotifyAsRoot(text, "AbnormalityIcon.png")
+        except:
+            pass
+
+
+
+'''if __name__ == "__main__":
+    NotifyUser("Test crash message",True)
+    NotifyUser("Test abnorm message", False)'''

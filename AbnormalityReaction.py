@@ -8,7 +8,7 @@ import JSONoperators as js
 import SimpleXChat_Interface as sxci
 import Logging
 import subprocess
-from EmailNotificationSystem import NotifyAsRoot
+from EmailNotificationSystem import NotifyUser
 
 
 
@@ -103,7 +103,7 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
 
 
 
-                        NotifyAsRoot(log_entry,"AbnormalityIcon.png")
+                        NotifyUser(log_entry,False)
 
 
                         
