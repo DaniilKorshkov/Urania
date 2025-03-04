@@ -170,8 +170,14 @@ def DisplayCurrentScans():
 
                     ax.set_xlabel(f'Time')
                     ax.set_ylabel(ylabel)
-                    ax.xaxis.grid(color='k', alpha=0.5, linestyle=':', linewidth=1)
-                    ax.yaxis.grid(color='k', alpha=0.5, linestyle=':', linewidth=1)
+
+                    ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+                    ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+                    ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+                    ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+
                     ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
                     ax.legend()
                     ax.set_title(f'{ylabel} vs time for given M')
