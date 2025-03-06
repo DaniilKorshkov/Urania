@@ -11,6 +11,7 @@ import streamlit.components.v1 as components
 import math
 import AbnormalityReaction as ar
 import GUI_File_Manager as fm
+import matplotlib.ticker as ticker
 
 
 def date_time_input():  # function to input date and time as seconds from 01jan1970 through graphic user interface
@@ -76,24 +77,65 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax1.set_xlabel(f'Time')
         ax1.set_ylabel("MFC flow")
         ax1.set_title(f'MFC flow vs time for given M')
+
+        ax1.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax1.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax1.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax1.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax1.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax1.legend()
+
+
         st.pyplot(fig1)
 
         ax2.plot(x_converted, y_mfm_flow)
         ax2.set_xlabel(f'Time')
         ax2.set_ylabel("MFM flow")
         ax2.set_title(f'MFM flow vs time for given M')
+
+        ax2.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax2.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax2.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax2.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax2.xaxis.set_major_locator(ticker.MaxNLocator(5))
+
         st.pyplot(fig2)
 
         ax3.plot(x_converted, y_pg_pressure)
         ax3.set_xlabel(f'Time')
         ax3.set_ylabel("PG pressure")
         ax3.set_title(f'PG pressure vs time for given M')
+
+        ax3.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax3.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax3.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax3.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax3.xaxis.set_major_locator(ticker.MaxNLocator(5))
+
+
+
+
         st.pyplot(fig3)
 
         ax4.plot(x_converted, y_pc_pressure)
         ax4.set_xlabel(f'Time')
         ax4.set_ylabel("PC pressure")
         ax4.set_title(f'PC pressure vs time for given M')
+
+        ax4.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax4.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax4.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax4.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax4.xaxis.set_major_locator(ticker.MaxNLocator(5))
+
+
+
+
+
         st.pyplot(fig4)
 
         do_display_table = st.button(label="display table with values")  # optionally display table with numerical values

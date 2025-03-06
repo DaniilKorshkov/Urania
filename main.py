@@ -19,6 +19,7 @@ st.write("Use Task Manager to inspect, add or remove tasks for the sampling syst
 st.write("Use VSC page to manually control vacuum control system and multi-inlet valve")
 st.write("Use Technical page to find RGA IP address, and locate VSC, MIV and OA on USB bus")
 st.write("Use RGA Controls page to control pump, heater and capillary heater; and to inquire technical data from RGA")
+st.write("Use Main Config to inspect the config file")
 for i in range(10):
     st.markdown("")
 st.write("https://github.com/DaniilKorshkov/Urania")

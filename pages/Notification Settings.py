@@ -64,7 +64,7 @@ def EmailNotificationSettings():
 
     with col4:
         ret = js.ReadJSONConfig("email","email_notifications_for_crash")
-        st.write(f"Email notifications for abnorm: {ret}")
+        st.write(f"Email notifications for crash: {ret}")
 
         enable_email_crash = st.button("Enable email notifications for crash")
         disable_email_crash = st.button("Disable email notifications for crash")
