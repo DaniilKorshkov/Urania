@@ -15,7 +15,7 @@ def pressure_meter_gui(MainConfig="MainConfig"):
 
 
 def pressure_controller_gui(MainConfig="MainConfig"):
-    try:
+    #try:
         pressure = vscc.ReadPCPressure(MainConfig)
         mode = vscc.ReadPCMode(MainConfig)
         current_sp = vscc.ReadPCSetpoint(MainConfig)
@@ -52,9 +52,9 @@ def pressure_controller_gui(MainConfig="MainConfig"):
             except:
                 pass
 
-    except:
-        pc_port = ReadJSONConfig("vsc", "pressure_controller_port")
-        st.write(f"Failed to connect to pressure controller. . Make sure it is connected to port {pc_port}")
+    #except:
+     #   pc_port = ReadJSONConfig("vsc", "pressure_controller_port")
+      #  st.write(f"Failed to connect to pressure controller. . Make sure it is connected to port {pc_port}")
 
 
 
