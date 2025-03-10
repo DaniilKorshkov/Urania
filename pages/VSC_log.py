@@ -87,6 +87,7 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax1.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax1.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax1.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax1.tick_params('x', labelrotation=90)
         ax1.legend()
 
 
@@ -103,6 +104,8 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax2.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax2.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax2.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax2.tick_params('x', labelrotation=90)
+        ax2.legend()
 
         st.pyplot(fig2)
 
@@ -117,6 +120,8 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax3.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax3.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax3.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax3.tick_params('x', labelrotation=90)
+        ax3.legend()
 
 
 
@@ -134,6 +139,8 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax4.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax4.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax4.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax4.tick_params('x', labelrotation=90)
+        ax4.legend()
 
         st.pyplot(fig4)
 
@@ -151,6 +158,8 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax5.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax5.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax5.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax5.tick_params('x', labelrotation=90)
+        ax5.legend()
 
         st.pyplot(fig5)
 
