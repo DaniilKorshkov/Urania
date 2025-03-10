@@ -37,7 +37,7 @@ def SendCommand(MKS_ADDRESS,PORT,command):  #function to send command to VSC via
 
     #print("data sent !!!")
 
-    time.sleep(0.01)
+    time.sleep(0.1)
 
     result = ser.read_until(b"FF")
 
@@ -194,9 +194,9 @@ def ChangePCPressure(newpressure,MainConfig="MainConfig"):  # Change pressure of
 def ReadPCPressure(MainConfig="MainConfig"):  # Read pressure from pressure controller
     address = ReadJSONConfig("vsc", "address", MainConfig)
     vsc_serial_port = ReadJSONConfig("vsc", "vsc_serial_port")
-    pressure_gauge_port = ReadJSONConfig("vsc", "pressure_controller_port", MainConfig)
+    pressure_controller_port = ReadJSONConfig("vsc", "pressure_controller_port", MainConfig)
 
-    raw_pressure = str(SendCommand(address, vsc_serial_port, f"PR{pressure_gauge_port}?"))
+    raw_pressure = str(SendCommand(address, vsc_serial_port, f"PR{pressure_controller_port}?"))
 
 
     ret = ConvertEngineerNotation(raw_pressure)
@@ -207,9 +207,9 @@ def ReadPCPressure(MainConfig="MainConfig"):  # Read pressure from pressure cont
 def ReadPCSetpoint(MainConfig="MainConfig"):  # Function to read flow rate (ml/min) from Mass Flow Controller
     address = ReadJSONConfig("vsc","address",MainConfig)
     vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
-    mfc_port = ReadJSONConfig("vsc","mfc_port",MainConfig)
+    pc_port = ReadJSONConfig("vsc","pressure_controller_port",MainConfig)
 
-    raw_flowrate = str(SendCommand(address,vsc_serial_port,f"QSP{mfc_port}?"))
+    raw_flowrate = str(SendCommand(address,vsc_serial_port,f"QSP{pc_port}?"))
     #print(raw_flowrate)
 
     ret = ConvertEngineerNotation(raw_flowrate)
