@@ -47,7 +47,7 @@ def pressure_controller_gui(MainConfig="MainConfig"):
             try:
                 new_setpoint = float(new_setpoint)
                 if new_setpoint >= 20 and new_setpoint <= 1000:
-                    st.write(f"TEST PC TEST PC TEST PC {new_setpoint}")
+                    st.write(f"Trying to apply PC setpoint: {new_setpoint}")
                     vscc.ChangePCPressure(new_setpoint,MainConfig)
 
             except:
@@ -117,6 +117,7 @@ def mfc_gui(MainConfig="MainConfig"):
                 new_setpoint = float(new_setpoint)
                 if new_setpoint >= 20 and new_setpoint <= 1000:
 
+                    st.write(f"Trying to apply MFC setpoint: {new_setpoint}")
                     vscc.ChangeMFCFlowRate(new_setpoint,MainConfig)
 
             except:

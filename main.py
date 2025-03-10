@@ -20,6 +20,7 @@ st.write("Use VSC page to manually control vacuum control system and multi-inlet
 st.write("Use Technical page to find RGA IP address, and locate VSC, MIV and OA on USB bus")
 st.write("Use RGA Controls page to control pump, heater and capillary heater; and to inquire technical data from RGA")
 st.write("Use Main Config to inspect the config file")
+st.write("Use Delete Unused Files page to clean logs and remove unused spectrum files")
 for i in range(10):
     st.markdown("")
 st.write("https://github.com/DaniilKorshkov/Urania")
