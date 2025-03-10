@@ -47,6 +47,7 @@ def pressure_controller_gui(MainConfig="MainConfig"):
             try:
                 new_setpoint = float(new_setpoint)
                 if new_setpoint >= 20 and new_setpoint <= 1000:
+                    st.write(f"TEST PC TEST PC TEST PC {new_setpoint}")
                     vscc.ChangePCPressure(new_setpoint,MainConfig)
 
             except:
@@ -54,7 +55,7 @@ def pressure_controller_gui(MainConfig="MainConfig"):
 
     except:
         pc_port = ReadJSONConfig("vsc", "pressure_controller_port")
-        st.write(f"Failed to connect to pressure controller. . Make sure it is connected to port {pc_port}")
+        st.write(f"Failed to connect to pressure controller. Make sure it is connected to port {pc_port}")
 
 
 
