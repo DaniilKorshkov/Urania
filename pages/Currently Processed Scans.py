@@ -179,6 +179,8 @@ def DisplayCurrentScans():
 
 
                     ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
+                    ax.tick_params('x', labelrotation=90)
+
                     ax.legend()
                     ax.set_title(f'{ylabel} vs time for given M')
 

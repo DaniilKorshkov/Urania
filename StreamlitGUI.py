@@ -174,6 +174,7 @@ def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islo
         ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax.set_title(f'Spectrum for time: {dt.datetime.fromtimestamp(given_time)}')
+       
 
         st.pyplot(fig)
         st.write(f"{oxygen_label}: {oxygen}")
@@ -274,6 +275,7 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,default_mass_string, initia
         ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax.tick_params('x', labelrotation=90)
         ax.legend()
         ax.set_title(f'{ylabel} vs time for given M')
 
