@@ -33,7 +33,7 @@ def pressure_controller_gui(MainConfig="MainConfig"):
         with col2:
             closepc = st.button("Close Pressure Controller")
             if closepc:
-                vscc.ChangePCMode("Close Pressure Controller", MainConfig)
+                vscc.ChangePCMode("Close", MainConfig)
 
         with col3:
             setpointpc = st.button("Setpoint Mode")
@@ -42,14 +42,15 @@ def pressure_controller_gui(MainConfig="MainConfig"):
 
 
         new_setpoint = st.text_input(label="Enter new PC setpoint")
-        change_sp = st.button("Apply setpoint")
-        try:
-            new_setpoint = float(new_setpoint)
-            if change_sp and new_setpoint >= 20 and new_setpoint <= 1000:
-                vscc.ChangePCPressure(new_setpoint,MainConfig)
+        change_sp = st.button("Apply PC setpoint")
+        if change_sp:
+            try:
+                new_setpoint = float(new_setpoint)
+                if new_setpoint >= 20 and new_setpoint <= 1000:
+                    vscc.ChangePCPressure(new_setpoint,MainConfig)
 
-        except:
-            pass
+            except:
+                pass
 
     except:
         pc_port = ReadJSONConfig("vsc", "pressure_controller_port")
@@ -88,8 +89,8 @@ def mfc_gui(MainConfig="MainConfig"):
         current_sp = vscc.ReadMFCSetpoint(MainConfig)
 
         st.write(f"MFC flow rate: {flow} cm3 / min")
-        st.write(f"Pressure Controller mod: {mode}")
-        st.write(f"Pressure Controller setpoint: {current_sp}")
+        st.write(f"MFC mode: {mode}")
+        st.write(f"MFC setpoint: {current_sp}")
 
         col1,col2,col3 = st.columns(3)
         with col1:
@@ -100,7 +101,7 @@ def mfc_gui(MainConfig="MainConfig"):
         with col2:
             closepc = st.button("Close MFC")
             if closepc:
-                vscc.ChangeMFCMode("Close Pressure Controller", MainConfig)
+                vscc.ChangeMFCMode("Close", MainConfig)
 
         with col3:
             setpointpc = st.button("Setpoint Mode MFC")
@@ -110,13 +111,14 @@ def mfc_gui(MainConfig="MainConfig"):
 
         new_setpoint = st.text_input(label="Enter new MFC setpoint")
         change_sp = st.button("Apply MFC setpoint")
-        try:
-            new_setpoint = float(new_setpoint)
-            if change_sp and new_setpoint >= 20 and new_setpoint <= 1000:
-                vscc.ChangePCPressure(new_setpoint,MainConfig)
+        if change_sp:
+            try:
+                new_setpoint = float(new_setpoint)
+                if new_setpoint >= 20 and new_setpoint <= 1000:
+                    vscc.ChangeMFCFlowRate(new_setpoint,MainConfig)
 
-        except:
-            pass
+            except:
+                pass
 
     except:
         mfc_port = ReadJSONConfig("vsc", "mfc_port")
