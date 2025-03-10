@@ -68,6 +68,17 @@ def mfm_gui(MainConfig="MainConfig"):
         st.write(f"Failed to connect to MFM. Make sure it is connected to port {mfm_port}")
 
 
+def filling_mfm_gui(MainConfig="MainConfig"):
+    try:
+        filling_flow = vscc.ReadFillingMFMFlowRate(MainConfig)
+        st.write(f"Filling flow rate: {filling_flow} cm3 / min")
+    except:
+        filling_mfm_port = ReadJSONConfig("vsc", "filling_mfm_port")
+        st.write(f"Failed to connect to filling MFM. Make sure it is connected to port {filling_mfm_port}")
+
+
+
+
 
 
 def mfc_gui(MainConfig="MainConfig"):
@@ -150,6 +161,14 @@ def VSC_Gui(MainConfig="MainConfig"):
         mfm_gui(MainConfig)
         for i in range(6):
             st.markdown("")
+        mfm_gui(MainConfig)
+        for i in range(6):
+            st.markdown("")
+        filling_mfm_gui(MainConfig)
+        for i in range(6):
+            st.markdown("")
         pressure_meter_gui(MainConfig)
+
+
 
 

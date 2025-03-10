@@ -50,6 +50,7 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         fig2, ax2 = plt.subplots()
         fig3, ax3 = plt.subplots()
         fig4, ax4 = plt.subplots()
+        fig5, ax5 = plt.subplots()
 
         #mass_dictionary = {}  # dictionaty to be displayed in table with numerical values
         #mass_dictionary[f"Time:"] = x_converted   # first column is time moments of measurements
@@ -63,6 +64,7 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         y_mfm_flow = []
         y_pg_pressure = []
         y_pc_pressure = []
+        y_filling_mfm_flow = []
 
         for key in x:
 
@@ -70,13 +72,14 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
             y_mfm_flow.append((log_dictionary[f"{str(key)}"])["mfm_flow"])
             y_pg_pressure.append((log_dictionary[f"{str(key)}"])["pg_pressure"])
             y_pc_pressure.append((log_dictionary[f"{str(key)}"])["pc_pressure"])
+            y_filling_mfm_flow.append((log_dictionary[f"{str(key)}"])["filling_mfm_flow"])
 
 
 
         ax1.plot(x_converted, y_mfc_flow)
         ax1.set_xlabel(f'Time')
         ax1.set_ylabel("MFC flow")
-        ax1.set_title(f'MFC flow vs time for given M')
+        ax1.set_title(f'MFC flow vs time')
 
         ax1.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax1.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -92,7 +95,7 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax2.plot(x_converted, y_mfm_flow)
         ax2.set_xlabel(f'Time')
         ax2.set_ylabel("MFM flow")
-        ax2.set_title(f'MFM flow vs time for given M')
+        ax2.set_title(f'MFM flow vs time')
 
         ax2.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax2.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -106,7 +109,7 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax3.plot(x_converted, y_pg_pressure)
         ax3.set_xlabel(f'Time')
         ax3.set_ylabel("PG pressure")
-        ax3.set_title(f'PG pressure vs time for given M')
+        ax3.set_title(f'PG pressure vs time')
 
         ax3.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax3.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -123,7 +126,7 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax4.plot(x_converted, y_pc_pressure)
         ax4.set_xlabel(f'Time')
         ax4.set_ylabel("PC pressure")
-        ax4.set_title(f'PC pressure vs time for given M')
+        ax4.set_title(f'PC pressure vs time')
 
         ax4.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax4.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -132,11 +135,37 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax4.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax4.xaxis.set_major_locator(ticker.MaxNLocator(5))
 
-
-
-
-
         st.pyplot(fig4)
+
+
+
+
+        ax5.plot(x_converted, y_filling_mfm_flow)
+        ax5.set_xlabel(f'Time')
+        ax5.set_ylabel("Filling station flow")
+        ax5.set_title(f'Filling station flow vs time')
+
+        ax5.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax5.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax5.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax5.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax5.xaxis.set_major_locator(ticker.MaxNLocator(5))
+
+        st.pyplot(fig5)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         do_display_table = st.button(label="display table with values")  # optionally display table with numerical values
         if do_display_table:

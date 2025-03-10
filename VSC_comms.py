@@ -58,6 +58,21 @@ def ReadMFMFlowRate(MainConfig="MainConfig"):  # Function to read flow rate (ml/
 
 
 
+def ReadFillingMFMFlowRate(MainConfig="MainConfig"):  # Function to read flow rate (ml/min) from Mass Flow Meter
+    address = ReadJSONConfig("vsc","address",MainConfig)
+    vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
+    mfm_port = ReadJSONConfig("vsc","filling_mfm_port",MainConfig)
+
+    raw_flowrate = str(SendCommand(address,vsc_serial_port,f"FR{mfm_port}?"))
+    #print(raw_flowrate)
+
+    ret = ConvertEngineerNotation(raw_flowrate)
+
+    return ret
+
+
+
+
 def ReadPressureGauge(MainConfig="MainConfig"): # Function to read pressure (torr or pascal???) from pressure gauge
     address = ReadJSONConfig("vsc", "address", MainConfig)
     vsc_serial_port = ReadJSONConfig("vsc", "vsc_serial_port")
@@ -392,6 +407,13 @@ def FullQuery(MainConfig="MainConfig"):
 
     print(f"\n")
 
+    try:
+        filling_mfm_flow = ReadFillingMFMFlowRate(MainConfig)
+    except:
+        filling_mfm_flow = 0
+
+    print(f"Current mass flow for filling station: {filling_mfm_flow}")
+    print(f"\n")
 
 def LogVSCData(MainConfig="MainConfig"):
     #pg_port = ReadJSONConfig("vsc", "pressure_gauge_port")
@@ -413,6 +435,11 @@ def LogVSCData(MainConfig="MainConfig"):
     pc_setpoint = ReadPCSetpoint(MainConfig)
     
     mfm_flow = ReadMFMFlowRate(MainConfig)
+
+    try:
+        filling_mfm_flow = ReadFillingMFMFlowRate(MainConfig)
+    except:
+        filling_mfm_flow = 0
     
     
     current_time = int(datetime.datetime.now().timestamp())
@@ -430,6 +457,8 @@ def LogVSCData(MainConfig="MainConfig"):
     dictionary_to_append["pc_setpoint"] = pc_setpoint
     
     dictionary_to_append["mfm_flow"] = mfm_flow
+
+    dictionary_to_append["filling_mfm_flow"] = filling_mfm_flow
     
     
     
