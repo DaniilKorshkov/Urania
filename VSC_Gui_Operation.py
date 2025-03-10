@@ -115,6 +115,7 @@ def mfc_gui(MainConfig="MainConfig"):
             try:
                 new_setpoint = float(new_setpoint)
                 if new_setpoint >= 20 and new_setpoint <= 1000:
+                    st.write(f"TEST TEST TEST SETPOINT:{new_setpoint}")
                     vscc.ChangeMFCFlowRate(new_setpoint,MainConfig)
 
             except:
