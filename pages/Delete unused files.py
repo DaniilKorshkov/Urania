@@ -28,6 +28,13 @@ def DeleteUnusedFiles(MainConfig="MainConfig"):
         except:
             st.write("Abnormality log already cleaned")
 
+    delete_vsc_log = st.button(f"Clean VSC log")
+    if delete_vsc_log:
+        try:
+            os.system(f"rm VSC_log")
+        except:
+            st.write("VSC log already cleaned")
+
 
 
 
