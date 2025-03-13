@@ -166,9 +166,6 @@ def VSC_Gui(MainConfig="MainConfig"):
         mfm_gui(MainConfig)
         for i in range(6):
             st.markdown("")
-        mfm_gui(MainConfig)
-        for i in range(6):
-            st.markdown("")
         filling_mfm_gui(MainConfig)
         for i in range(6):
             st.markdown("")
