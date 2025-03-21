@@ -100,6 +100,18 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                                     #if received_split[0] == "MassReading" and float(received_split[1]) >= float(data_split[1]):
                                         #break
 
+                elif "Release" in str(data, "ascii"):
+                    while True:
+                        sock.send(bytes("Release", "ascii") + bytes([10]))
+                        received = str(sock.recv(1024), "ascii")
+                        if ("Release OK" or "Must be in control of sensor to release control") in received:
+                            break
+                        else:
+                            continue
+
+
+
+
 
                 else:
                     sock.send(data)
@@ -108,7 +120,18 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                     received = str(sock.recv(1024), "ascii")
 
                     if "ERROR" in received:
-                        sock.send(bytes("Release", "ascii") + bytes([10]))
+
+                        while True:
+                            sock.send(bytes("Release", "ascii") + bytes([10]))
+                            received = str(sock.recv(1024), "ascii")
+                            if ("Release OK" or "Must be in control of sensor to release control") in received:
+                                break
+                            else:
+                                continue
+
+
+
+
                         ErrorMessage = received
                         print(ErrorMessage)
                         return None, ErrorMessage
