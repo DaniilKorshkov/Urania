@@ -104,11 +104,12 @@ def CheckForScheduledTasks(config="MainConfig"): #function that reads task list 
             continue
 
         dict_line = json.loads(line)
-        if dict_line["class"] == "task" and dict_line["type"] == "schedule" and (not if_scheduled_tasks):
+        if dict_line["class"] == "task" and dict_line["type"] == "scheduled" and (not if_scheduled_tasks):
             if int(dict_line["last_execution"])+int(dict_line["freq"]) < current_time:
                 task_to_execute = dict_line["name"]
                 dict_line["last_execution"] = int(datetime.datetime.now().timestamp()) # if scheduled task is found, execution time is updated
                 if_scheduled_tasks = True
+
 
         text_copy.append(json.dumps(dict_line))
 
