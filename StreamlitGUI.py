@@ -99,92 +99,95 @@ def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islo
 
 
 
-    initial_load_time = datetime.datetime.now()
+    #initial_load_time = datetime.datetime.now()
     time_array = fn.get_time_list(spectrum_list)   # get all moments of time from loaded spectrums
-    final_load_time = datetime.datetime.now()
+    #final_load_time = datetime.datetime.now()
     #print(f"Loading time = {final_load_time-initial_load_time}")
 
 
+    if len(time_array) == 0:
+        st.write(f"File is empty, cannot display constant time mass spectrum")
+    else:
 
-    try:
-        given_time_tick = st.slider(label="Select time: ",max_value=(len(time_array)-1))  # select moment of time from list of loaded spectrums
-    except:
-        given_time_tick = 0
+        try:
+            given_time_tick = st.slider(label="Select time: ",max_value=(len(time_array)-1))  # select moment of time from list of loaded spectrums
+        except:
+            given_time_tick = 0
 
-    given_time = time_array[given_time_tick]   # get desired moment of time
-
-
-    placeholder = st.empty()
-    with placeholder.container():
-
+        given_time = time_array[given_time_tick]   # get desired moment of time
 
 
-        assert spectrum_list[str(given_time)] != None
-
-
-
-        fig, ax = plt.subplots()
-
-        mass_range = list()  # create array for X line with respect to initial mass value and step length
-        for i in range(len(spectrum_list[str(given_time)])):
-            mass_range.append(initial_value+i*step)
+        placeholder = st.empty()
+        with placeholder.container():
 
 
 
-        #print(mass_range)
-        display_range = spectrum_list[str(given_time)]
-        oxygen = oxygen_list[str(given_time)]
-        print(oxygen)
-        oxygen_label = "Oxygen ppm"
-        table_range = display_range
-        ylabel = "Pascal"
-
-        if isppm == "True":
-                pascal_sum = 0
-                for element in spectrum_list[str(given_time)]:
-                    pascal_sum = pascal_sum + element
-                new_range = []
-                for element in display_range:
-                    new_range.append((element * 1000000) / pascal_sum)
-
-                display_range = new_range
-                table_range = display_range
-                ylabel = "PPM"
+            assert spectrum_list[str(given_time)] != None
 
 
 
-        if islogarithmic == "True":
-            ax.set_yscale('log')
-            ylabel = f'log10 {ylabel}'
-            oxygen_label = "log10 oxygen ppm"
+            fig, ax = plt.subplots()
+
+            mass_range = list()  # create array for X line with respect to initial mass value and step length
+            for i in range(len(spectrum_list[str(given_time)])):
+                mass_range.append(initial_value+i*step)
+
+
+
+            #print(mass_range)
+            display_range = spectrum_list[str(given_time)]
+            oxygen = oxygen_list[str(given_time)]
+            print(oxygen)
+            oxygen_label = "Oxygen ppm"
+            table_range = display_range
+            ylabel = "Pascal"
+
+            if isppm == "True":
+                    pascal_sum = 0
+                    for element in spectrum_list[str(given_time)]:
+                        pascal_sum = pascal_sum + element
+                    new_range = []
+                    for element in display_range:
+                        new_range.append((element * 1000000) / pascal_sum)
+
+                    display_range = new_range
+                    table_range = display_range
+                    ylabel = "PPM"
+
+
+
+            if islogarithmic == "True":
+                ax.set_yscale('log')
+                ylabel = f'log10 {ylabel}'
+                oxygen_label = "log10 oxygen ppm"
 
 
 
 
 
-        ax.bar(mass_range, display_range, label="constant time spectrum",width=0.8*step) #  range(len(spectrum_list[str(given_time)]) is array of molar masses, from 0 to maximal molar mass specified in spectrum
+            ax.bar(mass_range, display_range, label="constant time spectrum",width=0.8*step) #  range(len(spectrum_list[str(given_time)]) is array of molar masses, from 0 to maximal molar mass specified in spectrum
 
 
 
-        ax.set_xlabel(f'M')
-        ax.set_ylabel(ylabel)
-        ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+            ax.set_xlabel(f'M')
+            ax.set_ylabel(ylabel)
+            ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+            ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax.set_title(f'Spectrum for time: {dt.datetime.fromtimestamp(given_time)}')
-       
+            ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+            ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+            ax.set_title(f'Spectrum for time: {dt.datetime.fromtimestamp(given_time)}')
 
-        st.pyplot(fig)
-        st.write(f"{oxygen_label}: {oxygen}")
 
-    do_display_table = st.button(label="Display table with values")
-    if do_display_table:
-        yylabel = ylabel.strip("log10")
-        st.write(pd.DataFrame({
-            'Molar mass': mass_range,
-            f'{yylabel}': display_range}))
+            st.pyplot(fig)
+            st.write(f"{oxygen_label}: {oxygen}")
+
+        do_display_table = st.button(label="Display table with values")
+        if do_display_table:
+            yylabel = ylabel.strip("log10")
+            st.write(pd.DataFrame({
+                'Molar mass': mass_range,
+                f'{yylabel}': display_range}))
 
 
 
