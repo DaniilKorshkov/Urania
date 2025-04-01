@@ -1,3 +1,5 @@
 import VSC_comms
 
-VSC_comms.LogVSCData("MainConfig")
+
+if __name__ == "__main__":
+    VSC_comms.LogVSCData("MainConfig")

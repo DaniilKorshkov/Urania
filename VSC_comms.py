@@ -5,12 +5,15 @@ import time
 import subprocess
 import os
 import serial
+
+import Logging
 from JSONoperators import ReadJSONConfig
 from JSONoperators import assert_file_exists
 import math
 import datetime
 import json
 import datetime
+import ArduinoComms
 
 #PORT = '/dev/ttyUSB0'  #"COM7"
 #MKS_ADDRESS = "253"
@@ -422,7 +425,7 @@ def LogVSCData(MainConfig="MainConfig"):
     #mfm_port = ReadJSONConfig("vsc", "mfm_port")
     filename = ReadJSONConfig("vsc","vsc_log_name")
 
-    assert_file_exists("VSC_log")
+    assert_file_exists(filename)
 
     pg_pressure = ReadPressureGauge(MainConfig)
     
@@ -466,6 +469,12 @@ def LogVSCData(MainConfig="MainConfig"):
     handle.write("\n")
     handle.write(json.dumps(dictionary_to_append))
     handle.close()
+
+    try:
+        ArduinoComms.LogArduinoData()
+    except:
+        Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
+        pass
     
     
     

@@ -50,6 +50,10 @@ def allocate_usb_devices():
     st.write("Please plug oxygen analyzer to USB port")
     oxa_address = check_for_new_connections()
     st.write("Oxygen analyzer address found")
+    time.sleep(1)
+    st.write("Please plug Arduino board to USB port")
+    arduino_address = check_for_new_connections()
+    st.write("Arduino address found")
 
 
     handle = open("MainConfig", "r")
@@ -70,6 +74,11 @@ def allocate_usb_devices():
 
             elif dictline["class"] == "vsc":
                 dictline["vsc_serial_port"] = f"/dev/{vsc_address}"
+                newline = json.dumps(dictline)
+                newconfig.append(newline + "\n")
+
+            elif dictline["class"] == "arduino":
+                dictline["port"] = f"/dev/{arduino_address}"
                 newline = json.dumps(dictline)
                 newconfig.append(newline + "\n")
 

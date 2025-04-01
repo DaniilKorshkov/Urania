@@ -12,6 +12,12 @@
 
 
 const int AZERO = A0;
+const int AONE = A1;
+const int ATWO = A2;
+const int ATHREE = A3;
+const int AFOUR = A4;
+const int AFIVE = A5;
+
 const int RED_PIN = 3;
 const int GREEN_PIN = 4;
 const int BLUE_PIN = 5;
@@ -21,7 +27,14 @@ const int BLUE_PIN = 5;
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
+
   pinMode(AZERO,INPUT);
+  pinMode(AONE,INPUT);
+  pinMode(ATWO,INPUT);
+  pinMode(ATHREE,INPUT);
+  pinMode(AFOUR,INPUT);
+  pinMode(AFIVE,INPUT);
+
   pinMode(RED_PIN,OUTPUT);
   pinMode(GREEN_PIN,OUTPUT);
   pinMode(BLUE_PIN,OUTPUT);
@@ -36,15 +49,33 @@ void loop() {
     String msg = Serial.readString();
     if(msg == "RV!"){
 
-    int rawSensorValue = analogRead(AZERO);
+    int AZEROREAD = analogRead(AZERO);
+    int AONEREAD = analogRead(AONE);
+    int ATWOREAD = analogRead(ATWO);
+    int ATHREEREAD = analogRead(ATHREE);
+    int AFOURREAD = analogRead(AFOUR);
+    int AFIVEREAD = analogRead(AFIVE);
+
+
     digitalWrite(GREEN_PIN,HIGH);
 
     //float amperage = voltage / resistance;
 
     // print out the value you read:
-    Serial.print("AZEROVOLTAGE!");
-    Serial.print(rawSensorValue);
+    Serial.print("CQ!AZEROVOLTAGE!");
+    Serial.print(AZEROREAD);
+    Serial.print("!AONEVOLTAGE!");
+    Serial.print(AONEREAD);
+    Serial.print("!ATWOVOLTAGE!");
+    Serial.print(ATWOREAD);
+    Serial.print("!ATHREEVOLTAGE!");
+    Serial.print(ATHREEREAD);
+    Serial.print("!AFOURVOLTAGE!");
+    Serial.print(AFOURREAD);
+    Serial.print("!AFIVEVOLTAGE!");
+    Serial.print(AFIVEREAD);
     Serial.print("!QRT");
+    
     delay(100);
     digitalWrite(GREEN_PIN,LOW);
     }
