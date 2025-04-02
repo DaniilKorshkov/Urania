@@ -47,7 +47,7 @@ void loop() {
   if(Serial.available() > 0){
 
     String msg = Serial.readString();
-    if(msg == "RV!"){
+    if(msg == "RV!"){ //RV! command is an inquiry for raw readings from A0-A5 ports
 
     int AZEROREAD = analogRead(AZERO);
     int AONEREAD = analogRead(AONE);
@@ -57,11 +57,9 @@ void loop() {
     int AFIVEREAD = analogRead(AFIVE);
 
 
-    digitalWrite(GREEN_PIN,HIGH);
+    digitalWrite(GREEN_PIN,HIGH);  // Green light flashes if ret is successfull
 
-    //float amperage = voltage / resistance;
-
-    // print out the value you read:
+    // Output starts from CQ and ends with QRT. Statements are separated with "!" sign
     Serial.print("CQ!AZEROVOLTAGE!");
     Serial.print(AZEROREAD);
     Serial.print("!AONEVOLTAGE!");
@@ -80,7 +78,7 @@ void loop() {
     digitalWrite(GREEN_PIN,LOW);
     }
     else{
-      digitalWrite(RED_PIN,HIGH);
+      digitalWrite(RED_PIN,HIGH); // Red light flashes if command not recognized
       delay(100);
       digitalWrite(RED_PIN,LOW);
 

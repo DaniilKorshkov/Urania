@@ -13,6 +13,7 @@ import os
 import AbnormalityReaction as ar
 import subprocess
 from EmailNotificationSystem import NotifyUser
+import ArduinoComms
 
 
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
@@ -284,9 +285,15 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                 else:
                     try:
                         VSC_comms.LogVSCData("MainConfig")
-                        time.sleep(1)
                     except:
-                        pass
+                        Logging.MakeLogEntry("Failed to log VSC data")
+
+                    try:
+                        ArduinoComms.LogArduinoData()
+                    except:
+                        Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
+
+                    time.sleep(10)
 
             try:
 
@@ -313,9 +320,15 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                     else:
                         try:
                             VSC_comms.LogVSCData("MainConfig")
-                            time.sleep(1)
                         except:
-                            pass
+                            Logging.MakeLogEntry("Failed to log VSC data")
+
+                        try:
+                            ArduinoComms.LogArduinoData()
+                        except:
+                            Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
+
+                        time.sleep(10)
 
 
                 lg.MakeLogEntry(f"Purge finalized")
@@ -362,7 +375,21 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                         lg.MakeLogEntry(f"Sampling terminated due to RGA error")
                         break
 
-                    VSC_comms.LogVSCData("MainConfig")
+
+
+
+
+                    try:
+                        VSC_comms.LogVSCData("MainConfig")
+                    except:
+                        Logging.MakeLogEntry("Failed to log VSC data")
+
+                    try:
+                        ArduinoComms.LogArduinoData()
+                    except:
+                        Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
+
+                    time.sleep(10)
 
                 return critical_errors
 

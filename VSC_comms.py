@@ -470,11 +470,7 @@ def LogVSCData(MainConfig="MainConfig"):
     handle.write(json.dumps(dictionary_to_append))
     handle.close()
 
-    try:
-        ArduinoComms.LogArduinoData()
-    except:
-        Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
-        pass
+
     
     
     
