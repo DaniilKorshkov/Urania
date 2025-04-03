@@ -26,7 +26,7 @@ def SystemCheck(MainConfig="MainConfig"):
             lg.MakeLogEntry(f"RGA heater status is {heatstat}. Sampling is cancelled\n")
 
 
-    if capheatstat != "On":
+    if (not faliures_found) and capheatstat != "On":
         try:
             bypass = JSONoperators.ReadJSONConfig("system_check","bypass cap heater")
         except:
@@ -41,7 +41,7 @@ def SystemCheck(MainConfig="MainConfig"):
             lg.MakeLogEntry(f"RGA capillary heater status is {capheatstat}. Sampling is cancelled\n")
 
 
-    if pumpstat != "On":
+    if (not faliures_found) and pumpstat != "On":
         try:
             bypass = JSONoperators.ReadJSONConfig("system_check","bypass pump")
         except:
@@ -57,7 +57,7 @@ def SystemCheck(MainConfig="MainConfig"):
 
 
 
-    if filament_status[0] != "ON":
+    if (not faliures_found) and filament_status[0] != "ON":
         try:
             bypass = JSONoperators.ReadJSONConfig("system_check","bypass filament")
         except:
@@ -71,92 +71,90 @@ def SystemCheck(MainConfig="MainConfig"):
             faliures_found = True
             lg.MakeLogEntry(f"RGA filament status is {filament_status}. Sampling is cancelled\n")
 
-
-
-    try:
-        void = VSC_comms.ReadMFCFlowRate()
-    except:
+    if not faliures_found:
         try:
-            bypass = JSONoperators.ReadJSONConfig("system_check","bypass MFC")
+            void = VSC_comms.ReadMFCFlowRate()
         except:
-            bypass = False
-        if not bypass:
-            manual_bypass = str(input(f"Cannot reach MFC. Press 'y' to continue "))
-            if manual_bypass.lower()[0] == "y":
-                bypass = True
-                lg.MakeLogEntry(f"Cannot reach MFC. Sampling initiated by user despite this fact")
-        if not bypass:
-            faliures_found = True
-            lg.MakeLogEntry(f"Cannot reach MFC. Sampling is cancelled\n")
+            try:
+                bypass = JSONoperators.ReadJSONConfig("system_check","bypass MFC")
+            except:
+                bypass = False
+            if not bypass:
+                manual_bypass = str(input(f"Cannot reach MFC. Press 'y' to continue "))
+                if manual_bypass.lower()[0] == "y":
+                    bypass = True
+                    lg.MakeLogEntry(f"Cannot reach MFC. Sampling initiated by user despite this fact")
+            if not bypass:
+                faliures_found = True
+                lg.MakeLogEntry(f"Cannot reach MFC. Sampling is cancelled\n")
 
-
-    try:
-        void = VSC_comms.ReadMFMFlowRate()
-    except:
+    if not faliures_found:
         try:
-            bypass = JSONoperators.ReadJSONConfig("system_check","bypass MFM")
+            void = VSC_comms.ReadMFMFlowRate()
         except:
-            bypass = False
-        if not bypass:
-            manual_bypass = str(input(f"Cannot reach MFM. Press 'y' to continue "))
-            if manual_bypass.lower()[0] == "y":
-                bypass = True
-                lg.MakeLogEntry(f"Cannot reach MFM. Sampling initiated by user despite this fact")
-        if not bypass:
-            faliures_found = True
-            lg.MakeLogEntry(f"Cannot reach MFM. Sampling is cancelled\n")
+            try:
+                bypass = JSONoperators.ReadJSONConfig("system_check","bypass MFM")
+            except:
+                bypass = False
+            if not bypass:
+                manual_bypass = str(input(f"Cannot reach MFM. Press 'y' to continue "))
+                if manual_bypass.lower()[0] == "y":
+                    bypass = True
+                    lg.MakeLogEntry(f"Cannot reach MFM. Sampling initiated by user despite this fact")
+            if not bypass:
+                faliures_found = True
+                lg.MakeLogEntry(f"Cannot reach MFM. Sampling is cancelled\n")
 
-
-    try:
-        void = VSC_comms.ReadPCPressure()
-    except:
+    if not faliures_found:
         try:
-            bypass = JSONoperators.ReadJSONConfig("system_check","bypass PC")
+            void = VSC_comms.ReadPCPressure()
         except:
-            bypass = False
-        if not bypass:
-            manual_bypass = str(input(f"Cannot reach pressure controller. Press 'y' to continue "))
-            if manual_bypass.lower()[0] == "y":
-                bypass = True
-                lg.MakeLogEntry(f"Cannot reach pressure controller. Sampling initiated by user despite this fact")
-        if not bypass:
-            faliures_found = True
-            lg.MakeLogEntry(f"Cannot reach pressure controller. Sampling is cancelled\n")
+            try:
+                bypass = JSONoperators.ReadJSONConfig("system_check","bypass PC")
+            except:
+                bypass = False
+            if not bypass:
+                manual_bypass = str(input(f"Cannot reach pressure controller. Press 'y' to continue "))
+                if manual_bypass.lower()[0] == "y":
+                    bypass = True
+                    lg.MakeLogEntry(f"Cannot reach pressure controller. Sampling initiated by user despite this fact")
+            if not bypass:
+                faliures_found = True
+                lg.MakeLogEntry(f"Cannot reach pressure controller. Sampling is cancelled\n")
 
-
-    try:
-        void = VSC_comms.ReadPressureGauge()
-    except:
+    if not faliures_found:
         try:
-            bypass = JSONoperators.ReadJSONConfig("system_check","bypass PG")
+            void = VSC_comms.ReadPressureGauge()
         except:
-            bypass = False
-        if not bypass:
-            manual_bypass = str(input(f"Cannot reach pressure gauge. Press 'y' to continue "))
-            if manual_bypass.lower()[0] == "y":
-                bypass = True
-                lg.MakeLogEntry(f"Cannot reach pressure gauge. Sampling initiated by user despite this fact")
-        if not bypass:
-            faliures_found = True
-            lg.MakeLogEntry(f"Cannot reach pressure gauge. Sampling is cancelled\n")
+            try:
+                bypass = JSONoperators.ReadJSONConfig("system_check","bypass PG")
+            except:
+                bypass = False
+            if not bypass:
+                manual_bypass = str(input(f"Cannot reach pressure gauge. Press 'y' to continue "))
+                if manual_bypass.lower()[0] == "y":
+                    bypass = True
+                    lg.MakeLogEntry(f"Cannot reach pressure gauge. Sampling initiated by user despite this fact")
+            if not bypass:
+                faliures_found = True
+                lg.MakeLogEntry(f"Cannot reach pressure gauge. Sampling is cancelled\n")
 
-
-
-    try:
-        void = oxygen_analyzer.GetOxygenData()
-    except:
+    if not faliures_found:
         try:
-            bypass = JSONoperators.ReadJSONConfig("system_check","bypass OA")
+            void = oxygen_analyzer.GetOxygenData()
         except:
-            bypass = False
-        if not bypass:
-            manual_bypass = str(input(f"Cannot reach oxygen analyzer. Press 'y' to continue "))
-            if manual_bypass.lower()[0] == "y":
-                bypass = True
-                lg.MakeLogEntry(f"Cannot reach oxygen analyzer. Sampling initiated by user despite this fact")
-        if not bypass:
-            faliures_found = True
-            lg.MakeLogEntry(f"Cannot reach oxygen analyzer. Sampling is cancelled\n")
+            try:
+                bypass = JSONoperators.ReadJSONConfig("system_check","bypass OA")
+            except:
+                bypass = False
+            if not bypass:
+                manual_bypass = str(input(f"Cannot reach oxygen analyzer. Press 'y' to continue "))
+                if manual_bypass.lower()[0] == "y":
+                    bypass = True
+                    lg.MakeLogEntry(f"Cannot reach oxygen analyzer. Sampling initiated by user despite this fact")
+            if not bypass:
+                faliures_found = True
+                lg.MakeLogEntry(f"Cannot reach oxygen analyzer. Sampling is cancelled\n")
 
 
     '''if multiplier_status != "Yes":

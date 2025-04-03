@@ -204,91 +204,117 @@ def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islo
 
 def constant_mass_spectrum(spectrum_list,oxygen_list,default_mass_string, initial_value, step, islogarithmic, isppm):  # function to display plots for constant masses with time on X axis and PPM on Y axis
 
-
-    st.write(f"Enter desired molar masses separated by comma: (default: {default_mass_string}) ")
-    mass_string = st.text_input(label="Enter desired molar masses (or 'ox') separated by comma: ")
-    if mass_string == "":
-        mass_string = default_mass_string  # user is promted to input list of desired masses as string. If nothing is inputed, default list is used
+    if spectrum_list == None or len(spectrum_list) == 0:
+        st.write(f"No data had been recorded yet")
 
 
-    temp_mass_list = (mass_string.strip()).split(",")
-    mass_list=[]  # list of desired molar masses to be displayed on graph
-    for element in temp_mass_list:
-
-        if element.strip() == "ox":
-            mass_list.append("ox")
-
-        else:
-            mass_list.append(float(element.strip()))
+    else:
+        st.write(f"Enter desired M/Z separated by comma: (default: {default_mass_string}) ")
+        mass_string = st.text_input(label="Enter desired M/Z (or 'ox') separated by comma: ")
+        if mass_string == "":
+            mass_string = default_mass_string  # user is promted to input list of desired masses as string. If nothing is inputed, default list is used
 
 
+        temp_mass_list = (mass_string.strip()).split(",")
+        mass_list=[]  # list of desired molar masses to be displayed on graph
+        for element in temp_mass_list:
 
-
-
-
-    placeholder = st.empty()
-    with placeholder.container():
-        fig, ax = plt.subplots()
-        x = fn.get_time_list(spectrum_list)
-        x_converted = [dt.datetime.fromtimestamp(element) for element in x]  # convert date and time from computer format to human readable format
-
-        mass_dictionary = {}  # dictionaty to be displayed in table with numerical values
-        mass_dictionary[f"Time:"] = x_converted   # first column is time moments of measurements
-
-        for given_mass in mass_list:
-
-            if given_mass == "ox":
-                y = []
-                for key in oxygen_list:
-                    print(oxygen_list[key])
-                    y.append(oxygen_list[key])
-
+            if element.strip() == "ox":
+                mass_list.append("ox")
+                #st.write(type(len(spectrum_list[0])))
 
             else:
-                mass_number = int((given_mass-initial_value)/step)
-                #st.write(mass_number)
                 try:
-                    y = fn.plot_mass(spectrum_list, mass_number,isppm)
+                    float_mass = float(element.strip())
+
+
+
+                    if (float_mass < initial_value ) or (float_mass > (initial_value + step*len(list(spectrum_list)[0]) ) ):
+                        st.write(f"M/Z {float_mass} is out of limit")
+
+
+
+                    else:
+
+                            mass_list.append(float_mass)
+
+
                 except:
-                    pass
+                    st.write(f"{element.strip()} is not a valid M/Z")
 
-            display_range = y
-
-
-            if isppm == "True" or given_mass == "ox":
-                ylabel = "PPM"
-            else:
-                ylabel = "Pascal"
-
-            if islogarithmic == "True":
-                ax.set_yscale('log')
-                ylabel = f'log10 {ylabel}'
+        if len(mass_list) == 0:
+            st.write("No valid M/Z provided to display")
+        else:
 
 
-            ax.plot(x_converted, display_range, label=f"M: {given_mass}")
-            ax.set_ylabel(ylabel)
-            mass_dictionary[f"M = {str(given_mass)}"] = y
 
 
-        ax.set_xlabel(f'Time')
-        ax.set_ylabel(ylabel)
-        ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
-        ax.tick_params('x', labelrotation=90)
-        ax.legend()
-        ax.set_title(f'{ylabel} vs time for given M')
 
-        #ax.xaxis.axis_date(tz=None)
 
-        st.pyplot(fig)
+            placeholder = st.empty()
+            with placeholder.container():
+                fig, ax = plt.subplots()
+                x = fn.get_time_list(spectrum_list)
+                x_converted = [dt.datetime.fromtimestamp(element) for element in x]  # convert date and time from computer format to human readable format
 
-        do_display_table = st.button(label="display table with values")  # optionally display table with numerical values
-        if do_display_table:
-            st.write(pd.DataFrame(mass_dictionary))
+                mass_dictionary = {}  # dictionaty to be displayed in table with numerical values
+                mass_dictionary[f"Time:"] = x_converted   # first column is time moments of measurements
+
+                for given_mass in mass_list:
+
+                    if given_mass == "ox":
+                        y = []
+                        for key in oxygen_list:
+                            print(oxygen_list[key])
+                            y.append(oxygen_list[key])
+
+
+                    else:
+                        mass_number = int((given_mass-initial_value)/step)
+                        #st.write(mass_number)
+                        try:
+                            y = fn.plot_mass(spectrum_list, mass_number,isppm)
+                        except:
+                            pass
+
+                    display_range = y
+
+
+                    if isppm == "True" or given_mass == "ox":
+                        ylabel = "PPM"
+                    else:
+                        ylabel = "Pascal"
+
+                    if islogarithmic == "True":
+                        ax.set_yscale('log')
+                        ylabel = f'log10 {ylabel}'
+
+
+                    ax.plot(x_converted, display_range, label=f"M/Z: {given_mass}")
+                    ax.set_ylabel(ylabel)
+                    mass_dictionary[f"M/Z = {str(given_mass)}"] = y
+
+
+                ax.set_xlabel(f'Time')
+                ax.set_ylabel(ylabel)
+                ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+                ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+                ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+                ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+                ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
+                ax.tick_params('x', labelrotation=90)
+                ax.legend()
+                ax.set_title(f'{ylabel} vs time for given M')
+
+                #ax.xaxis.axis_date(tz=None)
+
+                st.pyplot(fig)
+
+                do_display_table = st.button(label="display table with values")  # optionally display table with numerical values
+                if do_display_table:
+                    st.write(pd.DataFrame(mass_dictionary))
 
 
 
