@@ -14,7 +14,12 @@ import AbnormalityReaction as ar
 import subprocess
 from EmailNotificationSystem import NotifyUser
 import ArduinoComms
+import signal
 
+
+def TimeoutHandler():
+    Logging.MakeLogEntry("Timeout in TaskManagement")
+    raise Exception("Timeout")
 
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
     tasklist_name = None
@@ -57,23 +62,26 @@ def CheckForEmergencyTasks(config="MainConfig"):  #function that reads task list
     handle = open(tasklist_name, "r")
     for line in handle:
 
-        if line == "" or line == "\n" or line[0] == "#":
+        if line == "" or line == "\n" or line[0] == "#":   #skip empty lines
             continue
 
         dict_line = json.loads(line)
         if dict_line["class"] == "task" and dict_line["type"] == "emergency" and not if_task_found:
-            if_task_found = True
-            task_to_execute = dict_line["name"]
+
             try:   # evaluation of executiuon times.
                 match dict_line["how_much_executions"]:
                     case "inf":  #infinite executions case
                         text_copy.append(line.strip("\n"))
-                    case 1:  #if 1 execution time left, task is no longer executed
+                        if_task_found = True
+                        task_to_execute = dict_line["name"]
+                    case 0:  #if 0 execution time left, task is no longer appended to txt file and is deleted
                         pass
                     case _:  # else, howmuchexecutions is decremented by 1
                         howmuchexecutions = int(dict_line["how_much_executions"])-1
                         dict_line["how_much_executions"] = howmuchexecutions
                         text_copy.append(json.dumps(dict_line))
+                        if_task_found = True
+                        task_to_execute = dict_line["name"]
             except:  #if dict_line["how_much_executions"] not found, it is considered to be 1
                 pass
         else:
@@ -240,7 +248,7 @@ def GetTaskData(taskname, config="MainConfig"):
 
 
 def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, purging_mfc, calmdown_mfc):
-
+    signal.signal(signal.SIGALRM, TimeoutHandler())
     #global interrupted
     critical_errors = False
 
@@ -318,15 +326,28 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                     if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= total_wait_time:
                         break
                     else:
+                        signal.alarm(10)
                         try:
                             VSC_comms.LogVSCData("MainConfig")
+
+                        except Exception:
+                            Logging.MakeLogEntry("Failed to log VSC data due to timeout")
+                            NotifyUser("Failed to log VSC data due to timeout", False)
+
                         except:
                             Logging.MakeLogEntry("Failed to log VSC data")
+                            NotifyUser("Failed to log VSC data", False)
 
+                        signal.alarm(10)
                         try:
                             ArduinoComms.LogArduinoData()
+                        except Exception:
+                            Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure due to timeout")
+                            NotifyUser("Failed to log Arduino data due to timeout", False)
+
                         except:
                             Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
+                            NotifyUser("Failed to log Arduino data", False)
 
                         time.sleep(10)
 

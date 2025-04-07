@@ -202,7 +202,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     for i in range(int(amount_of_scans)):
 
         timestamp = int(1000000*(datetime.datetime.now()).timestamp())
-        packages_list.append(f'AddSinglePeak {timestamp}RSP{i} {start_mass+i*step} {0} 0 0 0')
+        packages_list.append(f'AddSinglePeak {timestamp}RSP{i} {start_mass+i*step} {2} 0 0 0')
         packages_list.append(f'scanadd {timestamp}RSP{i}')
     packages_list.append(f"MeasurementDetectorIndex {0}")
     packages_list.append('ScanStart 1')
