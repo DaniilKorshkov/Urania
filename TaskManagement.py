@@ -248,7 +248,7 @@ def GetTaskData(taskname, config="MainConfig"):
 
 
 def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, purging_mfc, calmdown_mfc):
-    signal.signal(signal.SIGALRM, TimeoutHandler())
+    #signal.signal(signal.SIGALRM, TimeoutHandler())
     #global interrupted
     critical_errors = False
 
