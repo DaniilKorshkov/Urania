@@ -17,9 +17,9 @@ import ArduinoComms
 import signal
 
 
-def TimeoutHandler():
+"""def TimeoutHandler():
     Logging.MakeLogEntry("Timeout in TaskManagement")
-    raise Exception("Timeout")
+    raise Exception("Timeout")"""
 
 def GetTasklistName(config="MainConfig"):  #function to get name of task list from main config
     tasklist_name = None
@@ -326,24 +326,24 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                     if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= total_wait_time:
                         break
                     else:
-                        signal.alarm(10)
+                        #signal.alarm(10)
                         try:
                             VSC_comms.LogVSCData("MainConfig")
 
-                        except Exception:
-                            Logging.MakeLogEntry("Failed to log VSC data due to timeout")
-                            NotifyUser("Failed to log VSC data due to timeout", False)
+                        #except Exception:
+                        #    Logging.MakeLogEntry("Failed to log VSC data due to timeout")
+                        #    NotifyUser("Failed to log VSC data due to timeout", False)
 
                         except:
                             Logging.MakeLogEntry("Failed to log VSC data")
                             NotifyUser("Failed to log VSC data", False)
 
-                        signal.alarm(10)
+                        #signal.alarm(10)
                         try:
                             ArduinoComms.LogArduinoData()
-                        except Exception:
-                            Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure due to timeout")
-                            NotifyUser("Failed to log Arduino data due to timeout", False)
+                       # except Exception:
+                       #     Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure due to timeout")
+                        #    NotifyUser("Failed to log Arduino data due to timeout", False)
 
                         except:
                             Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
