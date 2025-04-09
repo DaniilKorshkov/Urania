@@ -228,9 +228,10 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,default_mass_string, initia
                     float_mass = float(element.strip())
 
 
-
-                    if (float_mass < initial_value ) or (float_mass > (initial_value + step*len(list(spectrum_list)[0]) ) ):
+                    temp_timestamp = list(spectrum_list)[0]
+                    if (float_mass < initial_value ) or (float_mass > (initial_value + step*(len(spectrum_list[temp_timestamp]) )-1) ):
                         st.write(f"M/Z {float_mass} is out of limit")
+
 
 
 
@@ -281,19 +282,21 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,default_mass_string, initia
                     display_range = y
 
 
-                    if isppm == "True" or given_mass == "ox":
+                    if isppm == "True":
                         ylabel = "PPM"
                     else:
                         ylabel = "Pascal"
 
                     if islogarithmic == "True":
                         ax.set_yscale('log')
-                        ylabel = f'log10 {ylabel}'
+
+
+                    mass_dictionary[f"M/Z = {str(given_mass)}"] = y
 
 
                     ax.plot(x_converted, display_range, label=f"M/Z: {given_mass}")
-                    ax.set_ylabel(ylabel)
-                    mass_dictionary[f"M/Z = {str(given_mass)}"] = y
+                ax.set_ylabel(ylabel)
+
 
 
                 ax.set_xlabel(f'Time')
