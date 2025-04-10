@@ -129,7 +129,7 @@ def NotifyAsRoot(message, image):
 
 
 
-def NotifyUser(text,ifcrash):
+def NotifyUser(text,ifcrash=False):
     email_crash = JSONoperators.ReadJSONConfig("email","email_notifications_for_crash")
     email_abnorm = JSONoperators.ReadJSONConfig("email", "email_notifications_for_abnorm")
     live_crash = JSONoperators.ReadJSONConfig("email", "live_notifications_for_crash")

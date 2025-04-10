@@ -18,9 +18,15 @@ const int ATHREE = A3;
 const int AFOUR = A4;
 const int AFIVE = A5;
 
-const int RED_PIN = 3;
-const int GREEN_PIN = 4;
-const int BLUE_PIN = 5;
+const int ACTUATOR_READ_ONE = 2;
+const int ACTUATOR_READ_TWO = 3;
+
+const int ACTUATOR_WRITE_ONE = 4;
+const int ACTUATOR_WRITE_TWO = 5;
+
+const int RED_PIN = 10;
+const int GREEN_PIN = 11;
+const int BLUE_PIN = 12;
 
 
 // the setup routine runs once when you press reset:
@@ -34,6 +40,12 @@ void setup() {
   pinMode(ATHREE,INPUT);
   pinMode(AFOUR,INPUT);
   pinMode(AFIVE,INPUT);
+
+  pinMode(ACTUATOR_READ_ONE,INPUT);
+  pinMode(ACTUATOR_READ_TWO,INPUT);
+
+  pinMode(ACTUATOR_WRITE_ONE,OUTPUT);
+  pinMode(ACTUATOR_WRITE_TWO,OUTPUT);
 
   pinMode(RED_PIN,OUTPUT);
   pinMode(GREEN_PIN,OUTPUT);
@@ -55,6 +67,8 @@ void loop() {
     int ATHREEREAD = analogRead(ATHREE);
     int AFOURREAD = analogRead(AFOUR);
     int AFIVEREAD = analogRead(AFIVE);
+    int ACTUATOR_ONE = digitalRead(ACTUATOR_READ_ONE);
+    int ACTUATOR_TWO = digitalRead(ACTUATOR_READ_TWO);
 
 
     digitalWrite(GREEN_PIN,HIGH);  // Green light flashes if ret is successfull
@@ -72,11 +86,40 @@ void loop() {
     Serial.print(AFOURREAD);
     Serial.print("!AFIVEVOLTAGE!");
     Serial.print(AFIVEREAD);
+    Serial.print("!ACTUATORONE!");
+    Serial.print(ACTUATOR_ONE);
+    Serial.print("!ACTUATORTWO!");
+    Serial.print(ACTUATOR_TWO);
     Serial.print("!QRT");
     
     delay(100);
     digitalWrite(GREEN_PIN,LOW);
     }
+
+  if(msg == "ACT_ON!"){
+    digitalWrite(ACTUATOR_WRITE_ONE,HIGH);
+    digitalWrite(ACTUATOR_WRITE_TWO,HIGH);
+
+    digitalWrite(GREEN_PIN,HIGH);
+    delay(100);
+    digitalWrite(GREEN_PIN,LOW);
+    
+  }
+
+   if(msg == "ACT_OFF!"){
+    digitalWrite(ACTUATOR_WRITE_ONE,LOW);
+    digitalWrite(ACTUATOR_WRITE_TWO,LOW);
+
+    digitalWrite(GREEN_PIN,HIGH);
+    delay(100);
+    digitalWrite(GREEN_PIN,LOW);
+   }
+
+
+
+
+
+
     else{
       digitalWrite(RED_PIN,HIGH); // Red light flashes if command not recognized
       delay(100);

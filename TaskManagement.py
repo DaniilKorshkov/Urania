@@ -295,11 +295,15 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                         VSC_comms.LogVSCData("MainConfig")
                     except:
                         Logging.MakeLogEntry("Failed to log VSC data")
+                        NotifyUser("Failed to log VSC data", False)
 
                     try:
                         ArduinoComms.LogArduinoData()
                     except:
                         Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
+                        #NotifyUser("Failed to log Arduino data", False)
+
+
 
                     time.sleep(10)
 
@@ -347,7 +351,7 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
 
                         except:
                             Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
-                            NotifyUser("Failed to log Arduino data", False)
+                            #NotifyUser("Failed to log Arduino data", False)
 
                         time.sleep(10)
 
@@ -358,13 +362,17 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                     try:
                         spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename)
 
-                        if (ErrorMessage != None) and (ErrorMessage != "TIMEOUT") and (not ("Failed to create measurement" in ErrorMessage)):
+                        if (ErrorMessage != None) and (ErrorMessage != "TIMEOUT") and (not ("Failed to create measurement" in ErrorMessage)) and (not ("LinkDown" in ErrorMessage)):
                             critical_errors = True
                             lg.MakeLogEntry(f"Sampling terminated due to RGA error")
                             break
 
                         elif ErrorMessage == "TIMEOUT":
                             lg.MakeLogEntry(f"Sampling failed due to TIMEOUT error (probable packet loss); repeating attempt")
+
+
+                        elif "LinkDown" in ErrorMessage:
+                            lg.MakeLogEntry(f"Sampling failed due to LinkDown Serial error; repeating attempt")
 
 
                         elif ErrorMessage != None:
