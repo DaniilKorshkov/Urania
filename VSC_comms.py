@@ -1,3 +1,5 @@
+import random
+
 import usb.core
 import usb.util
 import time
@@ -14,6 +16,7 @@ import datetime
 import json
 import datetime
 import ArduinoComms
+import random
 
 #PORT = '/dev/ttyUSB0'  #"COM7"
 #MKS_ADDRESS = "253"
@@ -476,6 +479,24 @@ def LogVSCData(MainConfig="MainConfig"):
     
     
     
+if __name__ == "__main__":
+    filename = ReadJSONConfig("vsc", "vsc_log_name")
+
+    assert_file_exists(filename)
+
+
+    filling_mfm_flow = random.randint(10,20)
+
+    current_time = int(datetime.datetime.now().timestamp())
+    dictionary_to_append = {}
+    dictionary_to_append["time"] = current_time
+
+    dictionary_to_append["filling_mfm_flow"] = filling_mfm_flow
+
+    handle = open(filename, "a")
+    handle.write("\n")
+    handle.write(json.dumps(dictionary_to_append))
+    handle.close()
 
 
 #StabilityWatcher()

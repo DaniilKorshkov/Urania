@@ -2,6 +2,7 @@ import json
 import Functions as fn
 import os
 import streamlit as st
+import datetime
 
 '''def file_selector(folder_path='.'):
     filename = st.file_uploader(label="Select a spectrum file", type=None, accept_multiple_files=False, key=None, help=None, on_change=None, args=None,
@@ -376,3 +377,48 @@ def read_vsc_period_of_time(howmuchspectrums, desired_time, filename="VSC_log"):
     return new_log_dictionary
 
 
+def filling_numerical_integration(initial_time, final_time, filename="VSC_log"):  # returns flow in liters
+    if (final_time < initial_time):
+        return 0
+
+    else:
+
+
+        log_dictionary = read_vsc_log(filename)
+
+        #print(log_dictionary)
+        time_list = fn.get_time_list(log_dictionary)
+        #print(type(time_list))
+
+        new_time_list = []
+
+        for element in time_list:
+            if (element >= initial_time) and (element <= final_time):
+                new_time_list.append(element)
+
+
+        if len(new_time_list) == 0:
+            return 0
+
+        else:
+
+            #print(new_time_list)
+
+            integral = (float((log_dictionary[str(new_time_list[0])])["filling_mfm_flow"]))*(int(new_time_list[0])-initial_time)
+
+            #print(integral)
+
+            integral += (float((log_dictionary[str(new_time_list[len(new_time_list)-1])])["filling_mfm_flow"]))*(final_time - int(new_time_list[len(new_time_list)-1]))
+
+            #print(integral)
+
+            for i in range(len(new_time_list)-1):
+                integral += float((log_dictionary[str(new_time_list[i])]["filling_mfm_flow"]))*(int(new_time_list[i+1])-int(new_time_list[i]))
+                #print(integral)
+
+            integral = integral/60000  # convert cm3/min * seconds to liters
+            return (integral)
+
+
+if __name__ == "__main__":
+    print(filling_numerical_integration(1,20))

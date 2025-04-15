@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import Functions as fn
 import datetime as dt
+
+import JSONoperators
 import JSONoperators as js
 import datetime
 import streamlit.components.v1 as components
@@ -12,6 +14,7 @@ import math
 import AbnormalityReaction as ar
 import GUI_File_Manager as fm
 import matplotlib.ticker as ticker
+import json
 
 
 def date_time_input():  # function to input date and time as seconds from 01jan1970 through graphic user interface
@@ -68,11 +71,13 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
         for key in x:
 
-            y_mfc_flow.append((log_dictionary[f"{str(key)}"])["mfc_flow"])
-            y_mfm_flow.append((log_dictionary[f"{str(key)}"])["mfm_flow"])
-            y_pg_pressure.append((log_dictionary[f"{str(key)}"])["pg_pressure"])
-            y_pc_pressure.append((log_dictionary[f"{str(key)}"])["pc_pressure"])
-            y_filling_mfm_flow.append((log_dictionary[f"{str(key)}"])["filling_mfm_flow"])
+
+                y_mfc_flow.append((log_dictionary[f"{str(key)}"])["mfc_flow"])
+                y_mfm_flow.append((log_dictionary[f"{str(key)}"])["mfm_flow"])
+                y_pg_pressure.append((log_dictionary[f"{str(key)}"])["pg_pressure"])
+                y_pc_pressure.append((log_dictionary[f"{str(key)}"])["pc_pressure"])
+                y_filling_mfm_flow.append((log_dictionary[f"{str(key)}"])["filling_mfm_flow"])
+
 
 
 
@@ -185,7 +190,179 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
             st.write(pd.DataFrame(converted_log_dictionary))
             
-            
+
+
+
+
+def display_filling_counters(MainConfig="MainConfig"):
+    js.assert_file_exists("FillingCounters")
+    counter_list = []
+
+    handle = open("FillingCounters", "r")
+    for line in handle:
+        if line == None or line == "" or line == "\n":
+            pass
+        else:
+            counter_list.append(line)
+    handle.close()
+
+    for line in counter_list:
+        dictline = json.loads(line)
+        name = dictline["name"]
+        st.write(name)
+        init_time = dictline["initial_time"]
+        try:
+            final_time = dictline["final_time"]
+            st.write(f"Initial time: {datetime.datetime.fromtimestamp(init_time)}")
+            st.write(f"Final time: {datetime.datetime.fromtimestamp(final_time)}")
+
+            integral = JSONoperators.filling_numerical_integration(init_time,final_time)
+
+            st.write(f"Filled amount: {integral}")
+
+
+        except:
+            final_time = int(datetime.datetime.now().timestamp())
+            st.write(f"Initial time: {datetime.datetime.fromtimestamp(init_time)}")
+            st.write(f"Currently filling...")
+
+            integral = JSONoperators.filling_numerical_integration(init_time, final_time)
+
+            st.write(f"Filled amount: {integral}")
+
+
+            stop_counter = st.button(f"Stop {name} counter")
+
+
+            if stop_counter:
+
+                newfile = []
+
+                handle = open("FillingCounters", "r")
+                for handleline in handle:
+
+                    if handleline == None or handleline == "" or handleline == "\n":
+                        pass
+                    else:
+
+                        if json.loads(handleline)["name"] == dictline["name"]:
+
+                            dictline["final_time"] = int(datetime.datetime.now().timestamp())
+
+                            newfile.append(str(json.dumps(dictline))+"\n")
+
+
+                        else:
+                            newfile.append(handleline)
+
+
+
+
+                handle.close()
+
+                handle = open("FillingCounters", "w")
+
+                for handleline in newfile:
+                    handle.write(handleline)
+                handle.close()
+
+        delete_counter = st.button(f"Delete {name} counter")
+        if delete_counter:
+                newfile = []
+
+                handle = open("FillingCounters", "r")
+                for handleline in handle:
+
+                    if handleline == None or handleline == "" or handleline == "\n":
+                        pass
+                    else:
+
+                        if json.loads(handleline)["name"] == dictline["name"]:
+
+                            pass
+
+
+                        else:
+                            newfile.append(handleline)
+
+                handle.close()
+
+                handle = open("FillingCounters", "w")
+
+                for handleline in newfile:
+                    handle.write(handleline)
+                handle.close()
+
+
+        for i in range(4):
+            st.markdown("")
+
+
+def create_new_filling_counter(MainConfig="MainConfig"):
+    js.assert_file_exists("FillingCounters")
+
+    counter_name = st.text_input("Enter new counter name")
+    create_new_counter = st.button("Create new counter")
+
+    if create_new_counter:
+
+        newfile = []
+        namelist = []
+        new_counter_data = {}
+        new_counter_data["name"] = counter_name
+        new_counter_data["initial_time"] = int(datetime.datetime.now().timestamp())
+
+        handle = open("FillingCounters", "r")
+        for line in handle:
+
+            if line == None or line == "" or line == "\n":
+                pass
+            else:
+
+                newfile.append(line)
+                try:
+                    namelist.append(json.loads(line)["name"])
+                except:
+                    pass
+        handle.close()
+
+        newfile.append(str(json.dumps(new_counter_data)))
+
+
+
+
+
+        if (counter_name != "") and not(counter_name in namelist):
+
+            handle = open("FillingCounters", "w")
+
+            for line in newfile:
+
+                if line == None or line == "" or line == "\n":
+                    pass
+                else:
+
+                    line.strip("\n")
+                    handle.write(f"{line}\n")
+            handle.close()
+
+        else:
+            st.write("Counter with this name already exists")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def display_data():
     
@@ -225,6 +402,17 @@ def display_data():
             log_dictionary = js.read_vsc_period_of_time(howmuchspectrums,time_moment)
     
     vsc_graphs(log_dictionary)
+
+    for i in range(5):
+        st.markdown("")
+
+    st.write("Filling counters:")
+
+    for i in range(2):
+        st.markdown("")
+
+    display_filling_counters("MainConfig")
+    create_new_filling_counter("MainConfig")
     
     
 display_data()
