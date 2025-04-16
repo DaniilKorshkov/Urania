@@ -14,7 +14,6 @@ import netdiscover
 import oxygen_analyzer as oxa
 from JSONoperators import ReadJSONConfig
 import datetime
-from EmailNotificationSystem import NotifyUser
 
 
 def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
@@ -120,12 +119,11 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                     #time.sleep(3)
                     received = str(sock.recv(1024), "ascii")
 
-                    if "ERROR" or "LinkDown" in received:
+                    if "ERROR" in received:
 
                         while True:
                             sock.send(bytes("Release", "ascii") + bytes([10]))
                             received = str(sock.recv(1024), "ascii")
-                            Logging.MakeLogEntry(f"{received} Error Message encountered")
                             if ("Release OK" or "Must be in control of sensor to release control") in received:
                                 break
                             else:
@@ -396,7 +394,6 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
             Logging.MakeLogEntry(f"Received oxygen data for RGA scan: {filename}")
         except:
             Logging.MakeLogEntry(f"Failed to get oxygen data for RGA scan: {filename}")
-            #NotifyUser("Failed to get oxygen analyzer data",False)
             dictionary_to_append["oxygen"] = 0
 
 
@@ -623,7 +620,6 @@ def change_rga_ip(MainConfig="MainConfig"):
     handle.close()
 
     return if_success, ret
-
 
 
 
