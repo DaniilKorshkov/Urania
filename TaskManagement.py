@@ -295,7 +295,7 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                         VSC_comms.LogVSCData("MainConfig")
                     except:
                         Logging.MakeLogEntry("Failed to log VSC data")
-                        NotifyUser("Failed to log VSC data", False)
+                        #NotifyUser("Failed to log VSC data", False)
 
                     try:
                         ArduinoComms.LogArduinoData()

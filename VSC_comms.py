@@ -251,6 +251,9 @@ def ConvertEngineerNotation(raw_message):  # Function to exctract number from me
         semicolomn_position = raw_message.find(";")
 
         real_part = raw_message[(k_position+1):(e_position)]
+        real_part = real_part.strip(">")
+        real_part = real_part.strip("<")
+
         #print(real_part)
         power = raw_message[(e_position+1):(semicolomn_position)]
         #print(power)
