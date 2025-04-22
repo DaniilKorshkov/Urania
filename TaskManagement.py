@@ -371,8 +371,9 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                             lg.MakeLogEntry(f"Sampling failed due to TIMEOUT error (probable packet loss); repeating attempt")
 
 
-                        elif "LinkDown" in ErrorMessage:
-                            lg.MakeLogEntry(f"Sampling failed due to LinkDown Serial error; repeating attempt")
+                        #elif "LinkDown" in ErrorMessage:
+                         #   lg.MakeLogEntry(f"Sampling failed due to LinkDown Serial error; repeating attempt")
+
 
 
                         elif ErrorMessage != None:
