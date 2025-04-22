@@ -362,23 +362,19 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                     try:
                         spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename)
 
-                        if (ErrorMessage != None) and (ErrorMessage != "TIMEOUT") and (not ("Failed to create measurement" in ErrorMessage)) and (not ("LinkDown" in ErrorMessage)):
+                        if (ErrorMessage != None) and (ErrorMessage != "TIMEOUT") and (not ("Failed to create measurement" in str(ErrorMessage))) and (not ("LinkDown" in ErrorMessage)):
                             critical_errors = True
                             lg.MakeLogEntry(f"Sampling terminated due to RGA error: {ErrorMessage}")
                             break
 
-                        elif ErrorMessage == "TIMEOUT":
-                            lg.MakeLogEntry(f"Sampling failed due to TIMEOUT error (probable packet loss); repeating attempt")
-
-
-                        #elif "LinkDown" in ErrorMessage:
-                         #   lg.MakeLogEntry(f"Sampling failed due to LinkDown Serial error; repeating attempt")
-
-
 
                         elif ErrorMessage != None:
-                            if "Failed to create measurement" in ErrorMessage:
+                            if "Failed to create measurement" in str(ErrorMessage):
                                 lg.MakeLogEntry(f"Sampling failed due to 500: Failed To Create Measurement error; repeating attempt")
+                            if "LinkDown" in str(ErrorMessage):
+                                lg.MakeLogEntry(f"Sampling failed due to LinkDown Serial error; repeating attempt")
+                            if str(ErrorMessage) == "TIMEOUT":
+                                lg.MakeLogEntry(f"Sampling failed due to TIMEOUT error (probable packet loss); repeating attempt")
 
 
 
