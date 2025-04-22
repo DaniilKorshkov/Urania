@@ -364,7 +364,7 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
 
                         if (ErrorMessage != None) and (ErrorMessage != "TIMEOUT") and (not ("Failed to create measurement" in ErrorMessage)) and (not ("LinkDown" in ErrorMessage)):
                             critical_errors = True
-                            lg.MakeLogEntry(f"Sampling terminated due to RGA error")
+                            lg.MakeLogEntry(f"Sampling terminated due to RGA error: {ErrorMessage}")
                             break
 
                         elif ErrorMessage == "TIMEOUT":
