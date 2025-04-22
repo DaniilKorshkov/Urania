@@ -401,7 +401,7 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
                     except:
                         critical_errors = True
                         #interrupted = True
-                        lg.MakeLogEntry(f"Sampling terminated due to RGA error")
+                        lg.MakeLogEntry(f"Sampling terminated due to unknown RGA error")
                         break
 
 
