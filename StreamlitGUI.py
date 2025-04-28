@@ -378,7 +378,7 @@ def display_one_sample_data(settings_filename,self_name):           # function t
     assert howmuchspectrums > 0
 
     if parsing_mode == "last":
-            metadata, spectrum_list, oxygen_list = js.read_last_spectrums(spectrum_name, howmuchspectrums)   # most recent spectrums are imported from JSON file
+            metadata, spectrum_list, oxygen_list = js.read_last_spectrums_for_time(spectrum_name, howmuchspectrums)   # most recent spectrums are imported from JSON file
     else:
             metadata, spectrum_list, oxygen_list = js.read_period_of_time(spectrum_name,howmuchspectrums,time_moment)
 

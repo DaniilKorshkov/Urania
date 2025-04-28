@@ -64,6 +64,33 @@ def read_last_spectrums(filename, howmuchspectrums):   # function to get X most 
 
     return metadata, new_spectrum_list, new_oxygen_list      #new_spectrum_list is returned
 
+def read_last_spectrums_for_time(filename, time_interval):   # function to get X most recent spectrums from full array
+
+
+    metadata, spectrum_list, oxygen_list = read_spectrum_json(filename)
+    time_list = fn.get_time_list(spectrum_list)  # list of all time moments of spectrums in full array of spectrums
+    lng = len(spectrum_list)
+
+
+
+
+    new_spectrum_list = {}
+    new_oxygen_list = {}
+
+    i = 0
+
+    while i+1 <= lng:
+        new_spectrum_list[str(time_list[lng-i-1])] = spectrum_list[str(time_list[lng-i-1])]
+        new_oxygen_list[str(time_list[lng-i-1])] = oxygen_list[str(time_list[lng-i-1])]
+
+        if (time_list[lng-i-1]) < (datetime.datetime.now().timestamp() - time_interval):
+            break
+
+        i += 1
+
+    return metadata, new_spectrum_list, new_oxygen_list      #new_spectrum_list is returned
+
+
 
 def read_GUI_page_settings(filename, self_name):   #function to read settings for given page for GUI from JSON format
 
