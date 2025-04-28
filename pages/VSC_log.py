@@ -15,6 +15,7 @@ import AbnormalityReaction as ar
 import GUI_File_Manager as fm
 import matplotlib.ticker as ticker
 import json
+from StreamlitGUI import TimeInputWidget
 
 
 def date_time_input():  # function to input date and time as seconds from 01jan1970 through graphic user interface
@@ -389,17 +390,15 @@ def display_data():
         st.write(f"Time = {dt.datetime.fromtimestamp(time_moment)}")
         
     
-    howmuchspectrums = st.text_input(label="How much data entries to display: ")  # user is prompted to override amount of displayed spectrums
-    if howmuchspectrums == "":
-        howmuchspectrums = 10
+    howmuchspectrums = TimeInputWidget()
     
     howmuchspectrums = int(howmuchspectrums) # assert that howmuchspectrums is int and greater than 0
     assert howmuchspectrums > 0
     
     if parsing_mode == "last":
-            log_dictionary = js.read_last_vsc_entries(howmuchspectrums)   # most recent spectrums are imported from JSON file
+            log_dictionary = js.read_last_vsc_entries_wrt_time(howmuchspectrums)   # most recent spectrums are imported from JSON file
     else:
-            log_dictionary = js.read_vsc_period_of_time(howmuchspectrums,time_moment)
+            log_dictionary = js.read_vsc_period_of_time_wrt_time(howmuchspectrums,time_moment)
     
     vsc_graphs(log_dictionary)
 

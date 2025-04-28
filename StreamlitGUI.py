@@ -348,15 +348,8 @@ def display_one_sample_data(settings_filename,self_name):           # function t
         #time_moment = st.text_input("Moment of time to search for: ")
         #time_moment = int(date_time_input())
 
-        select_mode = st.selectbox(label="Select how to get time input: ",options=("Current","Default","Select"))
 
-        match select_mode:
-            case "Current":
-                time_moment = int((datetime.datetime.now()).timestamp())
-            case "Default":
-                time_moment = int(Settings["default_moment_of_time"])  # by default, time_mode is converted to default in settings
-            case "Select":
-                time_moment = int(date_time_input())
+        time_moment = int(date_time_input())
 
 
 
@@ -366,9 +359,7 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
 
 
-    howmuchspectrums = st.text_input(label="How much spectrums to display: ")  # user is prompted to override amount of displayed spectrums
-    if howmuchspectrums == "":
-        howmuchspectrums = Settings["default_amount_of_spectrums"]  # if not overrided, value is set to default
+    howmuchspectrums = TimeInputWidget()
 
 
 
@@ -380,7 +371,7 @@ def display_one_sample_data(settings_filename,self_name):           # function t
     if parsing_mode == "last":
             metadata, spectrum_list, oxygen_list = js.read_last_spectrums_for_time(spectrum_name, howmuchspectrums)   # most recent spectrums are imported from JSON file
     else:
-            metadata, spectrum_list, oxygen_list = js.read_period_of_time(spectrum_name,howmuchspectrums,time_moment)
+            metadata, spectrum_list, oxygen_list = js.read_period_of_time_wrt_time(spectrum_name,howmuchspectrums,time_moment)
 
     if metadata["is_a_spectrum"] != "True":   # verification that provided file is a spectrum
             st.write("Imported file is not valid!")
@@ -437,3 +428,42 @@ def TestGUI():  # test function that is not used
     ax.hist(arr, bins=20)
 
     st.pyplot(fig)
+
+
+def TimeInputWidget():
+    col = st.columns((1, 1, 1), gap='medium')
+    with col[0]:
+        days = st.text_input(
+            label="How much days of data to display: ")  # user is prompted to override amount of displayed spectrums
+    with col[1]:
+        hours = st.text_input(
+            label="How much hours of data to display: ")  # user is prompted to override amount of displayed spectrums
+    with col[2]:
+        minutes = st.text_input(
+            label="How much minutes of data to display: ")  # user is prompted to override amount of displayed spectrums
+
+    if days == None:   # if not specified, value is set to zero
+        days = 0
+    if hours == None:
+        hours = 0
+    if minutes == None:
+        minutes = 1
+
+
+    try:   #if invalid values specified by user, values are set to zero
+        days = int(days)
+    except:
+        days = 0
+    try:
+        hours = int(hours)
+    except:
+        hours = 0
+    try:
+        minutes = int(minutes)
+    except:
+        minutes = 1
+
+
+
+    ret = int( 86400*days + 3600*hours + 60*minutes )
+    return ret

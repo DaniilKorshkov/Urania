@@ -156,6 +156,60 @@ def read_period_of_time(filename, howmuchspectrums, desired_time):  #function to
 
 
 
+def read_period_of_time_wrt_time(filename, time_interval, initial_time):  #function to read X spectrums starting from given moment of time
+
+    metadata, spectrum_list, oxygen_list = read_spectrum_json(filename)
+    time_list = fn.get_time_list(spectrum_list)  # list of all time moments of spectrums in full array of spectrums
+
+
+    lng = len(spectrum_list)
+    #time_list.sort()
+
+    t = 0  # counter for finding desired time
+
+    time_found = False #error handler if desired initial time is bigger than last measurement
+
+    for element in time_list:
+        if element >= initial_time: #ineffective search algorithm, fix later?
+            time_found = True # finding closest match to desired time
+            break
+        else:
+            t += 1
+
+
+    if time_found:
+        new_spectrum_list = {}
+        new_oxygen_list = {} # only spectrums corresponding to desired time boundaries are added to new_spectrum_list
+
+        i=0
+
+        while i+1 <= lng:
+            try:
+                new_spectrum_list[str(time_list[t + i])] = spectrum_list[str(time_list[t + i])]
+                new_oxygen_list[str(time_list[t + i])] = oxygen_list[str(time_list[t + i])]
+
+                if (time_list[lng - i - 1]) < (datetime.datetime.now().timestamp() - time_interval):
+                    break
+
+                i += 1
+
+
+            except:
+                pass
+
+
+
+    else: # in desired time is bigger than most recent spectrum, only single last spectrum is added to new_spectrum_list
+        new_spectrum_list = {}
+        new_oxygen_list = {}
+        new_spectrum_list[str(time_list[t-1])] = spectrum_list[str(time_list[t-1])]
+        new_oxygen_list[str(time_list[t - 1])] = oxygen_list[str(time_list[t - 1])]
+
+
+    return metadata, new_spectrum_list, new_oxygen_list
+
+
+
 
 
 def read_all_page_numbers(filename):   # function to read all page numbers from JSON config
@@ -366,6 +420,35 @@ def read_last_vsc_entries(howmuchspectrums, filename="VSC_log"):   # function to
     return new_log_dictionary      #new_spectrum_list is returned
 
 
+def read_last_vsc_entries_wrt_time(time_interval,filename="VSC_log"):  # function to get X most recent spectrums from full array
+
+    log_dictionary = read_vsc_log(filename)
+    time_list = fn.get_time_list(log_dictionary)  # list of all time moments of spectrums in full array of spectrums
+    lng = len(log_dictionary)
+    # time_list.sort()
+
+    i = 0
+
+    new_log_dictionary = {}
+
+    while i + 1 <= lng:
+        new_log_dictionary[str(time_list[lng - i - 1])] = log_dictionary[str(time_list[lng - i - 1])]
+
+        if (time_list[lng - i - 1]) < (datetime.datetime.now().timestamp() - time_interval):
+            break
+
+        i += 1
+
+
+
+    return new_log_dictionary  # new_spectrum_list is returned
+
+
+
+
+
+
+
 def read_vsc_period_of_time(howmuchspectrums, desired_time, filename="VSC_log"):  #function to read X spectrums starting from given moment of time
 
     log_dictionary = read_vsc_log(filename)
@@ -389,17 +472,68 @@ def read_vsc_period_of_time(howmuchspectrums, desired_time, filename="VSC_log"):
 
     if time_found:
         new_log_dictionary = {}
+
+        i = 0
+
         for i in range(howmuchspectrums):
                 try:
                     new_log_dictionary[str(time_list[t+i])] = log_dictionary[str(time_list[t+i])]
 
                 except:
                     pass
+
+
     else: # in desired time is bigger than most recent spectrum, only single last spectrum is added to new_spectrum_list
         new_log_dictionary = {}
         new_log_dictionary[str(time_list[t-1])] = log_dictionary[str(time_list[t-1])]
         
 
+
+    return new_log_dictionary
+
+
+def read_vsc_period_of_time_wrt_time(time_interval, desired_time,
+                            filename="VSC_log"):  # function to read X spectrums starting from given moment of time
+
+    log_dictionary = read_vsc_log(filename)
+    time_list = fn.get_time_list(log_dictionary)  # list of all time moments of spectrums in full array of spectrums
+
+    lng = len(log_dictionary)
+    # time_list.sort()
+
+    t = 0  # counter for finding desired time
+
+    time_found = False  # error handler if desired time is bigger than last measurement
+
+    for element in time_list:
+        if element >= desired_time:  # ineffective search algorithm, fix later?
+            time_found = True  # finding closest match to desired time
+            break
+        else:
+            t += 1
+
+    if time_found:
+        new_log_dictionary = {}
+        i = 0
+
+        while i+1 <= lng:
+            try:
+                new_log_dictionary[str(time_list[t + i])] = log_dictionary[str(time_list[t + i])]
+
+                if (time_list[lng - i - 1]) < (datetime.datetime.now().timestamp() - time_interval):
+                    break
+
+                i += 1
+
+
+            except:
+                pass
+
+
+
+    else:  # in desired time is bigger than most recent spectrum, only single last spectrum is added to new_spectrum_list
+        new_log_dictionary = {}
+        new_log_dictionary[str(time_list[t - 1])] = log_dictionary[str(time_list[t - 1])]
 
     return new_log_dictionary
 
