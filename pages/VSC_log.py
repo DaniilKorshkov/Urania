@@ -84,8 +84,8 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
         ax1.plot(x_converted, y_mfc_flow)
         ax1.set_xlabel(f'Time')
-        ax1.set_ylabel("MFC flow")
-        ax1.set_title(f'MFC flow vs time')
+        ax1.set_ylabel("MFC flow (cm3/min)")
+        ax1.set_title(f'MFC flow (cm3/min) vs time')
 
         ax1.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax1.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -101,8 +101,8 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
         ax2.plot(x_converted, y_mfm_flow)
         ax2.set_xlabel(f'Time')
-        ax2.set_ylabel("MFM flow")
-        ax2.set_title(f'MFM flow vs time')
+        ax2.set_ylabel("MFM flow (cm3/min)")
+        ax2.set_title(f'MFM flow (cm3/min) vs time')
 
         ax2.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax2.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -117,8 +117,8 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
         ax3.plot(x_converted, y_pg_pressure)
         ax3.set_xlabel(f'Time')
-        ax3.set_ylabel("PG pressure")
-        ax3.set_title(f'PG pressure vs time')
+        ax3.set_ylabel("PG pressure (torr)")
+        ax3.set_title(f'PG pressure (torr) vs time')
 
         ax3.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax3.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -136,8 +136,8 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
         ax4.plot(x_converted, y_pc_pressure)
         ax4.set_xlabel(f'Time')
-        ax4.set_ylabel("PC pressure")
-        ax4.set_title(f'PC pressure vs time')
+        ax4.set_ylabel("PC pressure (torr)")
+        ax4.set_title(f'PC pressure (torr) vs time')
 
         ax4.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax4.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -155,8 +155,8 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
         ax5.plot(x_converted, y_filling_mfm_flow)
         ax5.set_xlabel(f'Time')
-        ax5.set_ylabel("Filling station flow")
-        ax5.set_title(f'Filling station flow vs time')
+        ax5.set_ylabel("Filling station flow (cm3/min)")
+        ax5.set_title(f'Filling station flow (cm3/min) vs time')
 
         ax5.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax5.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -219,7 +219,7 @@ def display_filling_counters(MainConfig="MainConfig"):
 
             integral = JSONoperators.filling_numerical_integration(init_time,final_time)
 
-            st.write(f"Filled amount: {integral}")
+            st.write(f"Filled amount: {integral} liters")
 
 
         except:
