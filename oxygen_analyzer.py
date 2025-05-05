@@ -5,10 +5,13 @@ import time
 import subprocess
 import os
 import serial
+
+import Logging
 from JSONoperators import ReadJSONConfig
 import math
 import datetime
 import JSONoperators as js
+import logging
 
 
 
@@ -50,6 +53,7 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
 
 
 def GetOxygenData(MainConfig="MainConfig"):
+    Logging.MakeLogEntry("Communication with oxygen analyzer initiated")
     port = js.ReadJSONConfig("ox_an","port",MainConfig)
 
 
@@ -76,6 +80,8 @@ def GetOxygenData(MainConfig="MainConfig"):
         pass
     else:
         ret = ret * 10000
+
+    Logging.MakeLogEntry(f"Communication with oxygen analyzer finished with result {ret}")
     return ret
 
 

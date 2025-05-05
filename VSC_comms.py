@@ -23,6 +23,9 @@ import random
 
 
 def SendCommand(MKS_ADDRESS,PORT,command):  #function to send command to VSC via Serial port
+
+    Logging.MakeLogEntry("Communication with VSC initiated")
+
     ser = serial.Serial(
         port=PORT,
         timeout=10.0,
@@ -47,10 +50,14 @@ def SendCommand(MKS_ADDRESS,PORT,command):  #function to send command to VSC via
 
     result = ser.read_until(b"FF")
 
+    Logging.MakeLogEntry(f"Communication with VSC finished with reading {result}")
+
     return result
 
 
 def ReadMFMFlowRate(MainConfig="MainConfig"):  # Function to read flow rate (ml/min) from Mass Flow Meter
+
+
     address = ReadJSONConfig("vsc","address",MainConfig)
     vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
     mfm_port = ReadJSONConfig("vsc","mfm_port",MainConfig)
@@ -60,11 +67,14 @@ def ReadMFMFlowRate(MainConfig="MainConfig"):  # Function to read flow rate (ml/
 
     ret = ConvertEngineerNotation(raw_flowrate)
 
+
     return ret
 
 
 
 def ReadFillingMFMFlowRate(MainConfig="MainConfig"):  # Function to read flow rate (ml/min) from Mass Flow Meter
+
+
     address = ReadJSONConfig("vsc","address",MainConfig)
     vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
     mfm_port = ReadJSONConfig("vsc","filling_mfm_port",MainConfig)
@@ -74,12 +84,16 @@ def ReadFillingMFMFlowRate(MainConfig="MainConfig"):  # Function to read flow ra
 
     ret = ConvertEngineerNotation(raw_flowrate)
 
+
+
     return ret
 
 
 
 
 def ReadPressureGauge(MainConfig="MainConfig"): # Function to read pressure (torr or pascal???) from pressure gauge
+
+
     address = ReadJSONConfig("vsc", "address", MainConfig)
     vsc_serial_port = ReadJSONConfig("vsc", "vsc_serial_port")
     pressure_gauge_port = ReadJSONConfig("vsc", "pressure_gauge_port", MainConfig)
@@ -89,11 +103,15 @@ def ReadPressureGauge(MainConfig="MainConfig"): # Function to read pressure (tor
 
     ret = ConvertEngineerNotation(raw_pressure)
 
+
+
     return ret
 
 
 
 def ReadMFCFlowRate(MainConfig="MainConfig"):  # Function to read flow rate (ml/min) from Mass Flow Controller
+
+
     address = ReadJSONConfig("vsc","address",MainConfig)
     vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
     mfc_port = ReadJSONConfig("vsc","mfc_port",MainConfig)

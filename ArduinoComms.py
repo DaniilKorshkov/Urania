@@ -12,12 +12,14 @@ import datetime
 import json
 import datetime
 import serial.tools.list_ports
+import Logging
 
 #PORT = '/dev/ttyUSB0'  #"COM7"
 #MKS_ADDRESS = "253"
 
 
 def SendCommand(PORT,command):
+    Logging.MakeLogEntry("Communication with arduino board initiated")
 
     #ports = serial.tools.list_ports.comports()
     #print(ports)
@@ -40,6 +42,8 @@ def SendCommand(PORT,command):
     ret = ser.read_until(b"!QRT")
 
     #print(str(ret).split("!"))
+
+    Logging.MakeLogEntry("Communication with arduino board finished")
 
     return ret
 
