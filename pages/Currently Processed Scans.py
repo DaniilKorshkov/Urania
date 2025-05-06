@@ -3,7 +3,7 @@ import StreamlitGUI as sg
 import JSONoperators as js
 import streamlit as st
 import datetime as dt
-from StreamlitGUI import date_time_input
+from StreamlitGUI import date_time_input, TimeInputWidget
 import math
 import pandas as pd
 import pickle as pk
@@ -60,10 +60,10 @@ def DisplayCurrentScans():
     mass_list = []  # list of desired molar masses to be displayed on graph
 
 
-    howmuchspectrums = st.text_input(
-        label="How much spectrums to display: ")  # user is prompted to override amount of displayed spectrums
-    if howmuchspectrums == "":
-        howmuchspectrums = 999  # if not overrided, value is set to default
+    howmuchspectrums = TimeInputWidget()
+
+
+
 
     howmuchspectrums = int(howmuchspectrums)  # assert that howmuchspectrums is int and greater than 0
 

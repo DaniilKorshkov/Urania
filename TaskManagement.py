@@ -262,98 +262,22 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
         lg.MakeLogEntry(f"Sampling terminated as multi inlet valve is not responding")
 
     if not critical_errors:
-
-        intitial_moment_of_time = datetime.datetime.now().timestamp()
-        total_wait_time = purging_time+calmdown_time
-
-
         try:
-            if purging_mfc == "open":
-                vsc.ChangeMFCMode("Open")
-            elif purging_mfc == "close":
-                vsc.ChangeMFCMode("Close")
-            else:
-                vsc.ChangeMFCMode("Setpoint")
-                vsc.ChangeMFCFlowRate(purging_mfc)
+            for i in range(3):
+                VSC_comms.ChangeMFCMode("Open")
+                VSC_comms.LogVSCData()
+                time.sleep(10)
+                VSC_comms.ChangeMFCFlowRate("Close")
+                time.sleep(15)
+            time.sleep(40)
+            VSC_comms.LogVSCData()
 
-
-            lg.MakeLogEntry(f"Purge initiated")
-            lg.MakeLogEntry(f"MFC mode changed to {purging_mfc} for purge for {purging_time} seconds")
-
+            
         except:
             critical_errors = True
-            #interrupted = True
-            lg.MakeLogEntry(f"Sampling terminated as mass flow controller is not responding")
+            lg.MakeLogEntry(f"Sampling failed due to purging error")
 
         if not critical_errors:
-
-            while True:
-                if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= purging_time:
-                    break
-                else:
-                    try:
-                        VSC_comms.LogVSCData("MainConfig")
-                    except:
-                        Logging.MakeLogEntry("Failed to log VSC data")
-                        #NotifyUser("Failed to log VSC data", False)
-
-                    try:
-                        ArduinoComms.LogArduinoData()
-                    except:
-                        Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
-                        #NotifyUser("Failed to log Arduino data", False)
-
-
-
-                    time.sleep(10)
-
-            try:
-
-                if calmdown_mfc == "open":
-                    vsc.ChangeMFCMode("Open")
-                elif calmdown_mfc == "close":
-                    vsc.ChangeMFCMode("Close")
-                else:
-                    vsc.ChangeMFCMode("Setpoint")
-                    vsc.ChangeMFCFlowRate(calmdown_mfc)
-
-                lg.MakeLogEntry(f"MFC mode changed to {calmdown_mfc} for {calmdown_time} seconds to finalize purge")
-
-            except:
-                critical_errors = True
-                #interrupted = True
-                lg.MakeLogEntry(f"Sampling terminated as mass flow controller is not responding")
-
-            if not critical_errors:
-
-                while True:
-                    if (datetime.datetime.now().timestamp() - intitial_moment_of_time) >= total_wait_time:
-                        break
-                    else:
-                        #signal.alarm(10)
-                        try:
-                            VSC_comms.LogVSCData("MainConfig")
-
-                        #except Exception:
-                        #    Logging.MakeLogEntry("Failed to log VSC data due to timeout")
-                        #    NotifyUser("Failed to log VSC data due to timeout", False)
-
-                        except:
-                            Logging.MakeLogEntry("Failed to log VSC data")
-                            NotifyUser("Failed to log VSC data", False)
-
-                        #signal.alarm(10)
-                        try:
-                            ArduinoComms.LogArduinoData()
-                       # except Exception:
-                       #     Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure due to timeout")
-                        #    NotifyUser("Failed to log Arduino data due to timeout", False)
-
-                        except:
-                            Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
-                            #NotifyUser("Failed to log Arduino data", False)
-
-                        time.sleep(10)
 
 
                 lg.MakeLogEntry(f"Purge finalized")
