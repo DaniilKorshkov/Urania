@@ -331,16 +331,13 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
     Settings = js.ReadJSONConfig("manual_inspect_settings","settings")   # settings are imported from JSON config
 
-    how_to_get_name = st.radio("How to get spectrum filename?",["default","dropdown menu"])
-    if how_to_get_name == "default":
-        spectrum_name = Settings["spectrum_filename"]
-    else:
-        spectrum_name = fm.SpectrumsDropdownMenu()
+
+
+    spectrum_name = fm.SpectrumsDropdownMenu()
 
     st.write(f"Reading logs from {str(spectrum_name)} source")
-    parsing_mode = st.selectbox("Parsing mode",["default","last","search"])
-    if parsing_mode == "default":
-        parsing_mode = Settings["parsing_mode"]
+    parsing_mode = st.selectbox("Parsing mode",["last","search"])
+
     st.write(f"{parsing_mode} mode of operation")
 
     time_moment = Settings["default_moment_of_time"]

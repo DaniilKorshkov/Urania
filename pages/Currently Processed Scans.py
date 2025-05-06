@@ -97,10 +97,10 @@ def DisplayCurrentScans():
         try:
 
             if parsing_mode == "last":
-                metadata, spectrum_list, oxygen_list = js.read_last_spectrums(spectrum_name,
+                metadata, spectrum_list, oxygen_list = js.read_last_spectrums_for_time(spectrum_name,
                                                                               howmuchspectrums)  # most recent spectrums are imported from JSON file
             else:
-                metadata, spectrum_list, oxygen_list = js.read_period_of_time(spectrum_name, howmuchspectrums,
+                metadata, spectrum_list, oxygen_list = js.read_period_of_time_wrt_time(spectrum_name, howmuchspectrums,
                                                                               time_moment)
 
             if metadata["is_a_spectrum"] != "True":  # verification that provided file is a spectrum

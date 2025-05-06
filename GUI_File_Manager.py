@@ -67,11 +67,11 @@ def GUI_File_Info(filename,MainConfig="MainConfig"):
             amt_of_scans = dictline["amount_of_scans"]
             step = dictline["step"]
             try:
-                purging_time = dictline["purging_time"]
-                calmdown_time = dictline["calmdown_time"]
-                purging_mfc = dictline["purging_mfc"]
-                calmdown_mfc = dictline["calmdown_mfc"]
-                return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}, purg.time:{purging_time}, purg.mfc: {purging_mfc}, calmdown time:{calmdown_time}, calmdown mfc:{calmdown_mfc}"
+                #purging_time = dictline["purging_time"]
+                #calmdown_time = dictline["calmdown_time"]
+                #purging_mfc = dictline["purging_mfc"]
+                #calmdown_mfc = dictline["calmdown_mfc"]
+                return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}"
             except:
                 return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}"
 
@@ -94,12 +94,12 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
     M_per_minute = JSONoperators.ReadJSONConfig("spectrometer_parameters","M_per_minute")
     #spectrum_scans = int((M_per_minute*minutes_of_scan)/)
 
-    purging_time = st.text_input("Type purging time in seconds")
-    calmdown_time = st.text_input("Type calmdown time in seconds")
-    purging_mfc = st.text_input("Type MFC behaviour for purging (open,close or number from 20 to 1000)")
-    purging_mfc = purging_mfc.lower()
-    calmdown_mfc = st.text_input("Type MFC behaviour for calmdown (open,close or number from 20 to 1000)")
-    calmdown_mfc = calmdown_mfc.lower()
+    #purging_time = st.text_input("Type purging time in seconds")
+    #calmdown_time = st.text_input("Type calmdown time in seconds")
+    #purging_mfc = st.text_input("Type MFC behaviour for purging (open,close or number from 20 to 1000)")
+    #purging_mfc = purging_mfc.lower()
+    #calmdown_mfc = st.text_input("Type MFC behaviour for calmdown (open,close or number from 20 to 1000)")
+    #calmdown_mfc = calmdown_mfc.lower()
 
 
     #scans = st.text_input(label="Type amount of scans")
@@ -179,45 +179,45 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
 
 
 
-        try:
-            calmdown_time = int(calmdown_time)
-            if calmdown_time < 1:
-                calmdown_time = 1
-                st.write("Calmdown time set to 1")
-        except:
-            spectrum_is_valid = False
-            st.write("Invalid calmdown time")
+        #try:
+         #   calmdown_time = int(calmdown_time)
+          #  if calmdown_time < 1:
+          #      calmdown_time = 1
+          #      st.write("Calmdown time set to 1")
+        #except:
+         #   spectrum_is_valid = False
+         #   st.write("Invalid calmdown time")
 
-        try:
-            purging_time = int(purging_time)
-            if purging_time < 1:
-                purging_time = 1
-                st.write("Purging time set to 1")
-        except:
-            spectrum_is_valid = False
-            st.write("Invalid calmdown time")
-
-
-
-        try:
+        #try:
+         #   purging_time = int(purging_time)
+          #  if purging_time < 1:
+        #        purging_time = 1
+         #       st.write("Purging time set to 1")
+        #except:
+         #   spectrum_is_valid = False
+          #  st.write("Invalid calmdown time")
 
 
-            if not ( (calmdown_mfc == "open") or (calmdown_mfc == "close")):
-                calmdown_mfc = int(calmdown_mfc)
-                assert calmdown_mfc > 19
-                assert  calmdown_mfc < 1001
-        except:
-            spectrum_is_valid = False
-            st.write("Invalid calmdown MFC behaviour")
 
-        try:
-            if not ((purging_mfc == "open") or (purging_mfc == "close")):
-                purging_mfc = int(purging_mfc)
-                assert purging_mfc > 19
-                assert  purging_mfc < 1001
-        except:
-            spectrum_is_valid = False
-            st.write("Invalid purging MFC behaviour")
+        #try:
+
+
+         #   if not ( (calmdown_mfc == "open") or (calmdown_mfc == "close")):
+          #      calmdown_mfc = int(calmdown_mfc)
+           #     assert calmdown_mfc > 19
+            #    assert  calmdown_mfc < 1001
+        #except:
+         #   spectrum_is_valid = False
+          #  st.write("Invalid calmdown MFC behaviour")
+
+        #try:
+         #   if not ((purging_mfc == "open") or (purging_mfc == "close")):
+          #      purging_mfc = int(purging_mfc)
+           #     assert purging_mfc > 19
+            #    assert  purging_mfc < 1001
+        #except:
+         #   spectrum_is_valid = False
+          #  st.write("Invalid purging MFC behaviour")
 
 
 
@@ -230,10 +230,10 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
             first_line["amount_of_scans"] = scans
             first_line["step"] = step
 
-            first_line["purging_time"] = purging_time
-            first_line["calmdown_time"] = calmdown_time
-            first_line["purging_mfc"] = purging_mfc
-            first_line["calmdown_mfc"] = calmdown_mfc
+            #first_line["purging_time"] = purging_time
+            #first_line["calmdown_time"] = calmdown_time
+            #first_line["purging_mfc"] = purging_mfc
+            #first_line["calmdown_mfc"] = calmdown_mfc
 
             line = json.dumps(first_line)
 
@@ -341,43 +341,43 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
 
 
 
-        try:
-            calmdown_time = int(calmdown_time)
-            if calmdown_time < 1:
-                calmdown_time = 1
-                st.write("Calmdown time set to 1")
-        except:
-            spectrum_is_valid = False
-            st.write("Invalid calmdown time")
+        #try:
+         #   calmdown_time = int(calmdown_time)
+          #  if calmdown_time < 1:
+         #       calmdown_time = 1
+          #      st.write("Calmdown time set to 1")
+        #except:
+         #   spectrum_is_valid = False
+          #  st.write("Invalid calmdown time")
 
-        try:
-            purging_time = int(purging_time)
-            if purging_time < 1:
-                purging_time = 1
-                st.write("Purging time set to 1")
-        except:
-            spectrum_is_valid = False
-            st.write("Invalid calmdown time")
+        #try:
+        #    purging_time = int(purging_time)
+        #    if purging_time < 1:
+         #       purging_time = 1
+         #       st.write("Purging time set to 1")
+        #except:
+         #   spectrum_is_valid = False
+          #  st.write("Invalid calmdown time")
 
 
-        try:
+        #try:
 
-            if not ((calmdown_mfc == "open") or (calmdown_mfc == "close")):
-                calmdown_mfc = int(calmdown_mfc)
-                assert calmdown_mfc > 19
-                assert  calmdown_mfc < 1001
-        except:
-            spectrum_is_valid = False
-            st.write("Invalid calmdown MFC behaviour")
+         #   if not ((calmdown_mfc == "open") or (calmdown_mfc == "close")):
+          #      calmdown_mfc = int(calmdown_mfc)
+           #     assert calmdown_mfc > 19
+            #    assert  calmdown_mfc < 1001
+        #except:
+         #   spectrum_is_valid = False
+          #  st.write("Invalid calmdown MFC behaviour")
 
-        try:
-            if not ((purging_mfc == "open") or (purging_mfc == "close")):
-                purging_mfc = int(purging_mfc)
-                assert purging_mfc > 19
-                assert  purging_mfc < 1001
-        except:
-            spectrum_is_valid = False
-            st.write("Invalid purging MFC behaviour")
+        #try:
+         #   if not ((purging_mfc == "open") or (purging_mfc == "close")):
+          #      purging_mfc = int(purging_mfc)
+           #     assert purging_mfc > 19
+            #    assert  purging_mfc < 1001
+        #except:
+         #   spectrum_is_valid = False
+          #  st.write("Invalid purging MFC behaviour")
 
 
 
@@ -394,10 +394,10 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
                 first_line["amount_of_scans"] = scans
                 first_line["step"] = step
 
-                first_line["purging_time"] = purging_time
-                first_line["calmdown_time"] = calmdown_time
-                first_line["purging_mfc"] = purging_mfc
-                first_line["calmdown_mfc"] = calmdown_mfc
+                #first_line["purging_time"] = purging_time
+                #first_line["calmdown_time"] = calmdown_time
+                #first_line["purging_mfc"] = purging_mfc
+                #first_line["calmdown_mfc"] = calmdown_mfc
 
                 newname = f"{i+1}_{name}"
 
@@ -429,8 +429,8 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
 
                 new_task_data = {"class": "task", "name": newname, "type": "regular", "valve_position": i+1,
                                  "filename": filename,
-                                 "scans": spectrum_scans,
-                                 "purging_time": purging_time,"calmdown_time": calmdown_time, "purging_mfc": purging_mfc, "calmdown_mfc": calmdown_mfc}
+                                 "scans": spectrum_scans}
+
 
 
 

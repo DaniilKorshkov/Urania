@@ -161,39 +161,46 @@ def GetRegularTask(config="MainConfig"):  #function to get regular task name
     if tasklist_name == None:
         raise NameError("Task List is not specified in Main Config")
     task_amount = GetAmountOfRegularTasks(config)
-    handle = open(tasklist_name,'r')
-    for line in handle:
-        if line == "" or line == "\n" or line[0] == "#":
-            continue
-        dict_line = json.loads(line)
-        if dict_line["class"] == "regular_log":
-            current_task_number = (dict_line["last_executed"] + 1) % task_amount  #number of previously executed task updated
-            dict_line["last_executed"] = current_task_number
-            text_copy.append(json.dumps(dict_line))
-        else:
-            text_copy.append(line.strip("\n"))
 
-    handle.close()
+    if task_amount == 0:
+        return False, None
+    else:
+        if_tasks_found = True
 
-    i=0
 
-    handle = open(tasklist_name,'r')
-    for line in handle:
+        handle = open(tasklist_name,'r')
+        for line in handle:
+            if line == "" or line == "\n" or line[0] == "#":
+                continue
+            dict_line = json.loads(line)
+            if dict_line["class"] == "regular_log":
+                current_task_number = (dict_line["last_executed"] + 1) % task_amount  #number of previously executed task updated
+                dict_line["last_executed"] = current_task_number
+                text_copy.append(json.dumps(dict_line))
+            else:
+                text_copy.append(line.strip("\n"))
 
-        if line == "" or line == "\n" or line[0] == "#":
-            continue
+        handle.close()
 
-        dict_line = json.loads(line)
-        if dict_line["class"] == "task":
-            if dict_line["type"] == "regular":
-                if i == current_task_number:
-                    task_to_execute = dict_line["name"]
-                i += 1
-    handle.close()
+        i=0
 
-    UpdateTaskList(tasklist_name, text_copy)
+        handle = open(tasklist_name,'r')
+        for line in handle:
 
-    return task_to_execute
+            if line == "" or line == "\n" or line[0] == "#":
+                continue
+
+            dict_line = json.loads(line)
+            if dict_line["class"] == "task":
+                if dict_line["type"] == "regular":
+                    if i == current_task_number:
+                        task_to_execute = dict_line["name"]
+                    i += 1
+        handle.close()
+
+        UpdateTaskList(tasklist_name, text_copy)
+
+        return if_tasks_found,task_to_execute
 
 
 
@@ -207,7 +214,7 @@ def GetTask(config="MainConfig"):  # function that checks for emergency tasks; f
     if not ifemergencytasks:
         ifscheduledtasks, taskname = CheckForScheduledTasks(config)
         if not ifscheduledtasks:
-            taskname = GetRegularTask(config)
+            ifregulartasks, taskname = GetRegularTask(config)
 
 
 
@@ -233,21 +240,18 @@ def GetTaskData(taskname, config="MainConfig"):
                 valve_position = dict_line["valve_position"]
 
 
-                purging_time = dict_line["purging_time"]
-                calmdown_time = dict_line["calmdown_time"]
-                purging_mfc = dict_line["purging_mfc"]
-                calmdown_mfc = dict_line["calmdown_mfc"]
+
 
                 break
         except:
             pass
     handle.close()
 
-    return spectrum_filename,amount_of_scans, valve_position, purging_time, calmdown_time, purging_mfc, calmdown_mfc
+    return spectrum_filename,amount_of_scans, valve_position
 
 
 
-def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, purging_mfc, calmdown_mfc):
+def MakeScan(filename,valve_number,amount_of_scans):
     #signal.signal(signal.SIGALRM, TimeoutHandler())
     #global interrupted
     critical_errors = False
@@ -263,16 +267,16 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
 
     if not critical_errors:
         try:
-            for i in range(3):
+            for i in range(5):
                 VSC_comms.ChangeMFCMode("Open")
                 VSC_comms.LogVSCData()
-                time.sleep(10)
+                time.sleep(20)
                 VSC_comms.ChangeMFCFlowRate("Close")
-                time.sleep(15)
-            time.sleep(40)
+                time.sleep(25)
+            time.sleep(30)
             VSC_comms.LogVSCData()
 
-            
+
         except:
             critical_errors = True
             lg.MakeLogEntry(f"Sampling failed due to purging error")
@@ -347,29 +351,35 @@ def MakeScan(filename,valve_number,amount_of_scans,purging_time, calmdown_time, 
 
 def DoTask(config="MainConfig"):
     taskname = GetTask(config)
-    lg.MakeLogEntry(f"Task {taskname} initiated")
 
-    handle = open("__currenttaskname__","w")
-    handle.write(taskname)
-    handle.close()
-
-    spectrum_filename, amount_of_scans, valve_position, purging_time, calmdown_time, purging_mfc, calmdown_mfc = GetTaskData(taskname,config)
-    critical_errors = MakeScan(spectrum_filename, valve_position, amount_of_scans, purging_time, calmdown_time, purging_mfc, calmdown_mfc)
-
-    os.system("rm __currenttaskname__")
-
-    if not critical_errors:
-        lg.MakeLogEntry(f"Task {taskname} finished without errors\n")
+    if taskname == None:
+        lg.MakeLogEntry(f"Sampling terminated due to empty task list\n")
+        return True
     else:
-        lg.MakeLogEntry(f"Task {taskname} finished with error\n")
 
-        NotifyUser("Sampling terminated due to error",True)
+        lg.MakeLogEntry(f"Task {taskname} initiated")
+
+        handle = open("__currenttaskname__","w")
+        handle.write(taskname)
+        handle.close()
+
+        spectrum_filename, amount_of_scans, valve_position  = GetTaskData(taskname,config)
+        critical_errors = MakeScan(spectrum_filename, valve_position, amount_of_scans)
+
+        os.system("rm __currenttaskname__")
+
+        if not critical_errors:
+            lg.MakeLogEntry(f"Task {taskname} finished without errors\n")
+        else:
+            lg.MakeLogEntry(f"Task {taskname} finished with error\n")
+
+            NotifyUser("Sampling terminated due to error",True)
 
 
 
 
 
-    return critical_errors
+        return critical_errors
 
 
 
