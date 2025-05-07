@@ -377,13 +377,8 @@ def display_data():
         #time_moment = st.text_input("Moment of time to search for: ")
         #time_moment = int(date_time_input())
 
-        select_mode = st.selectbox(label="Select how to get time input: ",options=("Current","Select"))
 
-        match select_mode:
-            case "Current":
-                time_moment = int((datetime.datetime.now()).timestamp())
-            case "Select":
-                time_moment = int(date_time_input())
+        time_moment = int(date_time_input())
 
 
 

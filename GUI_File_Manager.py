@@ -183,7 +183,7 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
 
 
 
-            
+
 
         try:
             if accuracy == None or accuracy == "":

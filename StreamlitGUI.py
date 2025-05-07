@@ -334,80 +334,84 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
 
     spectrum_name = fm.SpectrumsDropdownMenu()
+    if spectrum_name == None:
 
-    st.write(f"Reading logs from {str(spectrum_name)} source")
-    parsing_mode = st.selectbox("Parsing mode",["last","search"])
-
-    st.write(f"{parsing_mode} mode of operation")
-
-    time_moment = Settings["default_moment_of_time"]
-    if parsing_mode == "search":  #get desired moment of time is parsing mode is search
-        #time_moment = st.text_input("Moment of time to search for: ")
-        #time_moment = int(date_time_input())
-
-
-        time_moment = int(date_time_input())
-
-
-
-        st.write(f"Time = {dt.datetime.fromtimestamp(time_moment)}")
-
-
-
-
-
-    howmuchspectrums = TimeInputWidget()
-
-
-
-
-
-    howmuchspectrums = int(howmuchspectrums) # assert that howmuchspectrums is int and greater than 0
-    assert howmuchspectrums > 0
-
-    if parsing_mode == "last":
-            metadata, spectrum_list, oxygen_list = js.read_last_spectrums_for_time(spectrum_name, howmuchspectrums)   # most recent spectrums are imported from JSON file
+        st.write("No spectrum files found")
     else:
-            metadata, spectrum_list, oxygen_list = js.read_period_of_time_wrt_time(spectrum_name,howmuchspectrums,time_moment)
 
-    if metadata["is_a_spectrum"] != "True":   # verification that provided file is a spectrum
-            st.write("Imported file is not valid!")
+        st.write(f"Reading logs from {str(spectrum_name)} source")
+        parsing_mode = st.selectbox("Parsing mode",["last","search"])
 
-    initial_value, step = metadata["initial_value"],metadata["step"]
+        st.write(f"{parsing_mode} mode of operation")
+
+        #time_moment = Settings["default_moment_of_time"]
+        if parsing_mode == "search":  #get desired moment of time is parsing mode is search
+            #time_moment = st.text_input("Moment of time to search for: ")
+            #time_moment = int(date_time_input())
 
 
-
-
-
-
-
-    if Settings["do_display_const_time"] == "True":
-                islogarithmic = st.radio(f"Do display logarithmic scalе?", ["True", "False"])
-                isppm = st.radio(f"Do convert to ppm?", ["True", "False"])
-                constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islogarithmic,isppm)
-
-    if Settings["do_display_const_mass"] == "True":
-                islogarithmic2 = st.radio(f"Do display logarithmic scale2?", ["True", "False"])
-                isppm2 = st.radio(f"Do convert to ppm2?", ["True", "False"])
-                constant_mass_spectrum(spectrum_list,oxygen_list,Settings["default_masses"], initial_value, step, islogarithmic2, isppm2)
-
-    find_abnormalities = st.button("Find abnormalities")
-    if find_abnormalities:
-                spectrum_filename = Settings["spectrum_filename"]
-                if_abnormalities,log_entries_list = ar.AnalyseFile(spectrum_filename)
-                if if_abnormalities:
-                    for element in log_entries_list:
-                        st.write(element)
-                else:
-                    st.write("No abnormalities found in this file")
+            time_moment = int(date_time_input())
 
 
 
-    #except:
-        #st.write("Bad input in howmuchspectrums/momentoftime line!!!")
+            st.write(f"Time = {dt.datetime.fromtimestamp(time_moment)}")
 
-    final_load_time = datetime.datetime.now()
-    #print(f"Total time = {final_load_time - initial_load_time}")
+
+
+
+
+        howmuchspectrums = TimeInputWidget()
+
+
+
+
+
+        howmuchspectrums = int(howmuchspectrums) # assert that howmuchspectrums is int and greater than 0
+        assert howmuchspectrums > 0
+
+        if parsing_mode == "last":
+                metadata, spectrum_list, oxygen_list = js.read_last_spectrums_for_time(spectrum_name, howmuchspectrums)   # most recent spectrums are imported from JSON file
+        else:
+                metadata, spectrum_list, oxygen_list = js.read_period_of_time_wrt_time(spectrum_name,howmuchspectrums,time_moment)
+
+        if metadata["is_a_spectrum"] != "True":   # verification that provided file is a spectrum
+                st.write("Imported file is not valid!")
+
+        initial_value, step = metadata["initial_value"],metadata["step"]
+
+
+
+
+
+
+
+
+        islogarithmic = st.radio(f"Do display logarithmic scalе?", ["True", "False"])
+        isppm = st.radio(f"Do convert to ppm?", ["True", "False"])
+        constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islogarithmic,isppm)
+
+
+        islogarithmic2 = st.radio(f"Do display logarithmic scale2?", ["True", "False"])
+        isppm2 = st.radio(f"Do convert to ppm2?", ["True", "False"])
+        constant_mass_spectrum(spectrum_list,oxygen_list,Settings["default_masses"], initial_value, step, islogarithmic2, isppm2)
+
+        find_abnormalities = st.button("Find abnormalities")
+        if find_abnormalities:
+
+                    if_abnormalities,log_entries_list = ar.AnalyseFile(spectrum_name)
+                    if if_abnormalities:
+                        for element in log_entries_list:
+                            st.write(element)
+                    else:
+                        st.write("No abnormalities found in this file")
+
+
+
+        #except:
+            #st.write("Bad input in howmuchspectrums/momentoftime line!!!")
+
+        final_load_time = datetime.datetime.now()
+        #print(f"Total time = {final_load_time - initial_load_time}")
 
 
 def TestGUI():  # test function that is not used

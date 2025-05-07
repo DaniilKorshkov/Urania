@@ -202,8 +202,11 @@ def read_period_of_time_wrt_time(filename, time_interval, initial_time):  #funct
     else: # in desired time is bigger than most recent spectrum, only single last spectrum is added to new_spectrum_list
         new_spectrum_list = {}
         new_oxygen_list = {}
-        new_spectrum_list[str(time_list[t-1])] = spectrum_list[str(time_list[t-1])]
-        new_oxygen_list[str(time_list[t - 1])] = oxygen_list[str(time_list[t - 1])]
+
+        if len(time_list) > 0:
+
+            new_spectrum_list[str(time_list[t - 1])] = spectrum_list[str(time_list[t-1])]
+            new_oxygen_list[str(time_list[t - 1])] = oxygen_list[str(time_list[t - 1])]
 
 
     return metadata, new_spectrum_list, new_oxygen_list
@@ -532,8 +535,10 @@ def read_vsc_period_of_time_wrt_time(time_interval, desired_time,
 
 
     else:  # in desired time is bigger than most recent spectrum, only single last spectrum is added to new_spectrum_list
+
         new_log_dictionary = {}
-        new_log_dictionary[str(time_list[t - 1])] = log_dictionary[str(time_list[t - 1])]
+        if len(time_list) > 0:
+            new_log_dictionary[str(time_list[t - 1])] = log_dictionary[str(time_list[t - 1])]
 
     return new_log_dictionary
 

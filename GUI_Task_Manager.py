@@ -40,40 +40,45 @@ def display_all_tasks(MainConfig="MainConfig"):
             pass
     handle.close()
 
-    st.write("Emergency Tasks: ")
-    st.markdown("")
-    for task in emergency_task_list:
-        name = task["name"]
-        valve = task["valve_position"]
-        filename = task["filename"]
-        scans = task["scans"]
-        execs_left = task["how_much_executions"]
-        st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, scans: {scans}, executions left: {execs_left}")
 
-        delete = st.button(f"delete {name}")
+    if len(emergency_task_list) > 0:
+        st.write("Emergency Tasks: ")
+        st.markdown("")
+        for task in emergency_task_list:
+            name = task["name"]
+            valve = task["valve_position"]
+            filename = task["filename"]
+            scans = task["scans"]
+            execs_left = task["how_much_executions"]
+            st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, data entries per task: {scans}, executions left: {execs_left}")
 
-        if delete:
-            delete_task(name)
+            delete = st.button(f"delete {name}")
+
+            if delete:
+                delete_task(name)
+    else:
+        st.write("No emergency tasks currenty specified")
 
     for i in range(4):
         st.markdown("")
 
+    if len(scheduled_task_list) > 0:
+        st.write("Scheduled Tasks: ")
+        for task in scheduled_task_list:
+            name = task["name"]
+            valve = task["valve_position"]
+            filename = task["filename"]
+            scans = task["scans"]
+            freq = task["freq"]
+            st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, data entries per task: {scans}, frequency: {freq}")
 
-    st.write("Scheduled Tasks: ")
-    for task in scheduled_task_list:
-        name = task["name"]
-        valve = task["valve_position"]
-        filename = task["filename"]
-        scans = task["scans"]
-        freq = task["freq"]
-        st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, scans: {scans}, frequency: {freq}")
+            delete = st.button(f"delete {name}")
 
-        delete = st.button(f"delete {name}")
+            if delete:
+                delete_task(name)
 
-        if delete:
-            delete_task(name)
-
-
+    else:
+        st.write("No scheduled tasks currenty specified")
 
 
     for i in range(4):
@@ -82,43 +87,44 @@ def display_all_tasks(MainConfig="MainConfig"):
 
     task_counter = 0
 
-    st.write("Regular Tasks: ")
-    for task in regular_task_list:
-        name = task["name"]
-        valve = task["valve_position"]
-        filename = task["filename"]
-        scans = task["scans"]
+    if len(regular_task_list) > 0:
+        st.write("Regular Tasks: ")
+        for task in regular_task_list:
+            name = task["name"]
+            valve = task["valve_position"]
+            filename = task["filename"]
+            scans = task["scans"]
 
 
-        st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, data entries per task: {scans}")
-        try:
-            file_info = GUI_File_Manager.GUI_File_Info(filename, MainConfig)
-            st.write(file_info)
-        except:
-            pass
-
-        col1,col2,col3=st.columns(3)
-        with col1:
-            delete = st.button(f"delete {name}")
-        with col2:
-            move_up = st.button(f"move {name} up")
-        with col3:
-            move_down = st.button(f"move {name} down")
-
-
-        if delete:
-            delete_task(name)
-        if move_up:
+            st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, data entries per task: {scans}")
             try:
-                change_task_position(task_counter,"up",regular_task_list, scheduled_task_list, emergency_task_list, metadata)
+                file_info = GUI_File_Manager.GUI_File_Info(filename, MainConfig)
+                st.write(file_info)
             except:
-                st.write("Cannot move this task up")
-        if move_down:
-            try:
-                change_task_position(task_counter, "down", regular_task_list, scheduled_task_list, emergency_task_list,
-                                 metadata)
-            except:
-                st.write("Cannot move this task down")
+                pass
+
+            col1,col2,col3=st.columns(3)
+            with col1:
+                delete = st.button(f"delete {name}")
+            with col2:
+                move_up = st.button(f"move {name} up")
+            with col3:
+                move_down = st.button(f"move {name} down")
+
+
+            if delete:
+                delete_task(name)
+            if move_up:
+                try:
+                    change_task_position(task_counter,"up",regular_task_list, scheduled_task_list, emergency_task_list, metadata)
+                except:
+                    st.write("Cannot move this task up")
+            if move_down:
+                try:
+                    change_task_position(task_counter, "down", regular_task_list, scheduled_task_list, emergency_task_list,
+                                     metadata)
+                except:
+                    st.write("Cannot move this task down")
 
 
 
@@ -128,7 +134,9 @@ def display_all_tasks(MainConfig="MainConfig"):
 
 
 
-        task_counter += 1
+            task_counter += 1
+    else:
+        st.write("No regular tasks currenty specified")
 
 
     for i in range(4):
