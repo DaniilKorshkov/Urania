@@ -12,6 +12,20 @@ import GUI_File_Manager as fm
 
 
 def display_all_tasks(MainConfig="MainConfig"):
+    try:
+        handle = open("__currenttaskname__", "r")
+        for line in handle:
+            st.write(f"Currently processed task: {line}")
+        handle.close()
+    except:
+        st.write(f"No tasks currently processed")
+
+
+    for i in range(4):
+        st.markdown("")
+
+
+
 
 
     emergency_task_list = []

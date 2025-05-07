@@ -10,13 +10,7 @@ heatstat, capheatstat, pumpstat = rga.heating_info("MainConfig")  # query RGA fo
 filamentstatus, activefilament = rga.rga_filament_info("MainConfig")
 
 
-try:
-    handle = open("__currenttaskname__","r")
-    for line in handle:
-        st.write(f"Currently processed task: {line}")
-    handle.close()
-except:
-    st.write(f"No tasks currently processed")
+
 
 
 
