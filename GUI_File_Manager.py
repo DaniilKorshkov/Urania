@@ -66,12 +66,15 @@ def GUI_File_Info(filename,MainConfig="MainConfig"):
             init_scan = dictline["initial_value"]
             amt_of_scans = dictline["amount_of_scans"]
             step = dictline["step"]
+            accuracy = dictline["accuracy"]
+            purge_cycles = dictline["purge_cycles"]
+
             try:
                 #purging_time = dictline["purging_time"]
                 #calmdown_time = dictline["calmdown_time"]
                 #purging_mfc = dictline["purging_mfc"]
                 #calmdown_mfc = dictline["calmdown_mfc"]
-                return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}"
+                return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}, accuracy:{accuracy}, amount of purge cycles:{purge_cycles}"
             except:
                 return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}"
 
@@ -90,6 +93,9 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
     valve = st.text_input(label="Type multi inlet valve position")
     init_m = st.text_input(label="Type initial molar mass")
     final_m = st.text_input(label="Type final molar mass")
+    step = st.text_input(label="Type step")
+    accuracy = st.text_input(label="Enter scan accuracy from 1 to 8 (default - 5)")
+    purge_cycles = st.text_input(label="Enter amount of purge cycles (default - 5)")
     minutes_of_scan = st.text_input("How much minutes data is recorded? (for 16 files at a time creation only, otherwise it is specified in TaskManager)")
     M_per_minute = JSONoperators.ReadJSONConfig("spectrometer_parameters","M_per_minute")
     #spectrum_scans = int((M_per_minute*minutes_of_scan)/)
@@ -102,9 +108,12 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
     #calmdown_mfc = calmdown_mfc.lower()
 
 
+
+
+
     #scans = st.text_input(label="Type amount of scans")
 
-    step = st.text_input(label="Type step")
+
 
 
     create_new_spectrum = st.button("Create spectrum")
@@ -174,6 +183,54 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
 
 
 
+            
+
+        try:
+            if accuracy == None or accuracy == "":
+                accuracy = 5
+            accuracy = int(accuracy)
+
+            accuracy_is_int = True
+
+        except:
+            spectrum_is_valid = False
+            st.write("Provided accuracy is not a valid number")
+            accuracy_is_int = False
+
+        if accuracy_is_int:
+            try:
+
+                assert accuracy >= 1
+
+            except:
+                spectrum_is_valid = False
+                st.write("Provided accuracy is less than one")
+
+            try:
+
+                assert accuracy <= 8
+
+            except:
+                spectrum_is_valid = False
+                st.write("Provided accuracy is greater than eight")
+
+
+
+        try:
+            if purge_cycles == None or purge_cycles == "":
+                purge_cycles = 5
+            purge_cycles = int(purge_cycles)
+
+            if purge_cycles < 1:
+                purge_cycles = 1
+
+
+        except:
+            spectrum_is_valid = False
+            st.write("Provided amount of purge cycles is not an integer")
+
+
+
 
 
 
@@ -229,6 +286,8 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
             first_line["initial_value"] = init_m
             first_line["amount_of_scans"] = scans
             first_line["step"] = step
+            first_line["accuracy"] = accuracy
+            first_line["purge_cycles"] = purge_cycles
 
             #first_line["purging_time"] = purging_time
             #first_line["calmdown_time"] = calmdown_time
@@ -322,7 +381,9 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
         try:
             M_per_minute = int(JSONoperators.ReadJSONConfig("spectrometer_parameters", "M_per_minute"))
 
-            spectrum_scans = int((M_per_minute * int(minutes_of_scan)) /scans)
+            spectrum_scans = int((M_per_minute * minutes_of_scan) /scans)
+            if spectrum_scans == 0:
+                spectrum_scans = 1
         except:
             spectrum_is_valid = False
             st.write("Failed to calculate required amount of scans")
@@ -336,6 +397,57 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
         except:
             spectrum_is_valid = False
             st.write("Invalid data entries amount")
+
+
+
+
+        try:
+            if accuracy == None or accuracy == "":
+                accuracy = 5
+            accuracy = int(accuracy)
+
+            accuracy_is_int = True
+
+        except:
+            spectrum_is_valid = False
+            st.write("Provided accuracy is not a valid number")
+            accuracy_is_int = False
+
+
+
+        if accuracy_is_int:
+            try:
+
+                assert accuracy >= 1
+
+            except:
+                spectrum_is_valid = False
+                st.write("Provided accuracy is less than one")
+
+
+
+            try:
+
+                assert accuracy <= 8
+
+            except:
+                spectrum_is_valid = False
+                st.write("Provided accuracy is greater than eight")
+
+
+
+        try:
+            if purge_cycles == None or purge_cycles == "":
+                purge_cycles = 5
+            purge_cycles = int(purge_cycles)
+
+            if purge_cycles < 1:
+                purge_cycles = 1
+
+
+        except:
+            spectrum_is_valid = False
+            st.write("Provided amount of purge cycles is not an integer")
 
 
 
@@ -393,6 +505,9 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
                 first_line["initial_value"] = init_m
                 first_line["amount_of_scans"] = scans
                 first_line["step"] = step
+
+                first_line["accuracy"] = accuracy
+                first_line["purge_cycles"] = purge_cycles
 
                 #first_line["purging_time"] = purging_time
                 #first_line["calmdown_time"] = calmdown_time

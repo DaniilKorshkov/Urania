@@ -238,6 +238,8 @@ def GetTaskData(taskname, config="MainConfig"):
                 spectrum_filename = dict_line["filename"]
                 amount_of_scans = dict_line["scans"]
                 valve_position = dict_line["valve_position"]
+                accuracy = dict_line["accuracy"]
+                purge_cycles = dict_line["purge_cycles"]
 
 
 
@@ -247,11 +249,11 @@ def GetTaskData(taskname, config="MainConfig"):
             pass
     handle.close()
 
-    return spectrum_filename,amount_of_scans, valve_position
+    return spectrum_filename,amount_of_scans, valve_position, accuracy, purge_cycles
 
 
 
-def MakeScan(filename,valve_number,amount_of_scans):
+def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
     #signal.signal(signal.SIGALRM, TimeoutHandler())
     #global interrupted
     critical_errors = False
@@ -267,7 +269,7 @@ def MakeScan(filename,valve_number,amount_of_scans):
 
     if not critical_errors:
         try:
-            for i in range(5):
+            for i in range(purge_cycles):
                 VSC_comms.ChangeMFCMode("Open")
                 VSC_comms.LogVSCData()
                 time.sleep(20)
@@ -288,7 +290,7 @@ def MakeScan(filename,valve_number,amount_of_scans):
 
                 for i in range(amount_of_scans):
                     try:
-                        spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename)
+                        spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename, accuracy=accuracy)
 
                         if (ErrorMessage != None) and (ErrorMessage != "TIMEOUT") and (not ("Failed to create measurement" in str(ErrorMessage))) and (not ("LinkDown" in ErrorMessage)):
                             critical_errors = True
