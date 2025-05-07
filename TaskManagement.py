@@ -365,8 +365,8 @@ def DoTask(config="MainConfig"):
         handle.write(taskname)
         handle.close()
 
-        spectrum_filename, amount_of_scans, valve_position  = GetTaskData(taskname,config)
-        critical_errors = MakeScan(spectrum_filename, valve_position, amount_of_scans)
+        spectrum_filename, amount_of_scans, valve_position, accuracy, purge_cycles  = GetTaskData(taskname,config)
+        critical_errors = MakeScan(spectrum_filename, valve_position, amount_of_scans, accuracy, purge_cycles)
 
         os.system("rm __currenttaskname__")
 
