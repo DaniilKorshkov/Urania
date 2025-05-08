@@ -186,7 +186,7 @@ def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islo
         if do_display_table:
             yylabel = ylabel.strip("log10")
             st.write(pd.DataFrame({
-                'Molar mass': mass_range,
+                'M/Z': mass_range,
                 f'{yylabel}': display_range}))
 
 

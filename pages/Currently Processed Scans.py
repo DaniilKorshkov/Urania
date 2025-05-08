@@ -49,8 +49,8 @@ def DisplayCurrentScans():
 
     default_mass_string = js.ReadJSONConfig("cache", "default_mass_string")
 
-    st.write(f"Enter desired molar masses separated by comma: (default: {default_mass_string}) ")
-    mass_string = st.text_input(label="Enter desired molar masses (or 'ox') separated by comma: ")
+    st.write(f"Enter desired M/Z separated by comma: (default: {default_mass_string}) ")
+    mass_string = st.text_input(label="Enter desired M/Z (or 'ox') separated by comma: ")
     islogarithmic = st.radio(f"Do display logarithmic scalе?", ["True", "False"])
     isppm = st.radio(f"Do convert to ppm?", ["True", "False"])
     if mass_string == "":
@@ -177,9 +177,9 @@ def DisplayCurrentScans():
 
 
 
-                            ax.plot(x_converted, display_range, label=f"M: {given_mass}")
+                            ax.plot(x_converted, display_range, label=f"M/Z: {given_mass}")
 
-                            mass_dictionary[f"M = {str(given_mass)}"] = y
+                            mass_dictionary[f"M/Z = {str(given_mass)}"] = y
 
                         if isppm == "True":
                             ylabel = "PPM"
@@ -215,7 +215,7 @@ def DisplayCurrentScans():
                         st.pyplot(fig)
 
                         do_display_table = st.button(
-                            label="display table with values")  # optionally display table with numerical values
+                            label=f"display table with values for {spectrum_name}")  # optionally display table with numerical values
                         if do_display_table:
                             st.write(pd.DataFrame(mass_dictionary))
             except:

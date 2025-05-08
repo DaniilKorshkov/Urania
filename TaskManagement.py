@@ -272,9 +272,9 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
             for i in range(purge_cycles):
                 VSC_comms.ChangeMFCMode("Open")
                 VSC_comms.LogVSCData()
-                time.sleep(20)
+                time.sleep(35)
                 VSC_comms.ChangeMFCMode("Close")
-                time.sleep(25)
+                time.sleep(40)
             time.sleep(30)
             VSC_comms.LogVSCData()
 
