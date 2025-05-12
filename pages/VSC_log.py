@@ -268,6 +268,8 @@ def display_filling_counters(MainConfig="MainConfig"):
                 handle.close()
 
         delete_counter = st.button(f"Delete {name} counter")
+        save_as_txt = st.button(f"Save {name} as text file")
+
         if delete_counter:
                 newfile = []
 
@@ -293,6 +295,22 @@ def display_filling_counters(MainConfig="MainConfig"):
                 for handleline in newfile:
                     handle.write(handleline)
                 handle.close()
+
+
+        if save_as_txt:
+
+            current_date = dt.datetime.now()
+            datetime_label = current_date.strftime("%d_%m_%Y")
+
+            handle = open(f"{name} counter save: {datetime_label}","w")
+
+
+
+            handle.write(f"{name} counter: filled {integral} liters since {datetime.datetime.fromtimestamp(init_time)} to {datetime.datetime.fromtimestamp(final_time)}")
+
+
+            handle.close()
+            st.write(f"Saved!")
 
 
         for i in range(4):
