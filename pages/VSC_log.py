@@ -117,8 +117,8 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
         ax3.plot(x_converted, y_pg_pressure)
         ax3.set_xlabel(f'Time')
-        ax3.set_ylabel("PG pressure (torr)")
-        ax3.set_title(f'PG pressure (torr) vs time')
+        ax3.set_ylabel("PT pressure (torr)")
+        ax3.set_title(f'PT pressure (torr) vs time')
 
         ax3.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax3.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)

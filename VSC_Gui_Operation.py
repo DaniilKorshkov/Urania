@@ -10,7 +10,7 @@ import json
 def pressure_meter_gui(MainConfig="MainConfig"):
     try:
         pressure = vscc.ReadPressureGauge(MainConfig)
-        st.write(f"Pressure Meter pressure: {pressure} torr")
+        st.write(f"Pressure Transducer pressure: {pressure} torr")
     except:
         pg_port = ReadJSONConfig("vsc", "pressure_gauge_port")
         st.write(f"Failed to connect to pressure meter. Make sure it is connected to port {pg_port}")
