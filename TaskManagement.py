@@ -288,7 +288,9 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
 
                 lg.MakeLogEntry(f"Purge finalized")
 
-                for i in range(amount_of_scans):
+                initial_time = int(datetime.datetime.now().timestamp())
+
+                while int(datetime.datetime.now().timestamp()) < (initial_time + amount_of_scans + 1):
                     try:
                         spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename, accuracy=accuracy)
 

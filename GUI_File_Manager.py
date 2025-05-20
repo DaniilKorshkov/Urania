@@ -379,24 +379,15 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
 
 
         try:
-            M_per_minute = int(JSONoperators.ReadJSONConfig("spectrometer_parameters", "M_per_minute"))
 
-            spectrum_scans = int((M_per_minute * minutes_of_scan) /scans)
+
+            spectrum_scans = int(minutes_of_scan)*60
             if spectrum_scans == 0:
                 spectrum_scans = 1
         except:
             spectrum_is_valid = False
             st.write("Failed to calculate required amount of scans")
 
-
-
-
-        try:
-            spectrum_scans = int(spectrum_scans)
-            assert spectrum_scans > 0
-        except:
-            spectrum_is_valid = False
-            st.write("Invalid data entries amount")
 
 
 

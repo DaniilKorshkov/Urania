@@ -202,17 +202,22 @@ def display_all_tasks(MainConfig="MainConfig"):
             for line in handle:
                 dictline = json.loads(line)
                 if dictline["class"] == "metadata":
-                    M_in_file = int(dictline["amount_of_scans"])
+
                     accuracy = dictline["accuracy"]
                     purge_cycles = dictline["purge_cycles"]
-                    #purging_mfc = dictline["purging_mfc"]
-                    #calmdown_mfc = dictline["calmdown_mfc"]
+
 
 
                     break
             handle.close()
+        except:
+            task_is_valid = False
+            st.write("Failed to get spectrum file information")
 
-            scans = int(int(minutes_to_scan)*M_per_minute/M_in_file)
+
+        try:
+
+            scans = int(minutes_to_scan)*60
             if scans < 1:
                 scans = 1
 
