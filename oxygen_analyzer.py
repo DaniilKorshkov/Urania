@@ -53,7 +53,7 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
 
 
 def GetOxygenData(MainConfig="MainConfig"):
-    Logging.MakeLogEntry("Communication with oxygen analyzer initiated")
+    Logging.MakeLogEntry("Communication with oxygen analyzer initiated",log_name="USB_Log")
     port = js.ReadJSONConfig("ox_an","port",MainConfig)
 
 
@@ -81,7 +81,7 @@ def GetOxygenData(MainConfig="MainConfig"):
     else:
         ret = ret * 10000
 
-    Logging.MakeLogEntry(f"Communication with oxygen analyzer finished with result {ret}")
+    Logging.MakeLogEntry(f"Communication with oxygen analyzer finished with result {ret}",log_name="USB_Log")
     return ret
 
 

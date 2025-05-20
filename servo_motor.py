@@ -4,7 +4,7 @@ import JSONoperators as js
 import Logging
 
 def switch_valve_position(position, config="MainConfig"):
-    Logging.MakeLogEntry("Communication with MIV initiated")
+    Logging.MakeLogEntry("Communication with MIV initiated",log_name="USB_Log")
     motor_address = js.ReadJSONConfig("vicimotor","address")
 
     rm = pyvisa.ResourceManager()
@@ -12,5 +12,5 @@ def switch_valve_position(position, config="MainConfig"):
 
     vicivalve.write("GO"+str(position))
 
-    Logging.MakeLogEntry("Communication with MIV finished")
+    Logging.MakeLogEntry("Communication with MIV finished",log_name="USB_Log")
 

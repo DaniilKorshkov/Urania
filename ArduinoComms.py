@@ -19,7 +19,7 @@ import Logging
 
 
 def SendCommand(PORT,command):
-    Logging.MakeLogEntry("Communication with arduino board initiated")
+    Logging.MakeLogEntry("Communication with arduino board initiated",log_name="USB_Log")
 
     #ports = serial.tools.list_ports.comports()
     #print(ports)
@@ -43,7 +43,7 @@ def SendCommand(PORT,command):
 
     #print(str(ret).split("!"))
 
-    Logging.MakeLogEntry("Communication with arduino board finished")
+    Logging.MakeLogEntry("Communication with arduino board finished",log_name="USB_Log")
 
     return ret
 

@@ -188,6 +188,9 @@ def DisplayCurrentScans():
 
                         if islogarithmic == "True":
                             ax.set_yscale('symlog')
+                            ax.set_ylim([1, 2000000])
+                        else:
+                            ax.set_ylim([1, 1100000])
                             
 
 
@@ -196,7 +199,7 @@ def DisplayCurrentScans():
 
                         ax.set_xlabel(f'Time')
                         ax.set_ylabel(ylabel)
-                        ax.set_ylim([1, 1100000])
+
 
                         ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
                         ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)

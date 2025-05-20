@@ -160,6 +160,9 @@ def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islo
                 ax.set_yscale('symlog')
                 ylabel = f'log10 {ylabel}'
                 oxygen_label = "log10 oxygen ppm"
+                ax.set_ylim([1, 2000000])
+            else:
+                ax.set_ylim([1, 1100000])
 
 
 
@@ -171,7 +174,6 @@ def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islo
 
             ax.set_xlabel(f'M')
             ax.set_ylabel(ylabel)
-            ax.set_ylim([1, 1100000])
             ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
             ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
@@ -290,6 +292,9 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,default_mass_string, initia
 
                     if islogarithmic == "True":
                         ax.set_yscale('symlog')
+                        ax.set_ylim([1, 2000000])
+                    else:
+                        ax.set_ylim([1, 1100000])
 
 
                     mass_dictionary[f"M/Z = {str(given_mass)}"] = y
@@ -302,7 +307,7 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,default_mass_string, initia
 
                 ax.set_xlabel(f'Time')
                 ax.set_ylabel(ylabel)
-                ax.set_ylim([1, 1100000])
+
                 ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
                 ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
