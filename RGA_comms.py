@@ -18,6 +18,8 @@ import datetime
 
 def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
 
+
+
     ip_adress = js.ReadJSONConfig("spectrometer_parameters","ip_address")
     timeout_time = js.ReadJSONConfig("spectrometer_parameters","timeout_time")
     initial_time = (datetime.datetime.now()).timestamp()
@@ -26,6 +28,8 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
     ErrorMessage = None
 
     data_list = list()
+
+    Logging.MakeLogEntry("Communication with RGA initiated",log_name="RGA_log")
 
     for package in packages_list:
         data_list.append(bytes(package, "ascii")+bytes([10]))   #each string in packages_list is converted to bytes and appended to data_list
@@ -53,15 +57,17 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                     for i in range(int(data_split[1])):
                         received = str(sock.recv(1024), "ascii")
 
-                        if "ERROR" in received:
+                        if ("ERROR" in received) or ("LinkDown  Serial" in received):
                             sock.send(bytes("Release", "ascii") + bytes([10]))
                             ErrorMessage = received
+                            print(f"Error message received from RGA: {ErrorMessage}")
+                            Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}", log_name="RGA_log")
                             return None, ErrorMessage
                             #raise ValueError("ERROR keyword in output")
 
 
 
-                        #print(received)
+                        print(f"Received from RGA: {received}")
                         received_list.append(received)
                         time.sleep(int(data_split[2]))
 
@@ -71,12 +77,14 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                                 data_split = data.split(" ")
                                 while True:
                                     if show_live_feed:
-                                        print(received)
+                                        print(f"Received from RGA: {received}")
                                     received = str(sock.recv(1024), "ascii")
 
-                                    if "ERROR" in received:
+                                    if ("ERROR" in received) or ("LinkDown  Serial" in received):
                                         sock.send(bytes("Release", "ascii") + bytes([10]))
                                         ErrorMessage = received
+                                        print(f"Error message received from RGA: {ErrorMessage}")
+                                        Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}",log_name="RGA_log")
 
                                         return None, ErrorMessage
 
@@ -91,6 +99,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
 
                                     if (datetime.datetime.now()).timestamp() > initial_time + timeout_time:
                                         ErrorMessage = "TIMEOUT"
+                                        Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}",log_name="RGA_log")
 
                                         return None, ErrorMessage
 
@@ -104,6 +113,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                     while True:
                         sock.send(bytes("Release", "ascii") + bytes([10]))
                         received = str(sock.recv(1024), "ascii")
+                        print(f"Received from RGA: {received}")
                         if ("Release OK" or "Must be in control of sensor to release control") in received:
                             break
                         else:
@@ -119,7 +129,7 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                     #time.sleep(3)
                     received = str(sock.recv(1024), "ascii")
 
-                    if "ERROR" in received:
+                    if ("ERROR" in received) or ("LinkDown  Serial" in received):
 
                         while True:
                             sock.send(bytes("Release", "ascii") + bytes([10]))
@@ -133,18 +143,19 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
 
 
                         ErrorMessage = received
-                        print(ErrorMessage)
+                        print(f"Error message received from RGA: {ErrorMessage}")
+                        Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}", log_name="RGA_log")
                         return None, ErrorMessage
 
 
                     if show_live_feed:
-                        print(received)
+                        print(f"Received from RGA: {received}")
                     received_list.append(received)
 
 
 
 
-
+        Logging.MakeLogEntry("Communication with RGA finished", log_name="RGA_log")
         return received_list, ErrorMessage
 
 
