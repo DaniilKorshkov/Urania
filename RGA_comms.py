@@ -22,7 +22,6 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
 
     ip_adress = js.ReadJSONConfig("spectrometer_parameters","ip_address")
     timeout_time = js.ReadJSONConfig("spectrometer_parameters","timeout_time")
-    initial_time = (datetime.datetime.now()).timestamp()
 
     HOST, PORT = ip_adress, 10014   #default IP and port of RGA, change later???
     ErrorMessage = None
@@ -34,106 +33,84 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
     for package in packages_list:
         data_list.append(bytes(package, "ascii")+bytes([10]))   #each string in packages_list is converted to bytes and appended to data_list
 
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:   # connection to RGA
-        # Connect to server and send data
-        sock.connect((HOST, PORT))
-        placeholder = str(sock.recv(1024), "ascii")
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:   # connection to RGA
+            # Connect to server and send data
+            sock.settimeout(timeout_time)
+            sock.connect((HOST, PORT))
+            placeholder = str(sock.recv(1024), "ascii")
 
-        received_list = list()  # list for strings received from RGA
+            received_list = list()  # list for strings received from RGA
 
-        for data in data_list:
+            for data in data_list:
 
-            if ErrorMessage == None:
+                if ErrorMessage == None:
 
-                if "__listen__" in str(data,"ascii"):  # __listen__ command is intended to be executed by this computer, not by RGA
-
-
-
-                    data = str(data,"ascii")   # __listen__ n m waits for n amount of messages from RGA waiting m seconds between
-                    data_split = data.split()
+                    if "__listen__" in str(data,"ascii"):  # __listen__ command is intended to be executed by this computer, not by RGA
 
 
 
-                    for i in range(int(data_split[1])):
-                        received = str(sock.recv(1024), "ascii")
-
-                        if ("ERROR" in received) or ("LinkDown  Serial" in received):
-                            sock.send(bytes("Release", "ascii") + bytes([10]))
-                            ErrorMessage = received
-                            print(f"Error message received from RGA: {ErrorMessage}")
-                            Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}", log_name="RGA_log")
-                            return None, ErrorMessage
-                            #raise ValueError("ERROR keyword in output")
+                        data = str(data,"ascii")   # __listen__ n m waits for n amount of messages from RGA waiting m seconds between
+                        data_split = data.split()
 
 
 
-                        print(f"Received from RGA: {received}")
-                        received_list.append(received)
-                        time.sleep(int(data_split[2]))
+                        for i in range(int(data_split[1])):
+                            received = str(sock.recv(1024), "ascii")
 
-                elif "__wait_for_given_mass__" in str(data,"ascii"):  #command to keep listening on port until desired mass appears (for ex., __wait_for_given_mass__ 100)
-
-                                data = str(data, "ascii")  # __listen__ n m waits for n amount of messages from RGA waiting m seconds between
-                                data_split = data.split(" ")
-                                while True:
-                                    if show_live_feed:
-                                        print(f"Received from RGA: {received}")
-                                    received = str(sock.recv(1024), "ascii")
-
-                                    if ("ERROR" in received) or ("LinkDown  Serial" in received):
-                                        sock.send(bytes("Release", "ascii") + bytes([10]))
-                                        ErrorMessage = received
-                                        print(f"Error message received from RGA: {ErrorMessage}")
-                                        Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}",log_name="RGA_log")
-
-                                        return None, ErrorMessage
-
-
-                                    received_list.append(received)
-                                    received_split = received.split()
-
-                                    if "MassReading" in received_split:
-                                        MassReadingPosition = received_split.index("MassReading")
-                                        if float(received_split[MassReadingPosition+1]) >= float(data_split[1]):
-                                            break
-
-                                    if (datetime.datetime.now()).timestamp() > initial_time + timeout_time:
-                                        ErrorMessage = "TIMEOUT"
-                                        Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}",log_name="RGA_log")
-
-                                        return None, ErrorMessage
+                            if ("ERROR" in received) or ("LinkDown  Serial" in received):
+                                sock.send(bytes("Release", "ascii") + bytes([10]))
+                                ErrorMessage = received
+                                print(f"Error message received from RGA: {ErrorMessage}")
+                                Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}", log_name="RGA_log")
+                                return None, ErrorMessage
+                                #raise ValueError("ERROR keyword in output")
 
 
 
+                            print(f"Received from RGA: {received}")
+                            received_list.append(received)
+                            time.sleep(int(data_split[2]))
 
-                                    #if received_split[0] == "MassReading" and float(received_split[1]) >= float(data_split[1]):
-                                        #break
+                    elif "__wait_for_given_mass__" in str(data,"ascii"):  #command to keep listening on port until desired mass appears (for ex., __wait_for_given_mass__ 100)
 
-                elif "Release" in str(data, "ascii"):
-                    while True:
-                        sock.send(bytes("Release", "ascii") + bytes([10]))
-                        received = str(sock.recv(1024), "ascii")
-                        print(f"Received from RGA: {received}")
-                        if ("Release OK" or "Must be in control of sensor to release control") in received:
-                            break
-                        else:
-                            continue
+                                    data = str(data, "ascii")  # __listen__ n m waits for n amount of messages from RGA waiting m seconds between
+                                    data_split = data.split(" ")
+                                    while True:
+                                        if show_live_feed:
+                                            print(f"Received from RGA: {received}")
+                                        received = str(sock.recv(1024), "ascii")
+
+                                        if ("ERROR" in received) or ("LinkDown  Serial" in received):
+                                            sock.send(bytes("Release", "ascii") + bytes([10]))
+                                            ErrorMessage = received
+                                            print(f"Error message received from RGA: {ErrorMessage}")
+                                            Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}",log_name="RGA_log")
+
+                                            return None, ErrorMessage
+
+
+                                        received_list.append(received)
+                                        received_split = received.split()
+
+                                        if "MassReading" in received_split:
+                                            MassReadingPosition = received_split.index("MassReading")
+                                            if float(received_split[MassReadingPosition+1]) >= float(data_split[1]):
+                                                break
 
 
 
 
 
-                else:
-                    sock.send(data)
-                    #print(data)
-                    #time.sleep(3)
-                    received = str(sock.recv(1024), "ascii")
 
-                    if ("ERROR" in received) or ("LinkDown  Serial" in received):
+                                        #if received_split[0] == "MassReading" and float(received_split[1]) >= float(data_split[1]):
+                                            #break
 
+                    elif "Release" in str(data, "ascii"):
                         while True:
                             sock.send(bytes("Release", "ascii") + bytes([10]))
                             received = str(sock.recv(1024), "ascii")
+                            print(f"Received from RGA: {received}")
                             if ("Release OK" or "Must be in control of sensor to release control") in received:
                                 break
                             else:
@@ -142,21 +119,46 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
 
 
 
-                        ErrorMessage = received
-                        print(f"Error message received from RGA: {ErrorMessage}")
-                        Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}", log_name="RGA_log")
-                        return None, ErrorMessage
+
+                    else:
+                        sock.send(data)
+                        #print(data)
+                        #time.sleep(3)
+                        received = str(sock.recv(1024), "ascii")
+
+                        if ("ERROR" in received) or ("LinkDown  Serial" in received):
+
+                            while True:
+                                sock.send(bytes("Release", "ascii") + bytes([10]))
+                                received = str(sock.recv(1024), "ascii")
+                                if ("Release OK" or "Must be in control of sensor to release control") in received:
+                                    break
+                                else:
+                                    continue
 
 
-                    if show_live_feed:
-                        print(f"Received from RGA: {received}")
-                    received_list.append(received)
+
+
+                            ErrorMessage = received
+                            print(f"Error message received from RGA: {ErrorMessage}")
+                            Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}", log_name="RGA_log")
+                            return None, ErrorMessage
+
+
+                        if show_live_feed:
+                            print(f"Received from RGA: {received}")
+                        received_list.append(received)
 
 
 
 
-        Logging.MakeLogEntry("Communication with RGA finished", log_name="RGA_log")
-        return received_list, ErrorMessage
+            Logging.MakeLogEntry("Communication with RGA finished", log_name="RGA_log")
+            return received_list, ErrorMessage
+    except:
+        ErrorMessage = "TIMEOUT"
+        Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}", log_name="RGA_log")
+
+        return None, ErrorMessage
 
 
 '''def GetMassSpectrum(convertion_coefficient=1,amount_of_scans=100,ip_adress="169.254.198.174"):
