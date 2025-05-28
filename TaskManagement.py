@@ -277,7 +277,17 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
             VSC_comms.ChangeMFCMode("Close")
             time.sleep(30)
         time.sleep(30)
-        VSC_comms.LogVSCData()
+
+        try:
+            VSC_comms.LogVSCData("MainConfig")
+        except:
+            Logging.MakeLogEntry("Failed to log VSC data")
+
+        try:
+            ArduinoComms.LogArduinoData()
+        except:
+            Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
+
 
 
     except:

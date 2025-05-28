@@ -3,6 +3,7 @@ import JSONoperators
 import VSC_comms
 import oxygen_analyzer
 import Logging as lg
+import ArduinoComms
 
 def SystemCheck(MainConfig="MainConfig"):
     heatstat, capheatstat, pumpstat = RGA_comms.heating_info()
@@ -149,6 +150,26 @@ def SystemCheck(MainConfig="MainConfig"):
                 bypass = False
             if not bypass:
                 manual_bypass = str(input(f"Cannot reach oxygen analyzer. Press 'y' to continue "))
+                if manual_bypass.lower()[0] == "y":
+                    bypass = True
+                    lg.MakeLogEntry(f"Cannot reach oxygen analyzer. Sampling initiated by user despite this fact")
+            if not bypass:
+                faliures_found = True
+                lg.MakeLogEntry(f"Cannot reach oxygen analyzer. Sampling is cancelled\n")
+
+
+    if not faliures_found:
+        try:
+            IfArduinoFound = ArduinoComms.PingArduino()
+            assert IfArduinoFound == True
+
+        except:
+            try:
+                bypass = JSONoperators.ReadJSONConfig("system_check","bypass arduino")
+            except:
+                bypass = False
+            if not bypass:
+                manual_bypass = str(input(f"Cannot reach arduino board. Press 'y' to continue "))
                 if manual_bypass.lower()[0] == "y":
                     bypass = True
                     lg.MakeLogEntry(f"Cannot reach oxygen analyzer. Sampling initiated by user despite this fact")

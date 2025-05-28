@@ -39,9 +39,10 @@ def SendCommand(PORT,command):
 
     time.sleep(0.1)
 
-    ret = ser.read_until(b"!QRT")
+    ret = ser.read_until(b"!END")
 
     #print(str(ret).split("!"))
+    ser.close()
 
     Logging.MakeLogEntry("Communication with arduino board finished",log_name="USB_Log")
 
@@ -53,33 +54,61 @@ def GetReadingsData():
     PORT = JSONoperators.ReadJSONConfig("arduino","port")
     polynomes = JSONoperators.ReadJSONConfig("arduino","polynomes")
 
-    ret = str(SendCommand(PORT,"RV!"))
+
+    ret = str(SendCommand(PORT,"RV"))
     retsplit = ret.split("!")
 
-    print(retsplit)
+
+
+
+
     raw_voltages =[ retsplit[2],retsplit[4],retsplit[6],retsplit[8],retsplit[10],retsplit[12] ]
 
     ret_data = []
 
     for i in range(6):
-        ret_data.append( int(raw_voltages[i])*(polynomes[i])[0] + (polynomes[i])[1] )
+        ret_data.append( int(raw_voltages[i])*((polynomes[i])[0]) + ((polynomes[i])[1]) )
 
-    return(ret_data)
+    for i in range(4):
+        ret_data.append( retsplit[14 + 2*i] )
+
+    return ret_data
 
 
 def LogArduinoData():
 
     ret_data = GetReadingsData()
 
+
     filename = ReadJSONConfig("arduino", "arduino_log_name")
+    polynomes = ReadJSONConfig("arduino", "polynomes")
     current_time = int(datetime.datetime.now().timestamp())
 
     assert_file_exists(filename)
 
     dictionary_to_append = {}
     dictionary_to_append["time"] = current_time
-    dictionary_to_append["pressure"] = [ ret_data[0], ret_data[1]  ]
-    dictionary_to_append["temperature"] = [ ret_data[2], ret_data[3], ret_data[4], ret_data[5]   ]
+
+
+
+    dictionary_to_append["PT-01"] = ret_data[0]
+    dictionary_to_append["PT-02"] = ret_data[1]
+    dictionary_to_append["PT-03"] = ret_data[2]
+    dictionary_to_append["PT-04"] = ret_data[3]
+    dictionary_to_append["PT-05"] = ret_data[4]
+    dictionary_to_append["PT-06"] = ret_data[5]
+
+    if ret_data[6] == 1:
+        dictionary_to_append["actuator_one_status"] = "open"
+    else:
+        dictionary_to_append["actuator_one_status"] = "closed"
+
+
+    if ret_data[8] == 1:
+        dictionary_to_append["actuator_two_status"] = "open"
+    else:
+        dictionary_to_append["actuator_two_status"] = "closed"
+
 
     handle = open(filename, "a")
     handle.write("\n")
@@ -89,9 +118,43 @@ def LogArduinoData():
 
 
 
+def TurnActuatorOneOn():
+
+    PORT = JSONoperators.ReadJSONConfig("arduino", "port")
+    void = str(SendCommand(PORT, "ACT_ONE_ON"))
+
+
+def TurnActuatorOneOff():
+
+    PORT = JSONoperators.ReadJSONConfig("arduino", "port")
+    void = str(SendCommand(PORT, "ACT_ONE_OFF"))
+
+
+def TurnActuatorTwoOn():
+
+    PORT = JSONoperators.ReadJSONConfig("arduino", "port")
+    void = str(SendCommand(PORT, "ACT_TWO_ON"))
+
+
+def TurnActuatorTwoOff():
+
+    PORT = JSONoperators.ReadJSONConfig("arduino", "port")
+    void = str(SendCommand(PORT, "ACT_TWO_OFF"))
 
 
 
+def PingArduino():
+
+    try:
+        PORT = JSONoperators.ReadJSONConfig("arduino", "port")
+        ret = str(SendCommand(PORT, "PING"))
+        retsplit = ret.split("!")
+        if retsplit[1] == "THIS_IS_ARDUINO":
+            return True
+        else:
+            return False
+    except:
+        return False
 
 
 

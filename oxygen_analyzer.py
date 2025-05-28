@@ -48,6 +48,8 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
     #for element in splitret:
         #print(element)
 
+    ser.close()
+
     return ret
 
 

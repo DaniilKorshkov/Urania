@@ -1,26 +1,25 @@
-*
-  AnalogReadSerial
 
-  Reads an analog input on pin 0, prints the result to the Serial Monitor.
-  Graphical representation is available using Serial Plotter (Tools > Serial Plotter menu).
-  Attach the center pin of a potentiometer to pin A0, and the outside pins to +5V and ground.
-
-  This example code is in the public domain.
-
-  https://www.arduino.cc/en/Tutorial/BuiltInExamples/AnalogReadSerial
-*/
 
 
 const int AZERO = A0;
 const int AONE = A1;
 const int ATWO = A2;
 const int ATHREE = A3;
-const int AFOUR = A4;/
+const int AFOUR = A4;
 const int AFIVE = A5;
 
 
-const int ACTUATOR_WRITE_ONE = 4;
-const int ACTUATOR_WRITE_TWO = 5;
+const int ACTUATOR_WRITE_ONE = 3;
+const int ACTUATOR_WRITE_TWO = 4;
+const int ACTUATOR_WRITE_THREE = 5;
+const int ACTUATOR_WRITE_FOUR = 6;
+
+
+  int WRITE_ONE_STATUS = LOW;
+  int WRITE_TWO_STATUS = LOW;
+  int WRITE_THREE_STATUS = LOW;
+  int WRITE_FOUR_STATUS = LOW;
+
 
 
 // the setup routine runs once when you press reset:
@@ -38,6 +37,10 @@ void setup() {
 
   pinMode(ACTUATOR_WRITE_ONE,OUTPUT);
   pinMode(ACTUATOR_WRITE_TWO,OUTPUT);
+  pinMode(ACTUATOR_WRITE_THREE,OUTPUT);
+  pinMode(ACTUATOR_WRITE_FOUR,OUTPUT);
+
+
 
 };
 
@@ -48,7 +51,7 @@ void loop() {
   if(Serial.available() > 0){
 
     String msg = Serial.readString();
-    if(msg == "RV!"){ //RV! command is an inquiry for raw readings from A0-A5 ports
+    if(msg == "RV"){ //RV command is an inquiry for raw readings from A0-A5 ports
 
     int AZEROREAD = analogRead(AZERO);
     int AONEREAD = analogRead(AONE);
@@ -58,10 +61,10 @@ void loop() {
     int AFIVEREAD = analogRead(AFIVE);
 
 
-    digitalWrite(GREEN_PIN,HIGH);  // Green light flashes if ret is successfull
+    
 
-    // Output starts from CQ and ends with QRT. Statements are separated with "!" sign
-    Serial.print("CQ!AZEROVOLTAGE!");
+    // Output starts from START and ends with END. Statements are separated with "!" sign
+    Serial.print("START!AZEROVOLTAGE!");
     Serial.print(AZEROREAD);
     Serial.print("!AONEVOLTAGE!");
     Serial.print(AONEREAD);
@@ -73,26 +76,76 @@ void loop() {
     Serial.print(AFOURREAD);
     Serial.print("!AFIVEVOLTAGE!");
     Serial.print(AFIVEREAD);
-    Serial.print("!QRT");
+
+    Serial.print("!WRITE_ONE_VOLTAGE!");
+    Serial.print(WRITE_ONE_STATUS);
+    Serial.print("!WRITE_TWO_VOLTAGE!");
+    Serial.print(WRITE_TWO_STATUS);
+    Serial.print("!WRITE_THREE_VOLTAGE!");
+    Serial.print(WRITE_THREE_STATUS);
+    Serial.print("!WRITE_FOUR_VOLTAGE!");
+    Serial.print(WRITE_FOUR_STATUS);
+
+    Serial.print("!END");
     
-    delay(100);
-    digitalWrite(GREEN_PIN,LOW);
+   
     }
 
-  if(msg == "ACT_ON!"){
-    digitalWrite(ACTUATOR_WRITE_ONE,HIGH);
-    digitalWrite(ACTUATOR_WRITE_TWO,HIGH);
+  else if(msg == "ACT_ONE_ON"){
 
+    WRITE_ONE_STATUS = HIGH;
+    WRITE_TWO_STATUS = HIGH;
+
+    digitalWrite(ACTUATOR_WRITE_ONE,WRITE_ONE_STATUS);
+    digitalWrite(ACTUATOR_WRITE_TWO,WRITE_TWO_STATUS);
+    Serial.print("START!ACT_ONE_ONED!END");
     
     
   }
 
-   if(msg == "ACT_OFF!"){
-    digitalWrite(ACTUATOR_WRITE_ONE,LOW);
-    digitalWrite(ACTUATOR_WRITE_TWO,LOW);
+   else if(msg == "ACT_ONE_OFF"){
 
+    WRITE_ONE_STATUS = LOW;
+    WRITE_TWO_STATUS = LOW;
+    
+    digitalWrite(ACTUATOR_WRITE_ONE,WRITE_ONE_STATUS);
+    digitalWrite(ACTUATOR_WRITE_TWO,WRITE_TWO_STATUS);
+    Serial.print("START!ACT_ONE_OFFED!END");
    
    }
+
+
+   else if(msg == "ACT_TWO_ON"){
+
+    WRITE_THREE_STATUS = HIGH;
+    WRITE_FOUR_STATUS = HIGH;
+
+    digitalWrite(ACTUATOR_WRITE_THREE,WRITE_THREE_STATUS);
+    digitalWrite(ACTUATOR_WRITE_FOUR,WRITE_FOUR_STATUS);
+    Serial.print("START!ACT_TWO_ONED!END");
+    
+    
+  }
+
+   else if(msg == "ACT_TWO_OFF"){
+
+    WRITE_THREE_STATUS = LOW;
+    WRITE_FOUR_STATUS = LOW;
+    
+    digitalWrite(ACTUATOR_WRITE_THREE,WRITE_THREE_STATUS);
+    digitalWrite(ACTUATOR_WRITE_FOUR,WRITE_FOUR_STATUS);
+    Serial.print("START!ACT_TWO_OFFED!END");
+   
+   }
+
+   else if(msg == "PING"){
+    Serial.print("START!THIS_IS_ARDUINO!END");
+   }
+
+  
+    else{
+      Serial.print("START!MESSAGE_NOT_RECOGNIZED!END");
+    };
 
 
 
@@ -104,3 +157,4 @@ void loop() {
 
   };
 }
+

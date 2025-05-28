@@ -50,6 +50,7 @@ def SendCommand(MKS_ADDRESS,PORT,command):  #function to send command to VSC via
 
     result = ser.read_until(b"FF")
 
+    ser.close()
     Logging.MakeLogEntry(f"Communication with VSC finished with reading {result}",log_name="USB_Log")
 
     return result

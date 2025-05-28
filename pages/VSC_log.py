@@ -182,7 +182,7 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
 
 
-        do_display_table = st.button(label="display table with values")  # optionally display table with numerical values
+        do_display_table = st.button(label="display table with values for VSC")  # optionally display table with numerical values
         if do_display_table:
 
             converted_log_dictionary = {}
@@ -191,6 +191,157 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
             st.write(pd.DataFrame(converted_log_dictionary))
             
+
+
+
+
+
+def arduino_graphs(log_dictionary):  # function to display plots for constant masses with time on X axis and PPM on Y axis
+
+    placeholder = st.empty()
+    with placeholder.container():
+        fig1, ax1 = plt.subplots()
+        fig2, ax2 = plt.subplots()
+        fig3, ax3 = plt.subplots()
+        fig4, ax4 = plt.subplots()
+        fig5, ax5 = plt.subplots()
+        fig6, ax6 = plt.subplots()
+
+
+
+        x = fn.get_time_list(log_dictionary)
+
+        x_converted = [dt.datetime.fromtimestamp(element) for element in x]
+
+        y_pressure_one = []
+        y_pressure_two = []
+        y_pressure_three = []
+        y_pressure_four = []
+        y_pressure_five = []
+        y_pressure_six = []
+
+        for key in x:
+            y_pressure_one.append((log_dictionary[f"{str(key)}"])["PT-01"])
+            y_pressure_two.append((log_dictionary[f"{str(key)}"])["PT-02"])
+            y_pressure_three.append((log_dictionary[f"{str(key)}"])["PT-03"])
+            y_pressure_four.append((log_dictionary[f"{str(key)}"])["PT-04"])
+            y_pressure_five.append((log_dictionary[f"{str(key)}"])["PT-05"])
+            y_pressure_six.append((log_dictionary[f"{str(key)}"])["PT-06"])
+
+        ax1.plot(x_converted, y_pressure_one)
+        ax1.set_xlabel(f'Time')
+        ax1.set_ylabel("Pressure (psi)")
+        ax1.set_title(f'PT-01 pressure (psi) vs time')
+
+        ax1.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax1.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax1.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax1.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax1.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax1.tick_params('x', labelrotation=90)
+        ax1.legend()
+
+        st.pyplot(fig1)
+
+        ax2.plot(x_converted, y_pressure_two)
+        ax2.set_xlabel(f'Time')
+        ax2.set_ylabel("Pressure (psi)")
+        ax2.set_title(f'PT-02 pressure (psi) vs time')
+
+        ax2.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax2.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax2.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax2.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax2.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax2.tick_params('x', labelrotation=90)
+        ax2.legend()
+
+        st.pyplot(fig2)
+
+        ax3.plot(x_converted, y_pressure_three)
+        ax3.set_xlabel(f'Time')
+        ax3.set_ylabel("Pressure (psi)")
+        ax3.set_title(f'PT-03 pressure (psi) vs time')
+
+        ax3.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax3.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax3.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax3.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax3.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax3.tick_params('x', labelrotation=90)
+        ax3.legend()
+
+        st.pyplot(fig3)
+
+        ax4.plot(x_converted, y_pressure_four)
+        ax4.set_xlabel(f'Time')
+        ax4.set_ylabel("Pressure (psi)")
+        ax4.set_title(f'PT-04 pressure (psi) vs time')
+
+        ax4.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax4.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax4.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax4.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax4.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax4.tick_params('x', labelrotation=90)
+        ax4.legend()
+
+        st.pyplot(fig4)
+
+        ax5.plot(x_converted, y_pressure_five)
+        ax5.set_xlabel(f'Time')
+        ax5.set_ylabel("Pressure (psi)")
+        ax5.set_title(f'PT-05 pressure (psi) vs time')
+
+        ax5.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax5.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax5.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax5.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax5.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax5.tick_params('x', labelrotation=90)
+        ax5.legend()
+
+        st.pyplot(fig5)
+
+
+        ax6.plot(x_converted, y_pressure_six)
+        ax6.set_xlabel(f'Time')
+        ax6.set_ylabel("Pressure (psi)")
+        ax6.set_title(f'PT-06 pressure (psi) vs time')
+
+        ax6.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax6.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+        ax6.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax6.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax6.xaxis.set_major_locator(ticker.MaxNLocator(5))
+        ax6.tick_params('x', labelrotation=90)
+        ax6.legend()
+
+        st.pyplot(fig6)
+
+
+        do_display_table = st.button(
+            label="display table with values for filling station")  # optionally display table with numerical values
+        if do_display_table:
+
+            converted_log_dictionary = {}
+            for key in log_dictionary:
+                converted_log_dictionary[dt.datetime.fromtimestamp(int(key))] = log_dictionary[key]
+
+            st.write(pd.DataFrame(converted_log_dictionary))
+
+
+
+
+
+
+
 
 
 
@@ -387,6 +538,7 @@ def display_data():
     
 
     js.assert_file_exists("VSC_log")
+    js.assert_file_exists("arduino_log")
 
     parsing_mode = st.selectbox("Parsing mode",["last","search"])
     st.write(f"{parsing_mode} mode of operation")
@@ -410,10 +562,24 @@ def display_data():
     
     if parsing_mode == "last":
             log_dictionary = js.read_last_vsc_entries_wrt_time(howmuchspectrums)   # most recent spectrums are imported from JSON file
+            arduino_log_dictionary = js.read_last_vsc_entries_wrt_time(howmuchspectrums,filename="arduino_log")
     else:
             log_dictionary = js.read_vsc_period_of_time_wrt_time(howmuchspectrums,time_moment)
-    
-    vsc_graphs(log_dictionary)
+            arduino_log_dictionary = js.read_vsc_period_of_time_wrt_time(howmuchspectrums, time_moment,filename="arduino_log")
+
+    if len(log_dictionary) > 0:
+        vsc_graphs(log_dictionary)
+    else:
+        st.write("No VSC data recorded yet")
+
+
+    for i in range(3):
+        st.markdown("")
+
+    if len(arduino_log_dictionary) > 0:
+        arduino_graphs(arduino_log_dictionary)
+    else:
+        st.write("No filling station pressure data recorded yet")
 
     for i in range(5):
         st.markdown("")
