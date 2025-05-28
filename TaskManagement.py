@@ -256,100 +256,100 @@ def GetTaskData(taskname, config="MainConfig"):
 def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
     #signal.signal(signal.SIGALRM, TimeoutHandler())
     #global interrupted
-    critical_errors = False
+    #critical_errors = False
 
 
     try:
         servo_motor.switch_valve_position(valve_number)
         lg.MakeLogEntry(f"Multi inlet valved switched to position {valve_number}")
     except:
-        critical_errors = True
-        #interrupted = True
-        lg.MakeLogEntry(f"Sampling terminated as multi inlet valve is not responding")
 
-    if not critical_errors:
-        try:
-            for i in range(purge_cycles):
-                VSC_comms.ChangeMFCMode("Open")
-                VSC_comms.LogVSCData()
-                time.sleep(35)
-                VSC_comms.ChangeMFCMode("Close")
-                time.sleep(30)
-            time.sleep(30)
+        lg.MakeLogEntry(f"Sampling terminated as multi inlet valve is not responding")
+        return True
+
+
+
+    try:
+        for i in range(purge_cycles):
+            VSC_comms.ChangeMFCMode("Open")
             VSC_comms.LogVSCData()
+            time.sleep(35)
+            VSC_comms.ChangeMFCMode("Close")
+            time.sleep(30)
+        time.sleep(30)
+        VSC_comms.LogVSCData()
+
+
+    except:
+
+        lg.MakeLogEntry(f"Sampling failed due to purging error")
+        return True
+
+
+
+
+    lg.MakeLogEntry(f"Purge finalized")
+
+    initial_time = int(datetime.datetime.now().timestamp())
+
+    while int(datetime.datetime.now().timestamp()) < (initial_time + amount_of_scans + 1):
+        try:
+            spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename, accuracy=accuracy)
+
+            if (ErrorMessage != None) and (ErrorMessage != "TIMEOUT") and (not ("Failed to create measurement" in str(ErrorMessage))) and (not ("LinkDown" in ErrorMessage)):
+                critical_errors = True
+                lg.MakeLogEntry(f"Sampling terminated due to RGA error: {ErrorMessage}")
+                break
+
+
+            elif ErrorMessage != None:
+                if "Failed to create measurement" in str(ErrorMessage):
+                    lg.MakeLogEntry(f"Sampling failed due to 500: Failed To Create Measurement error; repeating attempt")
+                if "LinkDown" in str(ErrorMessage):
+                    lg.MakeLogEntry(f"Sampling failed due to LinkDown Serial error; repeating attempt")
+                if str(ErrorMessage) == "TIMEOUT":
+                    lg.MakeLogEntry(f"Sampling failed due to TIMEOUT error (probable packet loss); repeating attempt")
+
+
+
+
+            else:
+
+
+                if valve_number != 16:
+                    try:
+                        if_abnormalities, void = ar.AnalyseSingleLine(spectrum_to_analyze,valve_number,intital_mass,step,filename)
+                        if if_abnormalities:
+                            Logging.MakeLogEntry(f"Abnormal readings were found for Filename = {filename} scan. Check AbnormalityLog for details")
+                    except:
+                        lg.MakeLogEntry(f"Abnormality scan for Filename = {filename} crashed with error")
+                else:
+                    if_abnormalities = False
+
+
 
 
         except:
-            critical_errors = True
-            lg.MakeLogEntry(f"Sampling failed due to purging error")
-
-        if not critical_errors:
-
-
-                lg.MakeLogEntry(f"Purge finalized")
-
-                initial_time = int(datetime.datetime.now().timestamp())
-
-                while int(datetime.datetime.now().timestamp()) < (initial_time + amount_of_scans + 1):
-                    try:
-                        spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename, accuracy=accuracy)
-
-                        if (ErrorMessage != None) and (ErrorMessage != "TIMEOUT") and (not ("Failed to create measurement" in str(ErrorMessage))) and (not ("LinkDown" in ErrorMessage)):
-                            critical_errors = True
-                            lg.MakeLogEntry(f"Sampling terminated due to RGA error: {ErrorMessage}")
-                            break
-
-
-                        elif ErrorMessage != None:
-                            if "Failed to create measurement" in str(ErrorMessage):
-                                lg.MakeLogEntry(f"Sampling failed due to 500: Failed To Create Measurement error; repeating attempt")
-                            if "LinkDown" in str(ErrorMessage):
-                                lg.MakeLogEntry(f"Sampling failed due to LinkDown Serial error; repeating attempt")
-                            if str(ErrorMessage) == "TIMEOUT":
-                                lg.MakeLogEntry(f"Sampling failed due to TIMEOUT error (probable packet loss); repeating attempt")
-
-
-
-
-                        else:
-
-
-                            if valve_number != 16:
-                                try:
-                                    if_abnormalities, void = ar.AnalyseSingleLine(spectrum_to_analyze,valve_number,intital_mass,step,filename)
-                                    if if_abnormalities:
-                                        Logging.MakeLogEntry(f"Abnormal readings were found for Filename = {filename} scan. Check AbnormalityLog for details")
-                                except:
-                                    lg.MakeLogEntry(f"Abnormality scan for Filename = {filename} crashed with error")
-                            else:
-                                if_abnormalities = False
-
-
-
-
-                    except:
-                        critical_errors = True
-                        #interrupted = True
-                        lg.MakeLogEntry(f"Sampling terminated due to unknown RGA error")
-                        break
+            lg.MakeLogEntry(f"Sampling terminated due to unknown RGA error")
+            return True
 
 
 
 
 
-                    try:
-                        VSC_comms.LogVSCData("MainConfig")
-                    except:
-                        Logging.MakeLogEntry("Failed to log VSC data")
+        try:
+            VSC_comms.LogVSCData("MainConfig")
+        except:
+            Logging.MakeLogEntry("Failed to log VSC data")
 
-                    try:
-                        ArduinoComms.LogArduinoData()
-                    except:
-                        Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
+        try:
+            ArduinoComms.LogArduinoData()
+        except:
+            Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
 
-                    time.sleep(10)
+        time.sleep(10)
 
-                return critical_errors
+    return False
 
 
 

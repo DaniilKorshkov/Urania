@@ -54,12 +54,8 @@ def Sampling():
 
                 while True:
                         critical_errors = DoTask()
-                        if critical_errors:
-                                interrupted = True
+                        if critical_errors or interrupted:
 
-
-
-                        if interrupted:
 
                                 snapshot = tracemalloc.take_snapshot()
                                 statistics = snapshot.statistics('lineno')
@@ -71,18 +67,20 @@ def Sampling():
 
                                 print(f"Sampling process terminated")
                                 os.system("rm .VSCINUSE")
+
                                 if not critical_errors:
                                         Logging.MakeLogEntry("Sampling terminated by user\n")
-                                        break
+
                                 else:
                                         Logging.MakeLogEntry("Sampling terminated due to error\n")
 
                                         NotifyUser("Sampling terminated due to error",True)
 
+                                break
 
 
 
-                                        break
+
 
 
         else:
