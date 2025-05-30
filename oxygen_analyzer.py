@@ -24,33 +24,49 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
         stopbits=serial.STOPBITS_ONE,
         bytesize=serial.EIGHTBITS,
     )
-    try:
-        ser.close()  # if connection is already opened, it gets closed
-    except:
-        pass
-    ser.open()   # open connection
 
+    timeout_countdown_starter = datetime.datetime.now().timestamp()
 
+    while datetime.datetime.now().timestamp() - timeout_countdown_starter < 20:
 
-    ser.write(bytes(f"st","ascii"))
+        try:
+            handle = open(".OA_USB_LOCK", "r")
+            handle.close()
+        except:
 
-    ret = ""  # ret is a string, which gets updated and printed every time data received
+            handle = open(".OA_USB_LOCK", 'w')
+            handle.close()
 
-    for i in range(83):
-            result = ser.read()  # data is received from oxygen analyzer
             try:
-                result = result.decode("ascii")
-                ret=ret+str(result)  # ret appended
+                ser.close()
             except:
-                pass
-    #print(ret)   # ret printed
-    #splitret = ret.split()
-    #for element in splitret:
-        #print(element)
+                ser.open()
 
-    ser.close()
 
-    return ret
+
+            ser.write(bytes(f"st","ascii"))
+
+            ret = ""  # ret is a string, which gets updated and printed every time data received
+
+            for i in range(83):
+                    result = ser.read()  # data is received from oxygen analyzer
+                    try:
+                        result = result.decode("ascii")
+                        ret=ret+str(result)  # ret appended
+                    except:
+                        pass
+            #print(ret)   # ret printed
+            #splitret = ret.split()
+            #for element in splitret:
+                #print(element)
+
+            ser.close()
+
+            os.system("rm .OA_USB_LOCK")
+
+            return ret
+
+        return None
 
 
 

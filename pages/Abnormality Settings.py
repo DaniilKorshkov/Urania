@@ -115,6 +115,38 @@ def AbnormalitySettings():
                     st.write("Provided M/Z is not integer")
 
 
+        if i == 13:
+            for k in range(3):
+                st.markdown("")
+            st.write(f"Automatically close filling station actuator if abnormal readings on line 14?")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                auto_close_yes = st.button("Yes")
+                if auto_close_yes:
+                    new_line = js.ReadJSONConfig("AbnormalityReaction")
+                    new_line[f"auto_close"] = "True"
+                    str_new_line = json.dumps(new_line)
+                    js.EditJSONConfig("AbnormalityReaction", str_new_line)
+                    st.write(f"Autoclose turned on")
+
+
+            with col2:
+                auto_close_no = st.button("No")
+                if auto_close_no:
+                    new_line = js.ReadJSONConfig("AbnormalityReaction")
+                    new_line[f"auto_close"] = "False"
+                    str_new_line = json.dumps(new_line)
+                    js.EditJSONConfig("AbnormalityReaction", str_new_line)
+                    st.write(f"Autoclose turned off")
+
+
+
+
+
+
+
 
 
 

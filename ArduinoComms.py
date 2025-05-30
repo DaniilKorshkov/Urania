@@ -29,24 +29,46 @@ def SendCommand(PORT,command):
     ser.baudrate = 9600
     ser.timeout = 10
 
+    timeout_countdown_starter = datetime.datetime.now().timestamp()
 
-    ser.open()
+    while datetime.datetime.now().timestamp() - timeout_countdown_starter < 20:
+
+        try:
+            handle = open(".ARD_USB_LOCK", "r")
+            handle.close()
+        except:
+
+            handle = open(".ARD_USB_LOCK", 'w')
+            handle.close()
+
+            try:
+                ser.close()
+            except:
+                ser.open()
 
 
 
 
-    ser.write(command.encode("ascii"))
+            ser.write(command.encode("ascii"))
 
-    time.sleep(0.1)
+            time.sleep(0.1)
 
-    ret = ser.read_until(b"!END")
+            ret = ser.read_until(b"!END")
 
-    #print(str(ret).split("!"))
-    ser.close()
+            ser.close()
 
-    Logging.MakeLogEntry("Communication with arduino board finished",log_name="USB_Log")
+            os.system("rm .ARD_USB_LOCK")
 
-    return ret
+            #print(str(ret).split("!"))
+            ser.close()
+
+            Logging.MakeLogEntry(f"Communication with arduino board finished with result: {ret}",log_name="USB_Log")
+            return ret
+
+        Logging.MakeLogEntry(f"Communication with arduino board failed due to timeout", log_name="USB_Log")
+        return None
+
+
 
 
 def GetReadingsData():
