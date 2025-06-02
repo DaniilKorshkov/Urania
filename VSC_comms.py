@@ -549,3 +549,92 @@ if __name__ == "__main__":
 
 #StabilityWatcher()
 
+
+
+
+
+
+
+def NewSendCommand(MKS_ADDRESS, VID, PID, command):
+    Logging.MakeLogEntry("Communication with VSC initiated", log_name="USB_Log")
+
+
+    dev = usb.core.find(idVendor = VID, idProduct = PID)
+
+    dev.set_configuration()
+
+    cfg = dev.get_active_configuration()
+    intf = cfg[(0, 0)]
+
+    ser = usb.util.find_descriptor(
+        intf,
+        # match the first OUT endpoint
+        custom_match= \
+            lambda e: \
+                usb.util.endpoint_direction(e.bEndpointAddress) == \
+                usb.util.ENDPOINT_OUT)
+
+    assert ser is not None
+
+
+
+
+
+
+    timeout_countdown_starter = datetime.datetime.now().timestamp()
+
+    while datetime.datetime.now().timestamp() - timeout_countdown_starter < 20:
+
+        try:
+            handle = open(".VSC_USB_LOCK", "r")
+            handle.close()
+        except:
+
+            handle = open(".VSC_USB_LOCK", 'w')
+            handle.close()
+
+            try:
+                ser.close()
+            except:
+                pass
+            ser.open()
+
+            ser.write(bytes(f"@{MKS_ADDRESS}{command};FF", "ascii"))
+
+            # print("data sent !!!")
+
+            time.sleep(0.1)
+
+            result = ser.read_until(b"FF")
+
+            ser.close()
+
+            os.system("rm .VSC_USB_LOCK")
+
+            Logging.MakeLogEntry(f"Communication with VSC finished with reading {result}", log_name="USB_Log")
+            return result
+
+        Logging.MakeLogEntry(f"Communication with VSC failed due to timeout", log_name="USB_Log")
+        return None
+
+
+
+def NewReadMFMFlowRate(MainConfig="MainConfig"):  # Function to read flow rate (ml/min) from Mass Flow Meter
+
+
+    address = ReadJSONConfig("vsc","address",MainConfig)
+    vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
+
+    vsc_VID = ReadJSONConfig("vsc","VID",MainConfig)
+    vsc_PID = ReadJSONConfig("vsc","PID",MainConfig)
+
+    mfm_port = ReadJSONConfig("vsc","mfm_port",MainConfig)
+
+    raw_flowrate = str(NewSendCommand(address,vsc_VID,vsc_PID,f"FR{mfm_port}?"))
+    #print(raw_flowrate)
+
+    ret = ConvertEngineerNotation(raw_flowrate)
+
+
+    return ret
+
