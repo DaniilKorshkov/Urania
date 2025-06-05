@@ -24,15 +24,25 @@ def find_usb_connections():         # function that returns a list of all ttyUSB
     return allUSB_list
 
 
-def check_for_new_connections():
+def check_for_new_connections(device_name):
     old_usb_list = find_usb_connections()
     while True:
+        
+        
+
         new_usb_list = find_usb_connections()
-        if old_usb_list == new_usb_list:
+
+        skip_element = st.button(f"Skip {device_name}")
+
+        if skip_element:
+            return None
+
+
+        elif old_usb_list == new_usb_list:
             pass
         else:
             for element in new_usb_list:
-                if not (element in old_usb_list) and ("ttyUSB" in element):
+                if not (element in old_usb_list) and (("ttyUSB" in element) or (("ttyACM" in element))):
                     return element
             break
 
@@ -40,19 +50,19 @@ def check_for_new_connections():
 
 def allocate_usb_devices():
     st.write("Please plug VSC to USB port")
-    vsc_address = check_for_new_connections()
+    vsc_address = check_for_new_connections("VSC")
     st.write("VSC address found")
     time.sleep(0.1)
     st.write("Please plug multi inlet valve to USB port")
-    miv_address = check_for_new_connections()
+    miv_address = check_for_new_connections("multi inlet valve")
     st.write("Multi inlet valve address found")
     time.sleep(0.1)
     st.write("Please plug oxygen analyzer to USB port")
-    oxa_address = check_for_new_connections()
+    oxa_address = check_for_new_connections("oxygen analyzer")
     st.write("Oxygen analyzer address found")
     time.sleep(0.1)
     st.write("Please plug Arduino board to USB port")
-    arduino_address = check_for_new_connections()
+    arduino_address = check_for_new_connections("Arduino board")
     st.write("Arduino address found")
 
 
