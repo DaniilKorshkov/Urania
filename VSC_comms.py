@@ -71,8 +71,8 @@ def SendCommand(MKS_ADDRESS,PORT,command):  #function to send command to VSC via
             Logging.MakeLogEntry(f"Communication with VSC finished with reading {result}", log_name="USB_Log")
             return result
 
-        Logging.MakeLogEntry(f"Communication with VSC failed due to timeout", log_name="USB_Log")
-        return None
+    Logging.MakeLogEntry(f"Communication with VSC failed due to timeout", log_name="USB_Log")
+    return None
 
 
 

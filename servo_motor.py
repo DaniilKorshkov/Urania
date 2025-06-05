@@ -34,5 +34,5 @@ def switch_valve_position(position, config="MainConfig"):
             return None
 
 
-        Logging.MakeLogEntry("Communication with MIV failed due to timeout",log_name="USB_Log")
+    Logging.MakeLogEntry("Communication with MIV failed due to timeout",log_name="USB_Log")
 

@@ -13,6 +13,7 @@ import json
 import datetime
 import serial.tools.list_ports
 import Logging
+import usb
 
 #PORT = '/dev/ttyUSB0'  #"COM7"
 #MKS_ADDRESS = "253"
@@ -44,7 +45,9 @@ def SendCommand(PORT,command):
             try:
                 ser.close()
             except:
-                ser.open()
+                pass
+                
+            ser.open()
 
 
 
@@ -65,8 +68,8 @@ def SendCommand(PORT,command):
             Logging.MakeLogEntry(f"Communication with arduino board finished with result: {ret}",log_name="USB_Log")
             return ret
 
-        Logging.MakeLogEntry(f"Communication with arduino board failed due to timeout", log_name="USB_Log")
-        return None
+    Logging.MakeLogEntry(f"Communication with arduino board failed due to timeout", log_name="USB_Log")
+    return None
 
 
 
@@ -79,6 +82,8 @@ def GetReadingsData():
 
     ret = str(SendCommand(PORT,"RV"))
     retsplit = ret.split("!")
+
+    print(ret)
 
 
 
@@ -180,5 +185,95 @@ def PingArduino():
 
 
 
+
+
+
+
+
+def NewSendCommand(VID, PID, command):
+
+
+
+
+    dev = usb.core.find(idVendor = int(VID, base=16), idProduct = int(PID, base=16))
+
+    reattach = False
+    if dev.is_kernel_driver_active(0):
+        reattach = True
+        dev.detach_kernel_driver(0)
+
+
+    dev.set_configuration()
+
+
+    cfg = dev.get_active_configuration()
+    intf = cfg[0,0]
+    ser = intf[1]
+    print(ser)
+
+
+
+
+    assert ser is not None
+
+    Logging.MakeLogEntry("Communication with arduino board initiated", log_name="USB_Log")
+
+    # ports = serial.tools.list_ports.comports()
+    # print(ports)
+
+
+
+    timeout_countdown_starter = datetime.datetime.now().timestamp()
+
+    while datetime.datetime.now().timestamp() - timeout_countdown_starter < 20:
+
+        try:
+            handle = open(".ARD_USB_LOCK", "r")
+            handle.close()
+        except:
+
+            handle = open(".ARD_USB_LOCK", 'w')
+            handle.close()
+
+
+
+            ser.write(command.encode("ascii"))
+
+            time.sleep(0.1)
+
+            ret = ser.read_until(b"!END")
+
+            ser.close()
+
+            os.system("rm .ARD_USB_LOCK")
+
+            # print(str(ret).split("!"))
+            ser.close()
+
+            Logging.MakeLogEntry(f"Communication with arduino board finished with result: {ret}", log_name="USB_Log")
+            usb.util.dispose_resources(dev)
+            if reattach:
+                dev.attach_kernel_driver(0)
+            return ret
+
+        Logging.MakeLogEntry(f"Communication with arduino board failed due to timeout", log_name="USB_Log")
+        return None
+
+
+
+def NewPingArduino():
+
+
+        VID = JSONoperators.ReadJSONConfig("arduino", "VID")
+        PID = JSONoperators.ReadJSONConfig("arduino", "PID")
+        ret = str(NewSendCommand(VID,PID, "PING"))
+        retsplit = ret.split("!")
+        if retsplit[1] == "THIS_IS_ARDUINO":
+            return True
+        else:
+            return False
+
+
+
 if __name__ == "__main__":
-    LogArduinoData()
+    print(GetReadingsData())

@@ -66,7 +66,7 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
 
             return ret
 
-        return None
+    return None
 
 
 
