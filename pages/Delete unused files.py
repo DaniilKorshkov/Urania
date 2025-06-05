@@ -20,6 +20,10 @@ def DeleteUnusedFiles(MainConfig="MainConfig"):
             os.system(f"rm {log_name}")
         except:
             st.write("Log alrealy cleaned")
+        try:
+            os.system(f"rm USB_Log")
+        except:
+            st.write("USB log alrealy cleaned")
 
     delete_abnorm_log = st.button(f"Clean abnormality log")
     if delete_abnorm_log:
@@ -34,6 +38,10 @@ def DeleteUnusedFiles(MainConfig="MainConfig"):
             os.system(f"rm VSC_log")
         except:
             st.write("VSC log already cleaned")
+        try:
+            os.system(f"rm arduino_log")
+        except:
+            st.write("Filling station log already cleaned")
 
 
 
