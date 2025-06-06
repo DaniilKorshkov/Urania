@@ -29,13 +29,7 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
 
     while datetime.datetime.now().timestamp() - timeout_countdown_starter < 20:
 
-        try:
-            handle = open(".OA_USB_LOCK", "r")
-            handle.close()
-        except:
-
-            handle = open(".OA_USB_LOCK", 'w')
-            handle.close()
+        
 
             try:
                 ser.close()
@@ -62,10 +56,10 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
 
             ser.close()
 
-            os.system("rm .OA_USB_LOCK")
+            
 
             return ret
-
+    
     return None
 
 

@@ -36,43 +36,34 @@ def SendCommand(MKS_ADDRESS,PORT,command):  #function to send command to VSC via
         bytesize=serial.EIGHTBITS,
     )
 
-    timeout_countdown_starter = datetime.datetime.now().timestamp()
+    
 
-    while datetime.datetime.now().timestamp() - timeout_countdown_starter < 20:
+        
 
-        try:
-            handle = open(".VSC_USB_LOCK", "r")
-            handle.close()
-        except:
-
-            handle = open(".VSC_USB_LOCK", 'w')
-            handle.close()
-
-            try:
-                ser.close()
-            except:
-                pass
-            ser.open()
+    try:
+        ser.close()
+    except:
+        pass
+    ser.open()
 
 
 
-            ser.write(bytes(f"@{MKS_ADDRESS}{command};FF", "ascii"))
+    ser.write(bytes(f"@{MKS_ADDRESS}{command};FF", "ascii"))
 
-            #print("data sent !!!")
+    #print("data sent !!!")
 
-            time.sleep(0.1)
+    time.sleep(0.1)
 
-            result = ser.read_until(b"FF")
+    result = ser.read_until(b"FF")
 
-            ser.close()
+    ser.close()
 
-            os.system("rm .VSC_USB_LOCK")
+    
 
-            Logging.MakeLogEntry(f"Communication with VSC finished with reading {result}", log_name="USB_Log")
-            return result
+    Logging.MakeLogEntry(f"Communication with VSC finished with reading {result}", log_name="USB_Log")
+    return result
 
-    Logging.MakeLogEntry(f"Communication with VSC failed due to timeout", log_name="USB_Log")
-    return None
+    
 
 
 

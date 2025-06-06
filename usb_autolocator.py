@@ -32,13 +32,10 @@ def check_for_new_connections(device_name):
 
         new_usb_list = find_usb_connections()
 
-        skip_element = st.button(f"Skip {device_name}")
-
-        if skip_element:
-            return None
+        
 
 
-        elif old_usb_list == new_usb_list:
+        if old_usb_list == new_usb_list:
             pass
         else:
             for element in new_usb_list:

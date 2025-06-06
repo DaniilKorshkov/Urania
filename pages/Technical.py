@@ -17,8 +17,7 @@ if changeip:
 if usb_discovery:
     usb_autolocator.allocate_usb_devices()
 
-
-if force_unlock:
+'''if force_unlock:
     try:
         os.system("rm .OA_USB_LOCK")
     except:
@@ -37,4 +36,4 @@ if force_unlock:
         pass
 
     
-    st.write("USB peripherals force unlocked")
+    st.write("USB peripherals force unlocked")'''
