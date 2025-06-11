@@ -25,7 +25,7 @@ import usb.core
 
 def SendCommand(MKS_ADDRESS,PORT,command):  #function to send command to VSC via Serial port
 
-    Logging.MakeLogEntry("Communication with VSC initiated",log_name="USB_Log")
+    #Logging.MakeLogEntry("Communication with VSC initiated",log_name="USB_Log")
 
     ser = serial.Serial(
         port=PORT,
@@ -60,7 +60,7 @@ def SendCommand(MKS_ADDRESS,PORT,command):  #function to send command to VSC via
 
     
 
-    Logging.MakeLogEntry(f"Communication with VSC finished with reading {result}", log_name="USB_Log")
+    #Logging.MakeLogEntry(f"Communication with VSC finished with reading {result}", log_name="USB_Log")
     return result
 
     

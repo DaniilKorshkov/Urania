@@ -25,47 +25,45 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
         bytesize=serial.EIGHTBITS,
     )
 
-    timeout_countdown_starter = datetime.datetime.now().timestamp()
-
-    while datetime.datetime.now().timestamp() - timeout_countdown_starter < 20:
+    
 
         
 
-            try:
-                ser.close()
-            except:
-                ser.open()
-
-
-
-            ser.write(bytes(f"st","ascii"))
-
-            ret = ""  # ret is a string, which gets updated and printed every time data received
-
-            for i in range(83):
-                    result = ser.read()  # data is received from oxygen analyzer
-                    try:
-                        result = result.decode("ascii")
-                        ret=ret+str(result)  # ret appended
-                    except:
-                        pass
-            #print(ret)   # ret printed
-            #splitret = ret.split()
-            #for element in splitret:
-                #print(element)
-
+        try:
             ser.close()
+        except:
+            ser.open()
 
-            
 
-            return ret
+
+        ser.write(bytes(f"st","ascii"))
+
+        ret = ""  # ret is a string, which gets updated and printed every time data received
+
+        for i in range(83):
+                result = ser.read()  # data is received from oxygen analyzer
+                try:
+                    result = result.decode("ascii")
+                    ret=ret+str(result)  # ret appended
+                except:
+                    pass
+        #print(ret)   # ret printed
+        #splitret = ret.split()
+        #for element in splitret:
+            #print(element)
+
+        ser.close()
+
+        
+
+        return ret
     
-    return None
+    
 
 
 
 def GetOxygenData(MainConfig="MainConfig"):
-    Logging.MakeLogEntry("Communication with oxygen analyzer initiated",log_name="USB_Log")
+    #Logging.MakeLogEntry("Communication with oxygen analyzer initiated",log_name="USB_Log")
     port = js.ReadJSONConfig("ox_an","port",MainConfig)
 
 
@@ -93,7 +91,7 @@ def GetOxygenData(MainConfig="MainConfig"):
     else:
         ret = ret * 10000
 
-    Logging.MakeLogEntry(f"Communication with oxygen analyzer finished with result {ret}",log_name="USB_Log")
+    #Logging.MakeLogEntry(f"Communication with oxygen analyzer finished with result {ret}",log_name="USB_Log")
     return ret
 
 
