@@ -112,7 +112,7 @@ void loop() {
     WRITE_TWO_STATUS = HIGH;
     
 
-    digitalWrite(ACTUATOR_WRITE_THREE,WRITE_TWO_STATUS);
+    digitalWrite(ACTUATOR_WRITE_TWO,WRITE_TWO_STATUS);
     Serial.print("START!ACT_TWO_ONED!END");
     
     
@@ -123,7 +123,7 @@ void loop() {
     WRITE_TWO_STATUS = LOW;
     
     
-    digitalWrite(ACTUATOR_WRITE_THREE,WRITE_TWO_STATUS);
+    digitalWrite(ACTUATOR_WRITE_TWO,WRITE_TWO_STATUS);
     Serial.print("START!ACT_TWO_OFFED!END");
    
    }

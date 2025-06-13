@@ -29,36 +29,36 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
 
         
 
-        try:
-            ser.close()
-        except:
-            ser.open()
-
-
-
-        ser.write(bytes(f"st","ascii"))
-
-        ret = ""  # ret is a string, which gets updated and printed every time data received
-
-        for i in range(83):
-                result = ser.read()  # data is received from oxygen analyzer
-                try:
-                    result = result.decode("ascii")
-                    ret=ret+str(result)  # ret appended
-                except:
-                    pass
-        #print(ret)   # ret printed
-        #splitret = ret.split()
-        #for element in splitret:
-            #print(element)
-
+    try:
         ser.close()
+    except:
+        ser.open()
 
-        
 
-        return ret
+
+    ser.write(bytes(f"st","ascii"))
+
+    ret = ""  # ret is a string, which gets updated and printed every time data received
+
+    for i in range(83):
+            result = ser.read()  # data is received from oxygen analyzer
+            try:
+                result = result.decode("ascii")
+                ret=ret+str(result)  # ret appended
+            except:
+                pass
+    #print(ret)   # ret printed
+    #splitret = ret.split()
+    #for element in splitret:
+        #print(element)
+
+    ser.close()
+
     
-    
+
+    return ret
+
+
 
 
 
