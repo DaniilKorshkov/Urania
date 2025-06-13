@@ -10,15 +10,13 @@ const int AFIVE = A5;
 
 
 const int ACTUATOR_WRITE_ONE = 3;
-const int ACTUATOR_WRITE_TWO = 4;
-const int ACTUATOR_WRITE_THREE = 5;
-const int ACTUATOR_WRITE_FOUR = 6;
+const int ACTUATOR_WRITE_TWO = 5;
 
 
-  int WRITE_ONE_STATUS = LOW;
-  int WRITE_TWO_STATUS = LOW;
-  int WRITE_THREE_STATUS = LOW;
-  int WRITE_FOUR_STATUS = LOW;
+
+int WRITE_ONE_STATUS = LOW;
+int WRITE_TWO_STATUS = LOW;
+  
 
 
 
@@ -37,8 +35,7 @@ void setup() {
 
   pinMode(ACTUATOR_WRITE_ONE,OUTPUT);
   pinMode(ACTUATOR_WRITE_TWO,OUTPUT);
-  pinMode(ACTUATOR_WRITE_THREE,OUTPUT);
-  pinMode(ACTUATOR_WRITE_FOUR,OUTPUT);
+ 
 
 
 
@@ -81,10 +78,7 @@ void loop() {
     Serial.print(WRITE_ONE_STATUS);
     Serial.print("!WRITE_TWO_VOLTAGE!");
     Serial.print(WRITE_TWO_STATUS);
-    Serial.print("!WRITE_THREE_VOLTAGE!");
-    Serial.print(WRITE_THREE_STATUS);
-    Serial.print("!WRITE_FOUR_VOLTAGE!");
-    Serial.print(WRITE_FOUR_STATUS);
+    
 
     Serial.print("!END");
     
@@ -94,10 +88,9 @@ void loop() {
   else if(msg == "ACT_ONE_ON"){
 
     WRITE_ONE_STATUS = HIGH;
-    WRITE_TWO_STATUS = HIGH;
+    
 
     digitalWrite(ACTUATOR_WRITE_ONE,WRITE_ONE_STATUS);
-    digitalWrite(ACTUATOR_WRITE_TWO,WRITE_TWO_STATUS);
     Serial.print("START!ACT_ONE_ONED!END");
     
     
@@ -106,10 +99,9 @@ void loop() {
    else if(msg == "ACT_ONE_OFF"){
 
     WRITE_ONE_STATUS = LOW;
-    WRITE_TWO_STATUS = LOW;
+    
     
     digitalWrite(ACTUATOR_WRITE_ONE,WRITE_ONE_STATUS);
-    digitalWrite(ACTUATOR_WRITE_TWO,WRITE_TWO_STATUS);
     Serial.print("START!ACT_ONE_OFFED!END");
    
    }
@@ -117,11 +109,10 @@ void loop() {
 
    else if(msg == "ACT_TWO_ON"){
 
-    WRITE_THREE_STATUS = HIGH;
-    WRITE_FOUR_STATUS = HIGH;
+    WRITE_TWO_STATUS = HIGH;
+    
 
-    digitalWrite(ACTUATOR_WRITE_THREE,WRITE_THREE_STATUS);
-    digitalWrite(ACTUATOR_WRITE_FOUR,WRITE_FOUR_STATUS);
+    digitalWrite(ACTUATOR_WRITE_THREE,WRITE_TWO_STATUS);
     Serial.print("START!ACT_TWO_ONED!END");
     
     
@@ -129,11 +120,10 @@ void loop() {
 
    else if(msg == "ACT_TWO_OFF"){
 
-    WRITE_THREE_STATUS = LOW;
-    WRITE_FOUR_STATUS = LOW;
+    WRITE_TWO_STATUS = LOW;
     
-    digitalWrite(ACTUATOR_WRITE_THREE,WRITE_THREE_STATUS);
-    digitalWrite(ACTUATOR_WRITE_FOUR,WRITE_FOUR_STATUS);
+    
+    digitalWrite(ACTUATOR_WRITE_THREE,WRITE_TWO_STATUS);
     Serial.print("START!ACT_TWO_OFFED!END");
    
    }

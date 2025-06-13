@@ -272,9 +272,11 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
     try:
         for i in range(purge_cycles):
             VSC_comms.ChangeMFCMode("Open")
+            ArduinoComms.TurnActuatorOneOn()
             VSC_comms.LogVSCData()
             time.sleep(35)
             VSC_comms.ChangeMFCMode("Close")
+            ArduinoComms.TurnActuatorOneOff()
             time.sleep(30)
         time.sleep(30)
 

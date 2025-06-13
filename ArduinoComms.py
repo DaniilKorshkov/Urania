@@ -90,7 +90,7 @@ def GetReadingsData():
     for i in range(6):
         ret_data.append( int(raw_voltages[i])*((polynomes[i])[0]) + ((polynomes[i])[1]) )
 
-    for i in range(4):
+    for i in range(2):
         ret_data.append( retsplit[14 + 2*i] )
 
     return ret_data
@@ -125,7 +125,7 @@ def LogArduinoData():
         dictionary_to_append["actuator_one_status"] = "closed"
 
 
-    if ret_data[8] == 1:
+    if ret_data[7] == 1:
         dictionary_to_append["actuator_two_status"] = "open"
     else:
         dictionary_to_append["actuator_two_status"] = "closed"
