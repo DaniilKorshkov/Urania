@@ -19,8 +19,8 @@ def switch_valve_position(position, config="MainConfig"):
 
     vicivalve.write("GO"+str(position))
 
-    vicivalve.close()
-    os.system("rm .VICI_USB_LOCK")
+    
+    
     #Logging.MakeLogEntry("Communication with MIV finished", log_name="USB_Log")
 
     return None

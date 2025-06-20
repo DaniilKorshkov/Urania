@@ -6,7 +6,7 @@ import os
 changeip = st.button("Netdiscover for RGA IP")
 st.write("Please unplug VSC, oxygen analyzer, multi inlet valve and arduino board from computer before allocating addresses")
 usb_discovery = st.button("Locate devices on USB bus")
-force_unlock = st.button("Force unlock communication with USB perippherals")
+
 
 if changeip:
     if_success, rga_ip = rga.change_rga_ip("MainConfig")
@@ -17,23 +17,3 @@ if changeip:
 if usb_discovery:
     usb_autolocator.allocate_usb_devices()
 
-'''if force_unlock:
-    try:
-        os.system("rm .OA_USB_LOCK")
-    except:
-        pass
-    try:
-        os.system("rm .ARD_USB_LOCK")
-    except:
-        pass
-    try:
-        os.system("rm .VSC_USB_LOCK")
-    except:
-        pass
-    try:
-        os.system("rm .VICI_USB_LOCK")
-    except:
-        pass
-
-    
-    st.write("USB peripherals force unlocked")'''
