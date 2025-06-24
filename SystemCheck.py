@@ -8,9 +8,86 @@ import ArduinoComms
 def SystemCheck(MainConfig="MainConfig"):
     heatstat, capheatstat, pumpstat = RGA_comms.heating_info()
     filament_status = RGA_comms.rga_filament_info()
+
+
+
+
+    vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
+    arduino_serial_port = JSONoperators.ReadJSONConfig("arduino","port")
+    motor_address = js.ReadJSONConfig("vicimotor","address")
+    ox_an_port = js.ReadJSONConfig("ox_an","port",MainConfig)
+
+
+
+
     #multiplier_status = RGA_comms.rga_multiplier_info()
 
     faliures_found = False
+
+
+
+    if vsc_serial_port == "dev/None":
+        try:
+            bypass = JSONoperators.ReadJSONConfig("system_check","bypass vsc dev")
+        except:
+            bypass = False
+        if not bypass:
+            manual_bypass = str(input(f"VSC dev port: {vsc_serial_port}. Press 'y' to continue. It is suggested to go to Technical page and re-doing USB autolocation"))
+            if manual_bypass.lower()[0] == "y":
+                bypass = True
+                lg.MakeLogEntry(f"VSC dev port is {vsc_serial_port}. Sampling initiated by user despite this fact")
+        if not bypass:
+            faliures_found = True
+            lg.MakeLogEntry(f"VSC dev port is {vsc_serial_port}. Sampling is cancelled\n")
+
+
+    
+    if ox_an_port == "dev/None":
+        try:
+            bypass = JSONoperators.ReadJSONConfig("system_check","bypass oxan dev")
+        except:
+            bypass = False
+        if not bypass:
+            manual_bypass = str(input(f"Arduino dev port: {ox_an_port}. Press 'y' to continue. It is suggested to go to Technical page and re-doing USB autolocation"))
+            if manual_bypass.lower()[0] == "y":
+                bypass = True
+                lg.MakeLogEntry(f"Arduino dev port is {ox_an_port}. Sampling initiated by user despite this fact")
+        if not bypass:
+            faliures_found = True
+            lg.MakeLogEntry(f"Arduino dev port is {ox_an_port}. Sampling is cancelled\n")
+
+
+
+
+    if motor_address == "dev/None":
+        try:
+            bypass = JSONoperators.ReadJSONConfig("system_check","bypass MIV dev")
+        except:
+            bypass = False
+            lg.MakeLogEntry(f"Multi inlet valve dev port is {motor_address}. Sampling is cancelled\n")
+
+    
+    if arduino_serial_port == "dev/None":
+        try:
+            bypass = JSONoperators.ReadJSONConfig("system_check","bypass arduino dev")
+        except:
+            bypass = False
+            lg.MakeLogEntry(f"Arduino dev port is {arduino_serial_port}. Sampling is cancelled\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     if heatstat != "Warm":
         try:
