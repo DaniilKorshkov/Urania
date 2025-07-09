@@ -95,7 +95,7 @@ def three_dimentional_spectrum(spectrum_list, initial_value, step):  # function 
 
 
 
-def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islogarithmic, isppm):   # function to display spectrum for given moment of time
+def constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initial_value, step, islogarithmic, isppm):   # function to display spectrum for given moment of time
 
 
 
@@ -179,7 +179,15 @@ def constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islo
 
             ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
             ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-            ax.set_title(f'Mass spectrum for time: {dt.datetime.fromtimestamp(given_time)}')
+
+            try:
+                
+                custom_line_name = str(custom_names_list[str(given_time)])
+                ax.set_title(custom_line_name)
+
+            except:
+
+                ax.set_title(f'Mass spectrum for time: {dt.datetime.fromtimestamp(given_time)}')
 
 
             st.pyplot(fig)
@@ -377,9 +385,9 @@ def display_one_sample_data(settings_filename,self_name):           # function t
         assert howmuchspectrums > 0
 
         if parsing_mode == "last":
-                metadata, spectrum_list, oxygen_list = js.read_last_spectrums_for_time(spectrum_name, howmuchspectrums)   # most recent spectrums are imported from JSON file
+                metadata, spectrum_list, oxygen_list, custom_names_list = js.read_last_spectrums_for_time(spectrum_name, howmuchspectrums)   # most recent spectrums are imported from JSON file
         else:
-                metadata, spectrum_list, oxygen_list = js.read_period_of_time_wrt_time(spectrum_name,howmuchspectrums,time_moment)
+                metadata, spectrum_list, oxygen_list, custom_names_list = js.read_period_of_time_wrt_time(spectrum_name,howmuchspectrums,time_moment)
 
         if metadata["is_a_spectrum"] != "True":   # verification that provided file is a spectrum
                 st.write("Imported file is not valid!")
@@ -395,7 +403,7 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
         islogarithmic = st.radio(f"Do display logarithmic scalе?", ["True", "False"])
         isppm = st.radio(f"Do convert to ppm?", ["True", "False"])
-        constant_time_spectrum(spectrum_list, oxygen_list, initial_value, step, islogarithmic,isppm)
+        constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initial_value, step, islogarithmic,isppm)
 
 
         islogarithmic2 = st.radio(f"Do display logarithmic scale2?", ["True", "False"])

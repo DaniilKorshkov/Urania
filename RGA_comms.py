@@ -343,7 +343,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
 
 
-def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="MainConfig"):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
+def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="MainConfig",custom_line_name = None):  #scanning for great amount of values is memory complex, therefore multiple steps of scanning and writing is required
 
 
 
@@ -408,6 +408,9 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
         except:
             Logging.MakeLogEntry(f"Failed to get oxygen data for RGA scan: {filename}")
             dictionary_to_append["oxygen"] = 0
+        
+        if custom_line_name != None:
+            dictionary_to_append["custom_line_name"] = custom_line_name
 
 
         handle = open(filename, "a")
