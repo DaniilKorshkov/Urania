@@ -12,10 +12,10 @@ def SystemCheck(MainConfig="MainConfig"):
 
 
 
-    vsc_serial_port = ReadJSONConfig("vsc","vsc_serial_port")
+    vsc_serial_port = JSONoperators.ReadJSONConfig("vsc","vsc_serial_port")
     arduino_serial_port = JSONoperators.ReadJSONConfig("arduino","port")
-    motor_address = js.ReadJSONConfig("vicimotor","address")
-    ox_an_port = js.ReadJSONConfig("ox_an","port",MainConfig)
+    motor_address = JSONoperators.ReadJSONConfig("vicimotor","address")
+    ox_an_port = JSONoperators.ReadJSONConfig("ox_an","port",MainConfig)
 
 
 
