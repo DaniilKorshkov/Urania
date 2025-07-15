@@ -306,9 +306,8 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
 
     while int(datetime.datetime.now().timestamp()) < (initial_time + amount_of_scans + 1):
         try:
-            current_pressure = VSC_comms.ReadPCPressure()
-            pressure_coefficient = (1/current_pressure)
-            spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename, convertion_coefficient=pressure_coefficient, accuracy=accuracy)
+            
+            spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename, accuracy=accuracy)
 
             if (ErrorMessage != None) and (ErrorMessage != "TIMEOUT") and (not ("Failed to create measurement" in str(ErrorMessage))) and (not ("LinkDown" in ErrorMessage)):
                 critical_errors = True

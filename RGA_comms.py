@@ -211,7 +211,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     MultiplierMode = 0
     #MultiplierMode = js.ReadJSONConfig("spectrometer_parameters","MultiplierMode")
     #assert MultiplierMode in range(4)
-    packages_list = ['Control  "MyProgram" "1.0"' , 'FilamentControl On']
+    packages_list = ['Control  "MyProgram" "1.0"' , 'FilamentControl On', "TotalPressureInfo"]
     for i in range(int(amount_of_scans)):
 
         timestamp = int(1000000*(datetime.datetime.now()).timestamp())
@@ -231,14 +231,25 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
         return None, ErrorMessage
 
 
-    ReconSpectrum = list()  # spectrum is a list of PPM's corresponding to integer molar masses
+    ReconSpectrum = list()  # spectrum is a list of ionic currents divided over chamber pressure corresponding to integer molar masses
     for i in range(amount_of_scans):
         ReconSpectrum.append(0)
 
     for line in RawInput:
         # print(line)
         split_line = line.split()
-        if "MassReading" in line:
+        if "TotalPressureInfo OK" in line:
+            PressurePosition = split_line.index("Pressure")
+            split_eng_notation = (split_line[PressurePosition+1]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
+
+            power = 10 ** (int(split_eng_notation[1]))
+
+            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+
+            CurrentPressure = end_result
+
+
+        elif "MassReading" in line:
             #print(line)
             MassReadingPosition = split_line.index("MassReading")
             split_eng_notation = (split_line[MassReadingPosition+2]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
@@ -248,6 +259,18 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
             end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
             ReconSpectrum[ int((float(split_line[MassReadingPosition+1])-float(start_mass))/float(step)) ] = end_result
+
+
+        elif "TotalPressure" in line:
+            PressurePosition = split_line.index("TotalPressure")
+            split_eng_notation = (split_line[PressurePosition+1]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
+
+            power = 10 ** (int(split_eng_notation[1]))
+
+            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+
+            CurrentPressure = end_result
+
 
     FaradayCupMasses = list()
     MultiplierMasses = list()
