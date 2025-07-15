@@ -49,7 +49,7 @@ def Sampling():
                 handle = open(".VSCINUSE", 'w')
                 handle.close()
 
-                tracemalloc.start()
+                #tracemalloc.start()
 
 
                 while True:
@@ -57,12 +57,12 @@ def Sampling():
                         if critical_errors or interrupted:
 
 
-                                snapshot = tracemalloc.take_snapshot()
-                                statistics = snapshot.statistics('lineno')
+                                #snapshot = tracemalloc.take_snapshot()
+                                #statistics = snapshot.statistics('lineno')
 
-                                print("results:")
-                                for stat in statistics[:10]:
-                                        print(stat)
+                                #print("results:")
+                                #for stat in statistics[:10]:
+                                        #print(stat)
 
 
                                 print(f"Sampling process terminated")

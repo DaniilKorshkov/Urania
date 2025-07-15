@@ -41,7 +41,7 @@ def DeleteUnusedFiles(MainConfig="MainConfig"):
         try:
             os.system(f"rm arduino_log")
         except:
-            st.write("Filling station log already cleaned")
+            st.write("Filling stationc log already cleaned")
 
 
 

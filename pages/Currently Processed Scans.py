@@ -48,16 +48,23 @@ def DisplayCurrentScans():
     st.write(f"Reading following files: {filelist}")
 
     default_mass_string = js.ReadJSONConfig("cache", "default_mass_string")
+    isinterpreted = st.radio(f"Do interpret spectra?", ["True", "False"])
+    if isinterpreted == "False":
 
-    st.write(f"Enter desired M/Z separated by comma: (default: {default_mass_string}) ")
-    mass_string = st.text_input(label="Enter desired M/Z (or 'ox') separated by comma: ")
+        st.write(f"Enter desired M/Z separated by comma: (default: {default_mass_string}) ")
+        mass_string = st.text_input(label="Enter desired M/Z (or 'ox') separated by comma: ")
+        if mass_string == "":
+            mass_string = default_mass_string  # user is promted to input list of desired masses as string. If nothing is inputed, default list is used
+
+        temp_mass_list = (mass_string.strip()).split(",")
+        mass_list = []  # list of desired molar masses to be displayed on graph
+
     islogarithmic = st.radio(f"Do display logarithmic scalе?", ["True", "False"])
     isppm = st.radio(f"Do convert to ppm?", ["True", "False"])
-    if mass_string == "":
-        mass_string = default_mass_string  # user is promted to input list of desired masses as string. If nothing is inputed, default list is used
+    
+    
 
-    temp_mass_list = (mass_string.strip()).split(",")
-    mass_list = []  # list of desired molar masses to be displayed on graph
+    
 
 
     howmuchspectrums = TimeInputWidget()
@@ -97,10 +104,10 @@ def DisplayCurrentScans():
         try:
 
             if parsing_mode == "last":
-                metadata, spectrum_list, oxygen_list, custom_names_list = js.read_last_spectrums_for_time(spectrum_name,
+                metadata, spectrum_list, oxygen_list, custom_names_list, solutions_list = js.read_last_spectrums_for_time(spectrum_name,
                                                                               howmuchspectrums)  # most recent spectrums are imported from JSON file
             else:
-                metadata, spectrum_list, oxygen_list, custom_names_list = js.read_period_of_time_wrt_time(spectrum_name, howmuchspectrums,time_moment)
+                metadata, spectrum_list, oxygen_list, custom_names_list, solutions_list = js.read_period_of_time_wrt_time(spectrum_name, howmuchspectrums,time_moment)
 
             
             if spectrum_list == None or len(spectrum_list) == 0:
@@ -115,118 +122,166 @@ def DisplayCurrentScans():
 
                 try:
 
-                    temp_mass_list = (mass_string.strip()).split(",")
+                    if isinterpreted == "False":
 
 
-                    mass_list = []  # list of desired molar masses to be displayed on graph
-                    for element in temp_mass_list:
-
-                        if element.strip() == "ox":
-                            mass_list.append("ox")
-                            # st.write(type(len(spectrum_list[0])))
-
-                        else:
-                            try:
-                                float_mass = float(element.strip())
-
-                                temp_timestamp = list(spectrum_list)[0]
-                                if (float_mass < initial_value) or (
-                                        float_mass > (initial_value + step * (len(spectrum_list[temp_timestamp])) - 1)):
-                                    st.write(f"M/Z {float_mass} is out of limit")
+                        temp_mass_list = (mass_string.strip()).split(",")
 
 
+                        mass_list = []  # list of desired molar masses to be displayed on graph
+                        for element in temp_mass_list:
+
+                            if element.strip() == "ox":
+                                mass_list.append("ox")
+                                # st.write(type(len(spectrum_list[0])))
+
+                            else:
+                                try:
+                                    float_mass = float(element.strip())
+
+                                    temp_timestamp = list(spectrum_list)[0]
+                                    if (float_mass < initial_value) or (
+                                            float_mass > (initial_value + step * (len(spectrum_list[temp_timestamp])) - 1)):
+                                        st.write(f"M/Z {float_mass} is out of limit")
 
 
-                                else:
-
-                                    mass_list.append(float_mass)
 
 
-                            except:
-                                st.write(f"{element.strip()} is not a valid M/Z")
+                                    else:
 
-                    if len(mass_list) == 0:
-                        st.write("No valid M/Z provided to display")
+                                        mass_list.append(float_mass)
+
+
+                                except:
+                                    st.write(f"{element.strip()} is not a valid M/Z")
+
+                        
+                            if len(mass_list) == 0:
+                                st.write("No valid M/Z provided to display")
+                            else:
+
+                                placeholder = st.empty()
+                                with placeholder.container():
+                                    fig, ax = plt.subplots()
+                                    x = fn.get_time_list(spectrum_list)
+                                    x_converted = [dt.datetime.fromtimestamp(element) for element in
+                                                x]  # convert date and time from computer format to human readable format
+
+                                    mass_dictionary = {}  # dictionaty to be displayed in table with numerical values
+                                    mass_dictionary[f"Time:"] = x_converted  # first column is time moments of measurements
+
+                                    for given_mass in mass_list:
+
+                                        if given_mass == "ox":
+                                            y = []
+                                            for key in oxygen_list:
+                                                print(oxygen_list[key])
+                                                y.append(oxygen_list[key])
+
+
+                                        else:
+                                            mass_number = int((given_mass - initial_value) / step)
+                                            # st.write(mass_number)
+                                            try:
+                                                y = fn.plot_mass(spectrum_list, mass_number, isppm)
+                                            except:
+                                                pass
+
+                                        display_range = y
+
+                                        ax.plot(x_converted, display_range, label=f"M/Z: {given_mass}")
+
+                                        mass_dictionary[f"M/Z = {str(given_mass)}"] = y
+
+
+
+
+
+                    if isinterpreted == "True":
+
+                        x = fn.get_time_list(spectrum_list)
+                        x_converted = [dt.datetime.fromtimestamp(element) for element in x]
+
+
+                        fig, ax = plt.subplots()
+                        x = fn.get_time_list(spectrum_list)
+
+                        y_oxygen = []
+                        for key in oxygen_list:
+                            y_oxygen.append(oxygen_list[key])
+                        
+
+                        display_range = y_oxygen
+                        ax.plot(x_converted, display_range, label=f"O2 (electrochemical)")
+                        mass_dictionary[f"O2 (electrochemical)"] = y_oxygen
+
+
+
+
+
+                        for key in solutions_list["interpreted_spectrum"]:
+                            y = []
+                            for time_key in key:
+                                y.append(key[time_key])
+
+
+                            display_range = y
+                            ax.plot(x_converted, display_range, label=f"{key}")
+                            mass_dictionary[f"{key}"] = y
+
+
+
+
+
+
+
+
+                    if isppm == "True":
+                        ylabel = "PPM"
                     else:
+                        ylabel = "Pascal"
 
-                        placeholder = st.empty()
-                        with placeholder.container():
-                            fig, ax = plt.subplots()
-                            x = fn.get_time_list(spectrum_list)
-                            x_converted = [dt.datetime.fromtimestamp(element) for element in
-                                        x]  # convert date and time from computer format to human readable format
+                    
 
-                            mass_dictionary = {}  # dictionaty to be displayed in table with numerical values
-                            mass_dictionary[f"Time:"] = x_converted  # first column is time moments of measurements
+                    if (islogarithmic == "True" and isppm == "True"):
+                        ax.set_yscale('symlog')
+                        ax.set_ylim([1, 2000000])
+                    elif (islogarithmic == "True" and isppm == "False"):
+                        ax.set_yscale('symlog')
+                        ax.set_ylim([1, 500000000])
 
-                            for given_mass in mass_list:
-
-                                if given_mass == "ox":
-                                    y = []
-                                    for key in oxygen_list:
-                                        print(oxygen_list[key])
-                                        y.append(oxygen_list[key])
+                    
+                        
 
 
-                                else:
-                                    mass_number = int((given_mass - initial_value) / step)
-                                    # st.write(mass_number)
-                                    try:
-                                        y = fn.plot_mass(spectrum_list, mass_number, isppm)
-                                    except:
-                                        pass
-
-                                display_range = y
+                    ax.set_ylabel(ylabel)
 
 
+                    ax.set_xlabel(f'Time')
+                    ax.set_ylabel(ylabel)
 
 
+                    ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+                    ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-                                ax.plot(x_converted, display_range, label=f"M/Z: {given_mass}")
-
-                                mass_dictionary[f"M/Z = {str(given_mass)}"] = y
-
-                            if isppm == "True":
-                                ylabel = "PPM"
-                            else:
-                                ylabel = "Pascal"
-
-                            if islogarithmic == "True":
-                                ax.set_yscale('symlog')
-                                ax.set_ylim([1, 2000000])
-                            else:
-                                ax.set_ylim([1, 1100000])
-                                
+                    ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+                    ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
 
-                            ax.set_ylabel(ylabel)
+                    ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
+                    ax.tick_params('x', labelrotation=90)
 
+                    ax.legend()
+                    ax.set_title(f'{ylabel} vs time for given M')
 
-                            ax.set_xlabel(f'Time')
-                            ax.set_ylabel(ylabel)
+                    # ax.xaxis.axis_date(tz=None)
 
+                    st.pyplot(fig)
 
-                            ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-                            ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-
-                            ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-                            ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-
-
-                            ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
-                            ax.tick_params('x', labelrotation=90)
-
-                            ax.legend()
-                            ax.set_title(f'{ylabel} vs time for given M')
-
-                            # ax.xaxis.axis_date(tz=None)
-
-                            st.pyplot(fig)
-
-                            do_display_table = st.button(
-                                label=f"display table with values for {spectrum_name}")  # optionally display table with numerical values
-                            if do_display_table:
-                                st.write(pd.DataFrame(mass_dictionary))
+                    do_display_table = st.button(
+                        label=f"display table with values for {spectrum_name}")  # optionally display table with numerical values
+                    if do_display_table:
+                        st.write(pd.DataFrame(mass_dictionary))
                 except:
                     pass
 

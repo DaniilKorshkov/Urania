@@ -1,8 +1,12 @@
 import numpy as np
+import JSONoperators as js
 
 
-def solve_mass_spectrum(mass_spectrum, samples_dict, other_factors_dict):  # mass spectrum is interpreted as least-square solution of overdefined square equation
+def solve_mass_spectrum(mass_spectrum):  # mass spectrum is interpreted as least-square solution of overdefined square equation
 
+
+    samples_dict = js.ReadJSONConfig("cracking_patterns","list")
+    other_factors_dict = js.ReadJSONConfig("other_factors_patterns","list")
 
     for key in samples_dict:
         assert len(mass_spectrum) == len(samples_dict["key"])
@@ -68,4 +72,4 @@ def solve_mass_spectrum(mass_spectrum, samples_dict, other_factors_dict):  # mas
 
 
 if __name__ == "__main__":
-    print(solve_mass_spectrum( [0,1,2,3,0],  {"ch4":[0,1,0,0,0],"he":[0,0,3,0,0]}  ))
+    print(solve_mass_spectrum( [0,1,2,3,0] ))

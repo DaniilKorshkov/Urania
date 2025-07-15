@@ -16,6 +16,8 @@ def read_spectrum_json(filename):   #function to read array of spectrums from JS
     spectrum_list = {}            #array of spectrums is presented as dictionaty with time used as key and list of PPM's for each mass used as respective value
     oxygen_list = {}
     custom_names_list = {}
+    solutions_list = {}
+
 
     handle = open(filename, "r")
 
@@ -43,19 +45,29 @@ def read_spectrum_json(filename):   #function to read array of spectrums from JS
                     
                 except:
                     pass
+                
+                try:
+                    interpreted_spectrum = tempdict["interpreted_spectrum"]
+                    error_factors = tempdict["error_factors"]
+                    stdev = tempdict["stdev"]
+
+                    solutions_list[str(time)] = { "interpreted_spectrum":interpreted_spectrum, "error_factors":error_factors, "stdev":stdev  }
+                except:
+                    solutions_list[str(time)] = None
+                    
 
                 spectrum_list[str(time)] = spectrum_array
                 oxygen_list[str(time)] = oxygen
 
     handle.close()
-    return metadata, spectrum_list, oxygen_list, custom_names_list
+    return metadata, spectrum_list, oxygen_list, custom_names_list, solutions_list
 
 
 
 def read_last_spectrums(filename, howmuchspectrums):   # function to get X most recent spectrums from full array
 
 
-    metadata, spectrum_list, oxygen_list, custom_names_list = read_spectrum_json(filename)
+    metadata, spectrum_list, oxygen_list, custom_names_list, solutions_list = read_spectrum_json(filename)
     time_list = fn.get_time_list(spectrum_list)  # list of all time moments of spectrums in full array of spectrums
     lng = len(spectrum_list)
 
@@ -68,20 +80,26 @@ def read_last_spectrums(filename, howmuchspectrums):   # function to get X most 
     new_spectrum_list = {}
     new_oxygen_list = {} # only spectrums corresponding to X latest moments of time are appended to new_spectrum_list
     new_custom_names_list = {}
+    new_solutions_list = {}
     for i in range(howmuchspectrums):
         new_spectrum_list[str(time_list[lng-i-1])] = spectrum_list[str(time_list[lng-i-1])]
         new_oxygen_list[str(time_list[lng-i-1])] = oxygen_list[str(time_list[lng-i-1])]
+        try:
+            new_solutions_list[str(time_list[lng-i-1])] = solutions_list[str(time_list[lng-i-1])]
+        except:
+            new_solutions_list[str(time_list[lng-i-1])] = None
+
         try:
             new_custom_names_list[str(time_list[lng-i-1])] = custom_names_list[str(time_list[lng-i-1])]
         except:
             pass
 
-    return metadata, new_spectrum_list, new_oxygen_list, new_custom_names_list      #new_spectrum_list is returned
+    return metadata, new_spectrum_list, new_oxygen_list, new_custom_names_list, new_solutions_list      #new_spectrum_list is returned
 
 def read_last_spectrums_for_time(filename, time_interval):   # function to get X most recent spectrums from full array
 
 
-    metadata, spectrum_list, oxygen_list, custom_names_list = read_spectrum_json(filename)
+    metadata, spectrum_list, oxygen_list, custom_names_list, solutions_list = read_spectrum_json(filename)
     time_list = fn.get_time_list(spectrum_list)  # list of all time moments of spectrums in full array of spectrums
     lng = len(spectrum_list)
 
@@ -91,6 +109,7 @@ def read_last_spectrums_for_time(filename, time_interval):   # function to get X
     new_spectrum_list = {}
     new_oxygen_list = {}
     new_custom_names_list = {}
+    new_solutions_list = {}
 
     i = 0
 
@@ -101,13 +120,17 @@ def read_last_spectrums_for_time(filename, time_interval):   # function to get X
             new_custom_names_list[str(time_list[lng-i-1])] = custom_names_list[str(time_list[lng-i-1])]
         except:
             pass
+        try:
+            new_solutions_list[str(time_list[lng-i-1])] = solutions_list[str(time_list[lng-i-1])]
+        except:
+            new_solutions_list[str(time_list[lng-i-1])] = None
 
         if (time_list[lng-i-1]) < (datetime.datetime.now().timestamp() - time_interval):
             break
 
         i += 1
 
-    return metadata, new_spectrum_list, new_oxygen_list, new_custom_names_list     #new_spectrum_list is returned
+    return metadata, new_spectrum_list, new_oxygen_list, new_custom_names_list, new_solutions_list     #new_spectrum_list is returned
 
 
 
@@ -135,7 +158,7 @@ def read_GUI_page_settings(filename, self_name):   #function to read settings fo
 
 def read_period_of_time(filename, howmuchspectrums, desired_time):  #function to read X spectrums starting from given moment of time
 
-    metadata, spectrum_list, oxygen_list, custom_names_list = read_spectrum_json(filename)
+    metadata, spectrum_list, oxygen_list, custom_names_list, solutions_list = read_spectrum_json(filename)
     time_list = fn.get_time_list(spectrum_list)  # list of all time moments of spectrums in full array of spectrums
 
 
@@ -166,6 +189,11 @@ def read_period_of_time(filename, howmuchspectrums, desired_time):  #function to
                         new_custom_names_list[str(time_list[t + i])] = custom_names_list[str(time_list[t + i])]
                     except:
                         pass
+                    
+                    try:
+                        new_solutions_list[str(time_list[t+i])] = solutions_list[str(time_list[t+i])]
+                    except:
+                        new_solutions_list[str(time_list[t+i])] = None
 
                 except:
                     pass
@@ -175,19 +203,24 @@ def read_period_of_time(filename, howmuchspectrums, desired_time):  #function to
         new_custom_names_list = {}
         new_spectrum_list[str(time_list[t-1])] = spectrum_list[str(time_list[t-1])]
         new_oxygen_list[str(time_list[t - 1])] = oxygen_list[str(time_list[t - 1])]
+        new_solutions_list = {}
         try:
             new_custom_names_list[str(time_list[t-1])] = custom_names_list[str(time_list[t-1])]
         except:
             pass
+        try:
+            new_solutions_list[str(time_list[t-1])] = solutions_list[str(time_list[t-1])]
+        except:
+            new_solutions_list[str(time_list[t-1])] = None
 
 
-    return metadata, new_spectrum_list, new_oxygen_list, new_custom_names_list
+    return metadata, new_spectrum_list, new_oxygen_list, new_custom_names_list, new_solutions_list
 
 
 
 def read_period_of_time_wrt_time(filename, time_interval, initial_time):  #function to read X spectrums starting from given moment of time
 
-    metadata, spectrum_list, oxygen_list, custom_names_list = read_spectrum_json(filename)
+    metadata, spectrum_list, oxygen_list, custom_names_list, solutions_list = read_spectrum_json(filename)
     time_list = fn.get_time_list(spectrum_list)  # list of all time moments of spectrums in full array of spectrums
 
 
@@ -210,6 +243,7 @@ def read_period_of_time_wrt_time(filename, time_interval, initial_time):  #funct
         new_spectrum_list = {}
         new_oxygen_list = {} # only spectrums corresponding to desired time boundaries are added to new_spectrum_list
         new_custom_names_list = {}
+        new_solutions_list = {}
 
         i=0
 
@@ -221,6 +255,11 @@ def read_period_of_time_wrt_time(filename, time_interval, initial_time):  #funct
                     new_custom_names_list[str(time_list[t + i])] = custom_names_list[str(time_list[t + i])]
                 except:
                     pass
+                
+                try:
+                    new_solutions_list[str(time_list[t+i])] = solutions_list[str(time_list[t+i])]
+                except:
+                    new_solutions_list[str(time_list[t+i])] = None
 
                 if (time_list[lng - i - 1]) < (datetime.datetime.now().timestamp() - time_interval):
                     break
@@ -237,6 +276,8 @@ def read_period_of_time_wrt_time(filename, time_interval, initial_time):  #funct
         new_spectrum_list = {}
         new_oxygen_list = {}
         new_custom_names_list = {}
+        new_solutions_list = {}
+        new_solutions_list = {}
 
         if len(time_list) > 0:
 
@@ -246,9 +287,14 @@ def read_period_of_time_wrt_time(filename, time_interval, initial_time):  #funct
                     new_custom_names_list[str(time_list[t -1])] = custom_names_list[str(time_list[t -1])]
             except:
                     pass
+            
+            try:
+                    new_solutions_list[t-1] = solutions_list[t-1]
+            except:
+                    new_solutions_list[t-1] = None
 
 
-    return metadata, new_spectrum_list, new_oxygen_list
+    return metadata, new_spectrum_list, new_oxygen_list, new_custom_names_list, new_solutions_list
 
 
 
