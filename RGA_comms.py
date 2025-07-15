@@ -244,7 +244,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
             power = 10 ** (int(split_eng_notation[1]))
 
-            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+            end_result = (float(split_eng_notation[0]) * power)  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
             CurrentPressure = end_result
 
@@ -256,7 +256,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
             power = 10 ** (int(split_eng_notation[1]))
 
-            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient/CurrentPressure # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
             ReconSpectrum[ int((float(split_line[MassReadingPosition+1])-float(start_mass))/float(step)) ] = end_result
 
@@ -267,7 +267,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
             power = 10 ** (int(split_eng_notation[1]))
 
-            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+            end_result = (float(split_eng_notation[0]) * power)  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
             CurrentPressure = end_result
 
@@ -317,9 +317,19 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
             power = 10 ** (int(split_eng_notation[1]))
 
-            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient/CurrentPressure  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
             Spectrum[ int((float(split_line[MassReadingPosition+1])-float(start_mass))/float(step)) ] = end_result
+        
+        elif "TotalPressure" in line:
+            PressurePosition = split_line.index("TotalPressure")
+            split_eng_notation = (split_line[PressurePosition+1]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
+
+            power = 10 ** (int(split_eng_notation[1]))
+
+            end_result = (float(split_eng_notation[0]) * power)  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+
+            CurrentPressure = end_result
 
 
     packages_list = ['Control  "MyProgram" "3.0"', 'FilamentControl On']
@@ -349,10 +359,20 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
             power = 10 ** (int(split_eng_notation[1]))
 
-            end_result = (float(split_eng_notation[
-                                    0]) * power) * convertion_coefficient  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient/CurrentPressure  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
             Spectrum[int((float(split_line[MassReadingPosition + 1]) - float(start_mass)) / float(step))] = end_result
+        
+
+        elif "TotalPressure" in line:
+            PressurePosition = split_line.index("TotalPressure")
+            split_eng_notation = (split_line[PressurePosition+1]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
+
+            power = 10 ** (int(split_eng_notation[1]))
+
+            end_result = (float(split_eng_notation[0]) * power)  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+
+            CurrentPressure = end_result
 
 
 
