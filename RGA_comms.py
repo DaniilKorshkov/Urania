@@ -14,7 +14,7 @@ import netdiscover
 import oxygen_analyzer as oxa
 from JSONoperators import ReadJSONConfig
 import datetime
-import SpectralInterpreter
+import SpectraInterpreter
 
 
 def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=True):    #command to send multiple commands to RGA via list of strings
@@ -462,7 +462,7 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
             dictionary_to_append["custom_line_name"] = custom_line_name
         
         if DoInterpreteSpectrum:
-            interpreted_spectrum, error_factors, stdev = SpectralInterpreter.solve_mass_spectrum(array_to_append)
+            interpreted_spectrum, error_factors, stdev = SpectraInterpreter.solve_mass_spectrum(array_to_append)
             dictionary_to_append["interpreted_spectrum"] = interpreted_spectrum
             dictionary_to_append["error_factors"] = error_factors
             dictionary_to_append["stdev"] = stdev
