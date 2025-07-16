@@ -351,22 +351,55 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
                         mass_dictionary[f"O2 (electrochemical)"] = y_oxygen
 
 
+                        compounds_of_interest_list = []
+                        for time_key in solutions_list:
+                            st.write(time_key)
+                            for compound_key in solutions_list[time_key]["interpreted_spectrum"]:
+                                compounds_of_interest_list.append(compound_key)
+                                
+                            
+                            break
 
 
 
-                        for key in solutions_list["interpreted_spectrum"]:
+
+                        for key in compounds_of_interest_list:
                             y = []
-                            for time_key in key:
-                                y.append(key[time_key])
+                            for time_key in solutions_list:
+                                if isppm == "False":
+                                    y.append(  solutions_list[time_key]["interpreted_spectrum"][key])
+                                if isppm == "True":
+                                    partial_pressures_sum = 0
+                                    for compound_key in compounds_of_interest_list:
+                                        partial_pressures_sum += abs(solutions_list[time_key]["interpreted_spectrum"][compound_key])
+                                    y.append(  (abs(solutions_list[time_key]["interpreted_spectrum"][key])*1000000/partial_pressures_sum ) )
 
 
                             display_range = y
-                            ax.plot(x_converted, display_range, label=f"{key}")
+                            
                             mass_dictionary[f"{key}"] = y
+                            ax.plot(x_converted, display_range, label=f"{key}")
 
 
 
+                        if isppm == "True":
+                            ylabel = "PPM"
+                        else:
+                            ylabel = "Pascal"
 
+                        if (islogarithmic == "True" and isppm == "True"):
+                            ax.set_yscale('symlog')
+                            ax.set_ylim([1, 2000000])
+                        elif (islogarithmic == "True" and isppm == "False"):
+                            ax.set_yscale('symlog')
+                            ax.set_ylim([1, 500000000])
+                        
+
+
+                        
+
+
+                        
 
 
 
@@ -396,7 +429,10 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
         ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax.tick_params('x', labelrotation=90)
         ax.legend()
-        ax.set_title(f'Ionic current {ylabel} vs time for specified M')
+        if isinterpreted == "False":
+            ax.set_title(f'Ionic current {ylabel} vs time for specified M')
+        if isinterpreted == "True":
+            ax.set_title(f'Concentration of gases vs time')
 
         #ax.xaxis.axis_date(tz=None)
 
