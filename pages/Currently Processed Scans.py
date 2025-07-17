@@ -197,7 +197,7 @@ def DisplayCurrentScans():
                         if isppm == "True":
                             ylabel = "PPM"
                         else:
-                            ylabel = "Pascal"
+                            ylabel = "ATM"
 
                         
 
@@ -235,10 +235,10 @@ def DisplayCurrentScans():
 
                         compounds_of_interest_list = []
                         for time_key in solutions_list:
-                            st.write(time_key)
+                            
                             for compound_key in solutions_list[time_key]["interpreted_spectrum"]:
                                 compounds_of_interest_list.append(compound_key)
-                                st.write(compound_key)
+                                
                             
                             break
 
@@ -267,15 +267,14 @@ def DisplayCurrentScans():
                         if isppm == "True":
                             ylabel = "PPM"
                         else:
-                            ylabel = "Pascal"
+                            ylabel = "ATM"
 
                         if (islogarithmic == "True" and isppm == "True"):
                             ax.set_yscale('symlog')
                             ax.set_ylim([1, 2000000])
                         elif (islogarithmic == "True" and isppm == "False"):
                             ax.set_yscale('symlog')
-                            ax.set_ylim([1, 500000000])
-
+                            ax.set_ylim([0, 2])
 
 
 
@@ -333,7 +332,7 @@ def DisplayCurrentScans():
         if_abnormalities_found_in_all_files = False
         for filename in filelist:
             spectrum_filename = filename
-            if_abnormalities, log_entries_list = ar.AnalyseFile(spectrum_filename)
+            if_abnormalities, log_entries_list = ar.AnalyzeInterpretedFile(spectrum_filename)
             if if_abnormalities:
                 for element in log_entries_list:
                     st.write(element)

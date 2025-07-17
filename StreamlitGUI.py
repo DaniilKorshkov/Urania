@@ -140,7 +140,7 @@ def constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initia
             print(oxygen)
             oxygen_label = "Oxygen ppm"
             table_range = display_range
-            ylabel = "Pascal"
+            ylabel = "ATM"
 
             if isppm == "True":
                     pascal_sum = 0
@@ -311,7 +311,7 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
                         if isppm == "True":
                             ylabel = "PPM"
                         else:
-                            ylabel = "Pascal"
+                            ylabel = "ATM"
 
                         if (islogarithmic == "True" and isppm == "True"):
                             ax.set_yscale('symlog')
@@ -385,14 +385,14 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
                         if isppm == "True":
                             ylabel = "PPM"
                         else:
-                            ylabel = "Pascal"
+                            ylabel = "ATM"
 
                         if (islogarithmic == "True" and isppm == "True"):
                             ax.set_yscale('symlog')
                             ax.set_ylim([1, 2000000])
                         elif (islogarithmic == "True" and isppm == "False"):
                             ax.set_yscale('symlog')
-                            ax.set_ylim([1, 500000000])
+                            ax.set_ylim([0, 2])
                         
 
 
@@ -523,7 +523,7 @@ def display_one_sample_data(settings_filename,self_name):           # function t
         find_abnormalities = st.button("Find abnormalities")
         if find_abnormalities:
 
-                    if_abnormalities,log_entries_list = ar.AnalyseFile(spectrum_name)
+                    if_abnormalities,log_entries_list = ar.AnalyzeInterpretedFile(spectrum_name)
                     if if_abnormalities:
                         for element in log_entries_list:
                             st.write(element)

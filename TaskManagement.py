@@ -331,11 +331,11 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
 
                 if valve_number != 16:
                     try:
-                        if_abnormalities, void = ar.AnalyseSingleLine(spectrum_to_analyze,valve_number,intital_mass,step,filename)
+                        if_abnormalities, void = ar.AnalyseInterpretedLine(spectrum_to_analyze,valve_number,filename)
                         if if_abnormalities:
                             Logging.MakeLogEntry(f"Abnormal readings were found for Filename = {filename} scan. Check AbnormalityLog for details")
 
-                            auto_close = js.ReadJSONConfig("AbnormalityReaction","auto_close")
+                            auto_close = js.ReadJSONConfig("InterpretedAbnormalityReaction","auto_close")
 
                             if (valve_number == 14) and (auto_close == "True"):
                                 ArduinoComms.TurnActuatorOneOff()

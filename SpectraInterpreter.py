@@ -14,6 +14,12 @@ def solve_mass_spectrum(mass_spectrum):  # mass spectrum is interpreted as least
     for key in other_factors_dict:
         assert len(mass_spectrum) == len(other_factors_dict[key])
 
+    
+    new_mass_spectrum = []
+    for element in mass_spectrum:
+        new_mass_spectrum.append(abs(element))
+    
+    mass_spectrum = new_mass_spectrum
 
     
     similar_entries_found = False
@@ -49,7 +55,7 @@ def solve_mass_spectrum(mass_spectrum):  # mass spectrum is interpreted as least
     left_side_matrix = left_side_matrix.transpose()
     
 
-    
+    print(mass_spectrum)
 
     solutions_numpy_array = np.linalg.lstsq(left_side_matrix, mass_spectrum)
     samples_solutions_dictionary = {}

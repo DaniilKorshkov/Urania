@@ -154,7 +154,101 @@ def AbnormalitySettings():
         for j in range(5):
             st.markdown("")
 
+def AbnormalitySettingsForInterpreted():
+    for i in range(15):
+        control_spectrum = js.ReadJSONConfig("InterpretedAbnormalityReaction",f"MIV{i+1}")
+        st.write(f"Line {i+1}")
+
+        for key in control_spectrum:
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.write(f"{key}: {(control_spectrum[key])[0]} - {(control_spectrum[key])[1]}")
+            with col2:
+                new_min_value = st.text_input(f"New minimal PPM threshold for {key} for line {i+1}: ")
+                append_new_min_value = st.button(f"Edit min PPM threshold for {key} for line {i+1}:")
+                if append_new_min_value:
+
+                    try:
+                        void = float(new_min_value)
+                        assert void <= float((control_spectrum[key])[1])
+
+
+                        new_line = js.ReadJSONConfig("InterpretedAbnormalityReaction")
+
+                        (((new_line[f"MIV{i + 1}"])[key])[0]) = float(new_min_value)
+                        str_new_line = json.dumps(new_line)
+                        js.EditJSONConfig("InterpretedAbnormalityReaction", str_new_line)
+
+                    except:
+                        st.write(f"Provided value is invalid")
 
 
 
-AbnormalitySettings()
+            with col3:
+                new_max_value = st.text_input(f"New maximal PPM threshold for {key} for line {i+1}: ")
+                append_new_max_value = st.button(f"Edit max PPM threshold for {key} for line {i + 1}:")
+                if append_new_max_value:
+
+                    try:
+                        void = float(new_max_value)
+                        assert void >= float((control_spectrum[key])[0])
+
+                        new_line = js.ReadJSONConfig("InterpretedAbnormalityReaction")
+
+                        (((new_line[f"MIV{i+1}"])[key])[1]) = float(new_max_value)
+                        str_new_line = json.dumps(new_line)
+                        js.EditJSONConfig("InterpretedAbnormalityReaction",str_new_line)
+
+                    except:
+                        st.write(f"Provided value is invalid")
+
+            
+
+
+        if i == 13:
+            for k in range(3):
+                st.markdown("")
+            st.write(f"Automatically close filling station actuator if abnormal readings on line 14?")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                auto_close_yes = st.button("Yes")
+                if auto_close_yes:
+                    new_line = js.ReadJSONConfig("InterpretedAbnormalityReaction")
+                    new_line[f"auto_close"] = "True"
+                    str_new_line = json.dumps(new_line)
+                    js.EditJSONConfig("InterpretedAbnormalityReaction", str_new_line)
+                    st.write(f"Autoclose turned on")
+
+
+            with col2:
+                auto_close_no = st.button("No")
+                if auto_close_no:
+                    new_line = js.ReadJSONConfig("InterpretedAbnormalityReaction")
+                    new_line[f"auto_close"] = "False"
+                    str_new_line = json.dumps(new_line)
+                    js.EditJSONConfig("InterpretedAbnormalityReaction", str_new_line)
+                    st.write(f"Autoclose turned off")
+
+
+
+
+
+
+
+
+
+
+
+        for j in range(5):
+            st.markdown("")
+
+
+
+
+
+
+
+
+AbnormalitySettingsForInterpreted()
