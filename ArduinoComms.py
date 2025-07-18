@@ -77,7 +77,7 @@ def GetReadingsData():
     ret = str(SendCommand(PORT,"RV"))
     retsplit = ret.split("!")
 
-    print(ret)
+    print(f"Arduino ret: {ret}")
 
 
 
@@ -87,11 +87,13 @@ def GetReadingsData():
     avg_raw_voltages = []
 
     for element in raw_voltages:
-        array = raw_voltages.split("+")
-        avg_voltagee = float(0)
+        avg_voltage = float(0)
+        array = element.split("+")
         for value in array:
             avg_voltage += float (int(value) / len(array) )
+        
         avg_raw_voltages.append(avg_voltage)
+        
 
     ret_data = []
 
