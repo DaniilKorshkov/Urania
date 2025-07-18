@@ -64,7 +64,7 @@ def display_all_tasks(MainConfig="MainConfig"):
             filename = task["filename"]
             scans = task["scans"]
             execs_left = task["how_much_executions"]
-            st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, data entries per task: {scans}, executions left: {execs_left}")
+            st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename},  seconds for scanning: {scans}, executions left: {execs_left}")
 
             delete = st.button(f"delete {name}")
 
@@ -84,7 +84,7 @@ def display_all_tasks(MainConfig="MainConfig"):
             filename = task["filename"]
             scans = task["scans"]
             freq = task["freq"]
-            st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, data entries per task: {scans}, frequency: {freq}")
+            st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, seconds for scanning: {scans}, frequency: {freq}")
 
             delete = st.button(f"delete {name}")
 
@@ -110,7 +110,7 @@ def display_all_tasks(MainConfig="MainConfig"):
             scans = task["scans"]
 
 
-            st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, data entries per task: {scans}")
+            st.write(f"{name} parameters: valve position:{valve}, spectrum filename: {filename}, seconds for scanning: {scans}")
             try:
                 file_info = GUI_File_Manager.GUI_File_Info(filename, MainConfig)
                 st.write(file_info)
@@ -224,7 +224,7 @@ def display_all_tasks(MainConfig="MainConfig"):
 
         except:
             task_is_valid = False
-            st.write("Failed to calculate amount of data entries")
+            st.write("Failed to calculate amount of time for scanning")
 
 
 

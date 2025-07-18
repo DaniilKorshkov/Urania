@@ -62,17 +62,54 @@ void loop() {
 
     // Output starts from START and ends with END. Statements are separated with "!" sign
     Serial.print("START!AZEROVOLTAGE!");
-    Serial.print(AZEROREAD);
+    for(i=0; i < 10; i++){
+      int READ = analogRead(AZERO);
+      Serial.print(READ);
+      if ( i<9 ){ Serial.print("+"); };
+
+    
+    };
     Serial.print("!AONEVOLTAGE!");
-    Serial.print(AONEREAD);
+    for(i=0; i < 10; i++){
+      int READ = analogRead(AONE);
+      Serial.print(READ);
+      if ( i<9 ){ Serial.print("+"); };
+
+    
+    };
     Serial.print("!ATWOVOLTAGE!");
-    Serial.print(ATWOREAD);
+    for(i=0; i < 10; i++){
+      int READ = analogRead(ATWO);
+      Serial.print(READ);
+      if ( i<9 ){ Serial.print("+"); };
+
+    
+    };
     Serial.print("!ATHREEVOLTAGE!");
-    Serial.print(ATHREEREAD);
+    for(i=0; i < 10; i++){
+      int READ = analogRead(ATHREE);
+      Serial.print(READ);
+      if ( i<9 ){ Serial.print("+"); };
+
+    
+    };
     Serial.print("!AFOURVOLTAGE!");
-    Serial.print(AFOURREAD);
+    for(i=0; i < 10; i++){
+      int READ = analogRead(AFOUR);
+      Serial.print(READ);
+      if ( i<9 ){ Serial.print("+"); };
+
+    
+    };
     Serial.print("!AFIVEVOLTAGE!");
-    Serial.print(AFIVEREAD);
+    for(i=0; i < 10; i++){
+      int READ = analogRead(AFIVE);
+      Serial.print(READ);
+      if ( i<9 ){ Serial.print("+"); };
+
+    
+    };
+    
 
     Serial.print("!WRITE_ONE_VOLTAGE!");
     Serial.print(WRITE_ONE_STATUS);
@@ -83,7 +120,7 @@ void loop() {
     Serial.print("!END");
     
    
-    }
+    
 
   else if(msg == "ACT_ONE_ON"){
 

@@ -84,11 +84,19 @@ def GetReadingsData():
 
 
     raw_voltages =[ retsplit[2],retsplit[4],retsplit[6],retsplit[8],retsplit[10],retsplit[12] ]
+    avg_raw_voltages = []
+
+    for element in raw_voltages:
+        array = raw_voltages.split("+")
+        avg_voltagee = float(0)
+        for value in array:
+            avg_voltage += float (int(value) / len(array) )
+        avg_raw_voltages.append(avg_voltage)
 
     ret_data = []
 
     for i in range(6):
-        ret_data.append( int(raw_voltages[i])*((polynomes[i])[0]) + ((polynomes[i])[1]) )
+        ret_data.append((avg_raw_voltages[i])*((polynomes[i])[0]) + ((polynomes[i])[1]) )
 
     for i in range(2):
         ret_data.append( retsplit[14 + 2*i] )
