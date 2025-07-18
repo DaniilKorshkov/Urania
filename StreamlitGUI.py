@@ -353,7 +353,7 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
 
                         compounds_of_interest_list = []
                         for time_key in solutions_list:
-                            st.write(time_key)
+                            
                             for compound_key in solutions_list[time_key]["interpreted_spectrum"]:
                                 compounds_of_interest_list.append(compound_key)
                                 
