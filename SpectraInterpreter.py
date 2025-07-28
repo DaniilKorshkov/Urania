@@ -80,7 +80,7 @@ def solve_mass_spectrum_old(mass_spectrum):  # mass spectrum is interpreted as l
 def solve_mass_spectrum(mass_spectrum):  # mass spectrum is interpreted as least-square solution of overdefined square equation
 
 
-    
+    cracking_patterns = json.ReadJSONConfig("cracking_patterns", "list")
 
     
     
@@ -91,13 +91,13 @@ def solve_mass_spectrum(mass_spectrum):  # mass spectrum is interpreted as least
     mass_spectrum = new_mass_spectrum
 
     
-    he_4 = 5354.42339958041
-    ar_40 = 281868.233650486
-    co2_44 = 198993.795665839
-    co2_28 =  15945.8734482825  #calirate it
-    ch4_15 = 154101.018002445
-    n2_28 = 146258.079565515
-    o2_32 = 100000
+    he_4 = cracking_pattern["He_4"]
+    ar_40 = cracking_patterns["Ar_40"]
+    co2_44 = cracking_patterns["CO2_44"]
+    co2_28 =  cracking_patterns["CO2_28"]
+    ch4_15 = cracking_patterns["CH4_15"]
+    n2_28 = cracking_patterns["N2_28"]
+    o2_32 = cracking_patterns["O2_32"]
 
 
     he_ic = new_mass_spectrum[3]/he_4
@@ -109,8 +109,9 @@ def solve_mass_spectrum(mass_spectrum):  # mass spectrum is interpreted as least
     n2_ic = (new_mass_spectrum[27] - co2_28_current)/n2_28
 
 
+
     samples_solutions_dictionary = {"He":he_ic, "Ar":ar_ic, "CO2":co2_ic, "CH4":ch4_ic, "O2":o2_ic, "N2":n2_ic}
-    other_factors_solutions_dictionary = {}
+    other_factors_solutions_dictionary = {"N2H":new_mass_spectrum[28], "ArH":new_mass_spectrum[40], "H2O":new_mass_spectrum[17]}
     stdev = 0
 
     return samples_solutions_dictionary, other_factors_solutions_dictionary, stdev
