@@ -72,9 +72,10 @@ def GetReadingsData():
 
     PORT = JSONoperators.ReadJSONConfig("arduino","port")
     polynomes = JSONoperators.ReadJSONConfig("arduino","polynomes")
+    amount_of_scans = JSONoperators.ReadJSONConfig("arduino","amount_of_scans")
 
 
-    ret = str(SendCommand(PORT,"RV"))
+    ret = str(SendCommand(PORT,f"RV!{amount_of_scans}"))
     retsplit = ret.split("!")
 
     print(f"Arduino ret: {ret}")
