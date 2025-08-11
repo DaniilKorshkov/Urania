@@ -1,7 +1,7 @@
 {"class": "user_notifications", "simplex_username": "UraniaClient", "do_simplex": "False", "do_sound": "False", "do_logging": "False"}
 {"class": "tasks", "TaskList": "TaskList", "DefaultTaskList": "DefaultTaskList"}
 {"class": "log", "MainLog": "MainLog"}
-{"class": "spectrometer_parameters", "ip_address": "192.168.0.128", "mac_address": "00:05:51:08:8b:54", "M_per_minute": 133, "MultiplierMode": 0, "MaxMultiplierIntensity": 50000, "timeout_time": 1800}
+{"class": "spectrometer_parameters", "ip_address": "192.168.0.128", "mac_address": "00:05:51:08:8b:54", "M_per_minute": 133, "MultiplierMode": 0, "MaxMultiplierIntensity": 50000, "timeout_time": 1800, "high_accuracy_list":[4,15,28,32,40,44]}
 {"class": "vicimotor", "address": "ASRL/dev/ttyUSB4::INSTR"}
 {"class": "vsc", "vsc_serial_port": "/dev/ttyUSB3", "address": 253, "mfm_port": 6, "mfc_port": 5,"filling_mfm_port": 4, "pressure_gauge_port": 1, "pressure_controller_port": 3, "vsc_log_name": "VSC_log"}
 {"class": "ox_an", "port": "/dev/ttyUSB1"}

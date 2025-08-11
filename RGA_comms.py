@@ -206,7 +206,7 @@ def AppendSpectrumJSON(filename,convertion_coefficient,ip_adress="169.254.198.17
 
 
 
-def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,accuracy=5,ip_adress="169.254.198.174"):
+def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,high_accuracy_list,step=1,accuracy=5,ip_adress="169.254.198.174"):
 
     MaxMultiplierIntensity = ReadJSONConfig("spectrometer_parameters","MaxMultiplierIntensity")
     MultiplierMode = 0
@@ -296,7 +296,12 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
     j = amount_of_scans
     for MolarMass in FaradayCupMasses:
         timestamp = int(1000000*(datetime.datetime.now()).timestamp())
-        packages_list.append(f'AddSinglePeak {timestamp}FSP{j} {MolarMass} {accuracy} 0 0 0')
+        if int(MolarMass) in high_accuracy_list:
+            current_accuracy = 8
+        else:
+            current_accuracy = accuracy
+
+        packages_list.append(f'AddSinglePeak {timestamp}FSP{j} {MolarMass} {current_accuracy} 0 0 0')
         packages_list.append(f'scanadd {timestamp}FSP{j}')
         j += 1
     packages_list.append(f"MeasurementDetectorIndex {0}")
@@ -337,7 +342,11 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,step=1,acc
 
     for MolarMass in MultiplierMasses:
         timestamp = int(1000000*(datetime.datetime.now()).timestamp())
-        packages_list.append(f'AddSinglePeak {timestamp}MSP{j} {MolarMass} {accuracy} 0 0 0')
+        if int(MolarMass) in high_accuracy_list:
+            current_accuracy = 8
+        else:
+            current_accuracy = accuracy
+        packages_list.append(f'AddSinglePeak {timestamp}MSP{j} {MolarMass} {current_accuracy} 0 0 0')
         packages_list.append(f'scanadd {timestamp}MSP{j}')
         j += 1
     packages_list.append(f"MeasurementDetectorIndex {1}")
@@ -392,6 +401,7 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
 
 
     ip_adress = js.ReadJSONConfig("spectrometer_parameters","ip_address",config)
+    high_accuracy_list = js.ReadJSONConfig("spectrometer_parameters","high_accuracy_list",config)
 
 
     handle = open(filename, "r")
@@ -434,7 +444,7 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
             amount_of_scans = 0
 
 
-        Spectrum, ErrorMessage = GetMassSpectrum(convertion_coefficient, start_mass, temp_amount_of_scans, step, accuracy, ip_adress)
+        Spectrum, ErrorMessage = GetMassSpectrum(convertion_coefficient, start_mass, temp_amount_of_scans, high_accuracy_list, step, accuracy, ip_adress)
 
         if ErrorMessage != None:
             break
