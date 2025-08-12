@@ -41,9 +41,25 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
             sock.connect((HOST, PORT))
             placeholder = str(sock.recv(1024), "ascii")
 
+            startup_time = int(datetime.datetime.now().timestamp())
+
             received_list = list()  # list for strings received from RGA
 
             for data in data_list:
+
+                current_time = int(datetime.datetime.now().timestamp())
+                if current_time > startup_time + timeout_time:
+                    while True:
+                                sock.send(bytes("Release", "ascii") + bytes([10]))
+                                received = str(sock.recv(1024), "ascii")
+                                if ("Release OK" or "Must be in control of sensor to release control") in received:
+                                    break
+                                else:
+                                    continue
+                    ErrorMessage = "TIMEOUT"
+                    Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}", log_name="RGA_log")
+                    return None, ErrorMessage
+
 
                 if ErrorMessage == None:
 
