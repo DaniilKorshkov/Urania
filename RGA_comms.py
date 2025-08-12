@@ -114,6 +114,24 @@ def SendPacketsToRGA(packages_list,ip_adress="169.254.198.174",show_live_feed=Tr
                                             MassReadingPosition = received_split.index("MassReading")
                                             if float(received_split[MassReadingPosition+1]) >= float(data_split[1]):
                                                 break
+                                        
+                                        current_time = int(datetime.datetime.now().timestamp())
+
+                                        
+                                        if current_time > startup_time + timeout_time:
+                                            while True:
+                                                        sock.send(bytes("Release", "ascii") + bytes([10]))
+                                                        received = str(sock.recv(1024), "ascii")
+                                                        if ("Release OK" or "Must be in control of sensor to release control") in received:
+                                                            break
+                                                        else:
+                                                            continue
+                                            ErrorMessage = "TIMEOUT"
+                                            Logging.MakeLogEntry(f"Error message received from RGA: {ErrorMessage}", log_name="RGA_log")
+                                            return None, ErrorMessage
+
+
+
 
 
 
