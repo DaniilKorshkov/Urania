@@ -16,6 +16,12 @@ import ssl
 import certifi
 
 
+import requests
+import json
+import datetime
+import pytz
+
+
 
 
 
@@ -168,3 +174,34 @@ def NotifyUser(text,ifcrash=False):
 '''if __name__ == "__main__":
     NotifyUser("Test crash message",True)
     NotifyUser("Test abnorm message", False)'''
+
+
+
+
+
+def NotifyUserDjango():
+    now = datetime.datetime.now(pytz.timezone('America/Denver')).isoformat()
+    #now = datetime.datetime.now(pytz.timezone('America/Toronto')).isoformat()
+
+    url = "https://apps1.physics.carleton.ca/alert/notification/email"  
+
+    data = {
+        "token": "kqvvLin-ykokvGLpISejkc3rlV7IETxR0JvEYM1PIIYNympl",
+        "type": "0002",
+        "time_detected": now,
+        "data": "Here is some data ..... ",
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, data=json.dumps(data), headers=headers)
+
+    print(f"Status Code: {response.status_code}")
+    print(f"Response Body: {response.json()}")
+
+
+
+if __name__ == "__main__":
+    NotifyUserDjango
