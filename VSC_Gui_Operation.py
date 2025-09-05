@@ -205,61 +205,66 @@ def ArduinoGUI():
             st.write(f"PT-06 pressure: {ret[5]} psi")
 
 
-        for i in range(6):
-            st.markdown("")
-
-
-        col1, col2 = st.columns(2)
-
-
-
-        with col1:
-
-            if ret[6] == "1":
-                st.write(f"Actuator 1 is open")
-            else:
-                st.write(f"Actuator 1 is closed")
-
-            for i in range(2):
+            for i in range(6):
                 st.markdown("")
 
 
+            col1, col2 = st.columns(2)
+
+
+
+            with col1:
+
+                if (ret[6] == "1") or (ret[6] == 1):
+                    st.write(f"FS actuator is open")
+                else:
+                    st.write(f"FS actuator is closed")
+
+                for i in range(2):
+                    st.markdown("")
+
             
-            turn_on_act_one = st.button("Open actuator 1")
-            turn_off_act_one = st.button("Close actuator 1")
+
+
+            with col2:
+
+
+
+                if (ret[8] == "1") or (ret[8] == 1):
+                    st.write(f"SS actuator is open")
+                else:
+                    st.write(f"SS actuator is closed")
+
+                for i in range(2):
+                    st.markdown("")
+
+
+
+
+
+        col3, col4 = st.columns(2)
+
+        with col3:
+            turn_on_act_one = st.button("Open FS actuator")
+            turn_off_act_one = st.button("Close FS actuator")
 
             if turn_on_act_one:
                 ArduinoComms.TurnActuatorOneOn()
-                st.write(f"Actuator 1 opened!")
+                st.write(f"FS actuator opened!")
             if turn_off_act_one:
                 ArduinoComms.TurnActuatorOneOff()
-                st.write(f"Actuator 1 closed!")
-
-
-
-        with col2:
-
-
-
-            if ret[8] == "1":
-                st.write(f"Actuator 2 is open")
-            else:
-                st.write(f"Actuator 2 is closed")
-
-            for i in range(2):
-                st.markdown("")
-
-
-            
-            turn_on_act_two = st.button("Open actuator 2")
-            turn_off_act_two = st.button("Close actuator 2")
+                st.write(f"FS actuator closed!")
+        
+        with col4:
+            turn_on_act_two = st.button("Open SS actuator")
+            turn_off_act_two = st.button("Close SS actuator")
 
             if turn_on_act_two:
                 ArduinoComms.TurnActuatorTwoOn()
-                st.write(f"Actuator 2 opened!")
+                st.write(f"SS actuator opened!")
             if turn_off_act_two:
                 ArduinoComms.TurnActuatorTwoOff()
-                st.write(f"Actuator 2 closed!")
+                st.write(f"SS actuator closed!")
 
 
 

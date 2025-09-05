@@ -11,15 +11,15 @@ def filling_station_gui():
 
         try:
 
-            turn_on_act_one = st.button("Force open actuator 1")
-            turn_off_act_one = st.button("Force close actuator 1")
+            turn_on_act_one = st.button("Force open filling station actuator")
+            turn_off_act_one = st.button("Force close filling station actuator")
 
             if turn_on_act_one:
                 ArduinoComms.TurnActuatorOneOn()
-                st.write(f"Actuator 1 opened!")
+                st.write(f"FS actuator opened!")
             if turn_off_act_one:
                 ArduinoComms.TurnActuatorOneOff()
-                st.write(f"Actuator 1 closed!")
+                st.write(f"FS actuator closed!")
         except:
             pass
 
