@@ -230,7 +230,7 @@ def ArduinoGUI():
 
 
 
-                if (ret[8] == "1") or (ret[8] == 1):
+                if (ret[7] == "1") or (ret[7] == 1):
                     st.write(f"SS actuator is open")
                 else:
                     st.write(f"SS actuator is closed")
