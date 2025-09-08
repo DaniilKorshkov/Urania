@@ -150,25 +150,25 @@ def LogArduinoData():
 
 
 
-def TurnActuatorOneOn():
+def FillingActClose():
 
     PORT = JSONoperators.ReadJSONConfig("arduino", "port")
     void = str(SendCommand(PORT, "ACT_ONE_ON"))
 
 
-def TurnActuatorOneOff():
+def FillingActOpen():
 
     PORT = JSONoperators.ReadJSONConfig("arduino", "port")
     void = str(SendCommand(PORT, "ACT_ONE_OFF"))
 
 
-def TurnActuatorTwoOn():
+def SamplingActClose():
 
     PORT = JSONoperators.ReadJSONConfig("arduino", "port")
     void = str(SendCommand(PORT, "ACT_TWO_ON"))
 
 
-def TurnActuatorTwoOff():
+def SamplingActOpen():
 
     PORT = JSONoperators.ReadJSONConfig("arduino", "port")
     void = str(SendCommand(PORT, "ACT_TWO_OFF"))

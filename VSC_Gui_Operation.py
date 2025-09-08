@@ -249,10 +249,10 @@ def ArduinoGUI():
             turn_off_act_one = st.button("Close FS actuator")
 
             if turn_on_act_one:
-                ArduinoComms.TurnActuatorOneOn()
+                ArduinoComms.FillingActOpen()
                 st.write(f"FS actuator opened!")
             if turn_off_act_one:
-                ArduinoComms.TurnActuatorOneOff()
+                ArduinoComms.FillingActClose()
                 st.write(f"FS actuator closed!")
         
         with col4:
@@ -260,10 +260,10 @@ def ArduinoGUI():
             turn_off_act_two = st.button("Close SS actuator")
 
             if turn_on_act_two:
-                ArduinoComms.TurnActuatorTwoOn()
+                ArduinoComms.SamplingActOpen()
                 st.write(f"SS actuator opened!")
             if turn_off_act_two:
-                ArduinoComms.TurnActuatorTwoOff()
+                ArduinoComms.SamplingActClose()
                 st.write(f"SS actuator closed!")
 
 
