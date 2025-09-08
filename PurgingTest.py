@@ -1,30 +1,34 @@
 from TaskManagement import MakeScan, GetTask, GetTaskData
 import servo_motor
+import time
+import RGA_comms
+import VSC_comms
+import ArduinoComms
 
 
 
-def MakeMultiplePurges():
+def MakeMultiplePurges( purge_cycles_list=[3,4,5] , time_open_list=[25,30,35,40,45] , time_closed_list = [30,35,40,45,50] , pure_line = 14, contaminant_line = 8, calmdown_time = 30 ):
     taskname = GetTask()
     spectrum_filename,amount_of_scans, valve_position, accuracy, purge_cycles_placeholder = GetTaskData(taskname)
 
     VSC_comms.ChangeMFCMode("Open")
 
-    for purge_cycles in [3,4,5,6,7]:
-        for time_open in [25,30,35,40,45]:
-            for time_closed in [30,35,40,45,50]:
+    for purge_cycles in purge_cycles_list:
+        for time_open in time_open_list:
+            for time_closed in time_closed_list:
 
 
 
 
                 ArduinoComms.SamplingActOpen()
-                servo_motor.switch_valve_position(8)
+                servo_motor.switch_valve_position(contaminant_line)
                 time.sleep(60)     #introduce contaminant into the line
                 ArduinoComms.SamplingActClose()
 
 
 
 
-                servo_motor.switch_valve_position(16)
+                servo_motor.switch_valve_position(pure_line)
 
                 for j in range(purge_cycles):
                     ArduinoComms.SamplingActOpen()
@@ -32,8 +36,8 @@ def MakeMultiplePurges():
                     time.sleep(time_open)          
                     ArduinoComms.SamplingActClose()
                     time.sleep(time_closed)
-                    
-                time.sleep(30)
+
+                time.sleep(calmdown_time)
 
 
                 spectrum_to_analyze, intital_mass, step, ErrorMessage = RGA_comms.AppendSpectrumJSON(filename, accuracy=accuracy, custom_line_name = f"PC: {purge_cycles}, TO: {time_open}, TC: {time_closed}")
