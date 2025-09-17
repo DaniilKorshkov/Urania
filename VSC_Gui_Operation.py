@@ -160,21 +160,24 @@ def VSC_Gui(MainConfig="MainConfig"):
     except:
 
         vicivalve_gui(MainConfig)
-        for i in range(6):
-            st.markdown("")
-        pressure_controller_gui(MainConfig)
-        for i in range(6):
-            st.markdown("")
-        mfc_gui(MainConfig)
-        for i in range(6):
-            st.markdown("")
-        mfm_gui(MainConfig)
-        for i in range(6):
-            st.markdown("")
-        filling_mfm_gui(MainConfig)
-        for i in range(6):
-            st.markdown("")
-        pressure_meter_gui(MainConfig)
+        try:
+            for i in range(6):
+                st.markdown("")
+            pressure_controller_gui(MainConfig)
+            for i in range(6):
+                st.markdown("")
+            mfc_gui(MainConfig)
+            for i in range(6):
+                st.markdown("")
+            mfm_gui(MainConfig)
+            for i in range(6):
+                st.markdown("")
+            filling_mfm_gui(MainConfig)
+            for i in range(6):
+                st.markdown("")
+            pressure_meter_gui(MainConfig)
+        except:
+            st.write("Failed to reach VSC")
         
 
 
