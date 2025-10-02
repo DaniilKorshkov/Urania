@@ -160,9 +160,15 @@ def constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initia
                 ax.set_yscale('symlog')
                 ylabel = f'log10 {ylabel}'
                 oxygen_label = "log10 oxygen ppm"
-                ax.set_ylim([1, 2000000])
+                if isppm == "True":
+                    ax.set_ylim([1, 2000000])
+                else:
+                    ax.set_ylim([1, 1000000000])
             else:
-                ax.set_ylim([1, 1100000])
+                if isppm == "True":
+                    ax.set_ylim([1, 1100000])
+                else:
+                    ax.set_ylim([1, 500000000])
 
 
 
@@ -315,6 +321,7 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
 
                         if (islogarithmic == "True" and isppm == "True"):
                             ax.set_yscale('symlog')
+                            if isppm == "True":
                             ax.set_ylim([1, 2000000])
                         elif (islogarithmic == "True" and isppm == "False"):
                             ax.set_yscale('symlog')

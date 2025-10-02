@@ -206,7 +206,9 @@ def DisplayCurrentScans():
                             ax.set_ylim([1, 2000000])
                         elif (islogarithmic == "True" and isppm == "False"):
                             ax.set_yscale('symlog')
-                            ax.set_ylim([1, 500000000])
+                            ax.set_ylim([1, 5000000000])
+
+
 
 
 
