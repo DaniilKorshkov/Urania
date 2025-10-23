@@ -81,7 +81,8 @@ def FindQuadraticError(RAW_dictionary, ppm_dictionary, ic_dictionary, ic_stdev_d
                         ppm_stdev_dictionary[key] += ((ic_stdev_dictionary[error_factor_key])*(  RAW_dictionary[key]/RAW_sum**2 ) / (coeff_dictionary["He_4"]))**2
                     else:
                         ppm_stdev_dictionary[key] += ((ic_stdev_dictionary[error_factor_key])*(  (RAW_sum - RAW_dictionary[key])/RAW_sum**2 ) / (coeff_dictionary["He_4"]))**2
-        
+    
+    ppm_stdev_dictionary["N2"] += (ppm_stdev_dictionary["CO2"]*coeff_dictionary["CO2_28"])/coeff_dictionary["CO2_44"]
 
     for key in ppm_stdev_dictionary:
         ppm_stdev_dictionary[key] = ((ppm_stdev_dictionary[key])**0.5)*1000000
