@@ -264,20 +264,27 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
         lg.MakeLogEntry(f"Multi inlet valved switched to position {valve_number}")
     except:
 
+        NotifyUser("0010", f"Multi Inlet Valve control failure (Event 0010)",True)
         lg.MakeLogEntry(f"Sampling terminated as multi inlet valve is not responding")
         return True
 
 
-    try:
-        VSC_comms.ChangeMFCMode("Open")
-    except:
-        lg.MakeLogEntry(f"Sampling terminated as VSC is not responding")
-        return True
     
     try:
         for i in range(purge_cycles):
             ArduinoComms.SamplingActOpen()
-            VSC_comms.LogVSCData()
+
+            try:
+                VSC_comms.LogVSCData()
+            except:
+                NotifyUser("0007", f"VSC Communication/Control Failure (0007)", False)
+                Logging.MakeLogEntry("Failed to log VSC data")
+            try:
+                ArduinoComms.LogArduinoData()
+            except:
+                NotifyUser("0011", f"Arduino pressure reading failure (Event 0011)", False)
+                Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
+
             time.sleep(35)
             ArduinoComms.SamplingActClose()
             time.sleep(30)
@@ -286,18 +293,22 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
         try:
             VSC_comms.LogVSCData("MainConfig")
         except:
+            NotifyUser("0007", f"VSC Communication/Control Failure (0007)", False)
             Logging.MakeLogEntry("Failed to log VSC data")
 
         try:
             ArduinoComms.LogArduinoData()
         except:
+            NotifyUser("0011", f"Arduino pressure reading failure (Event 0011)", False)
             Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
 
 
 
     except:
 
-        lg.MakeLogEntry(f"Sampling failed due to purging error")
+        NotifyUser("0011", f"Arduino actuator control failure (Event 0011)", True)
+
+        lg.MakeLogEntry(f"Sampling failed due to purging actuator")
         return True
 
 
@@ -314,6 +325,7 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
 
             if (ErrorMessage != None) and (ErrorMessage != "TIMEOUT") and (not ("Failed to create measurement" in str(ErrorMessage))) and (not ("LinkDown" in ErrorMessage)):
                 critical_errors = True
+                NotifyUser("0006", f"Shutting down: RGA Communication/Sampling Failure (Event 0006): {ErrorMessage}", True)
                 lg.MakeLogEntry(f"Sampling terminated due to RGA error: {ErrorMessage}")
                 break
 
@@ -325,6 +337,8 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
                     lg.MakeLogEntry(f"Sampling failed due to LinkDown Serial error; repeating attempt")
                 if str(ErrorMessage) == "TIMEOUT":
                     lg.MakeLogEntry(f"Sampling failed due to TIMEOUT error (probable packet loss); repeating attempt")
+
+                NotifyUser("0006", f"Repeating attempt: RGA Communication/Sampling Failure, (Event 0006): {ErrorMessage}", False)
 
 
 
@@ -341,9 +355,12 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
                             auto_close = js.ReadJSONConfig("InterpretedAbnormalityReaction","auto_close")
 
                             if (valve_number == 14) and (auto_close == "True"):
-                                ArduinoComms.TurnActuatorOneOff()
-                                lg.MakeLogEntry(f"Filling station actuator closed due to abnormal readings on line 14")
-
+                                try:
+                                    ArduinoComms.TurnActuatorOneOff()
+                                    lg.MakeLogEntry(f"Filling station actuator closed due to abnormal readings on line 14")
+                                except:
+                                    NotifyUser("0002", f"!!! URGENT ATTENTION REQUIRED !!! Argon purity out of spec & automatic shutdown failed Fail (Event 0002)",True)
+                                    lg.MakeLogEntry(f"Filling station actuator FAILED TO closed due to abnormal readings on line 14")
 
                     except:
                         lg.MakeLogEntry(f"Abnormality scan for Filename = {filename} crashed with error")
@@ -401,7 +418,7 @@ def DoTask(config="MainConfig"):
         else:
             lg.MakeLogEntry(f"Task {taskname} finished with error\n")
 
-            NotifyUser("Sampling terminated due to error",True)
+            
 
 
 

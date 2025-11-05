@@ -170,9 +170,12 @@ def AnalyseInterpretedLine(spectrum_to_analyze,multi_inlet_valve,filename, DoLog
                         Logging.MakeLogEntry(log_entry,log_name="AbnormalityLog")
 
 
-
-                        NotifyUser(log_entry,False)
-
+                        if int(multi_inlet_valve) in [13, 14]:
+                            NotifyUser("0001", f"Purity of Filling Argon (Lines 13 and 14, RGA/OA) out of spec  {log_entry}",True)
+                        elif int(multi_inlet_valve) in range(13):
+                            NotifyUser("0003", f" Purity of non-Argon Sampling Point (Lines 1-12, RGA/OA) out of spec:  {log_entry}",False)
+                        elif int(multi_inlet_valve) == 15:
+                            NotifyUser("0003", f" Purity of non-Argon Sampling Point (Lines 1-12, RGA/OA) out of spec:  {log_entry}",False)
 
                         
 

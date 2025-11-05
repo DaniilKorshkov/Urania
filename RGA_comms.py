@@ -499,6 +499,7 @@ def AppendSpectrumJSON(filename,convertion_coefficient=1,accuracy=5,config="Main
             dictionary_to_append["oxygen"] = oxa.GetOxygenData("MainConfig")
             Logging.MakeLogEntry(f"Received oxygen data for RGA scan: {filename}")
         except:
+            NotifyUser("0013", f"Oxygen analyzer communiation faliure (Event 0013)", False)
             Logging.MakeLogEntry(f"Failed to get oxygen data for RGA scan: {filename}")
             dictionary_to_append["oxygen"] = 0
         

@@ -135,13 +135,13 @@ def NotifyAsRoot(message, image):
 
 
 
-def NotifyUser(text,ifcrash=False):
+def NotifyUser(event_code, text, critical=False):
     email_crash = JSONoperators.ReadJSONConfig("email","email_notifications_for_crash")
     email_abnorm = JSONoperators.ReadJSONConfig("email", "email_notifications_for_abnorm")
     live_crash = JSONoperators.ReadJSONConfig("email", "live_notifications_for_crash")
     live_abnorm = JSONoperators.ReadJSONConfig("email", "live_notifications_for_abnorm")
 
-    if ifcrash:
+    if critical:
         try:
             if email_crash == "True":
                 SendEmail("Sampling system failure", text)
@@ -159,7 +159,7 @@ def NotifyUser(text,ifcrash=False):
     else:
         try:
             if email_abnorm == "True":
-                SendEmail("Abnormal readings detected", text)
+                SendEmailDjango(str(event_code), text)
         except:
             pass
 
@@ -179,7 +179,7 @@ def NotifyUser(text,ifcrash=False):
 
 
 
-def NotifyUserDjango():
+def SendEmailDjango(event_code = "0002", text = "Here is some data ...."):
     now = datetime.datetime.now(pytz.timezone('America/Denver')).isoformat()
     #now = datetime.datetime.now(pytz.timezone('America/Toronto')).isoformat()
 
@@ -204,4 +204,4 @@ def NotifyUserDjango():
 
 
 if __name__ == "__main__":
-    NotifyUserDjango
+    SendEmailDjango()

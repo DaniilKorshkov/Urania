@@ -15,10 +15,10 @@ def filling_station_gui():
             turn_off_act_one = st.button("Force close filling station actuator")
 
             if turn_on_act_one:
-                ArduinoComms.TurnActuatorOneOn()
+                ArduinoComms.FillingActOpen()
                 st.write(f"FS actuator opened!")
             if turn_off_act_one:
-                ArduinoComms.TurnActuatorOneOff()
+                ArduinoComms.FillingActClose()
                 st.write(f"FS actuator closed!")
         except:
             pass
