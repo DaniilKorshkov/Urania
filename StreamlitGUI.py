@@ -321,7 +321,7 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
 
                         if (islogarithmic == "True" and isppm == "True"):
                             ax.set_yscale('symlog')
-                            if isppm == "True":
+                        if isppm == "True":
                             ax.set_ylim([1, 2000000])
                         elif (islogarithmic == "True" and isppm == "False"):
                             ax.set_yscale('symlog')

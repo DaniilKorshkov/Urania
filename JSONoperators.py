@@ -3,6 +3,8 @@ import Functions as fn
 import os
 import streamlit as st
 import datetime
+#from EmailNotificationSystem import NotifyUser
+#from ArduinoComms import FillingActClose
 
 '''def file_selector(folder_path='.'):
     filename = st.file_uploader(label="Select a spectrum file", type=None, accept_multiple_files=False, key=None, help=None, on_change=None, args=None,
@@ -408,7 +410,8 @@ def MergeJSONConfigs(MainConfig="MainConfig",DefaultMainConfig="DefaultMainConfi
 
 
 
-def ReadJSONConfig(linename,entryname=None,config="MainConfig"): #function to read a specific entry from specified line in config
+def ReadJSONConfig(linename,entryname=None,config="MainConfig",DefaultMainConfig="DefaultMainConfig"): #function to read a specific entry from specified line in config
+    entry = None
     handle = open(config, "r")
     for line in handle:
 
@@ -425,8 +428,34 @@ def ReadJSONConfig(linename,entryname=None,config="MainConfig"): #function to re
                 break
     handle.close()
 
+    if entry ==  None:
+
+        handle = open(DefaultMainConfig, "r")
+        for line in handle:
+
+            if line == "" or line == "\n" or line[0] == "#" or line == None:
+                continue
+
+            dict_line = json.loads(line)
+            if dict_line["class"] == linename:
+                if entryname == None:
+                    entry = dict_line
+                    break
+                else:
+                    entry = dict_line[entryname]
+                    break
+        handle.close()
+    
     if entry == None:
+        #NotifyUser("0015", f"Default Config Entry Missing: {linename}, {entryname} (0015)",True)
+
+        #try:
+         #   FillingActClose()
+        #except:
+         #   NotifyUser("0014", f"Default Config Entry Missing; and filling actuator is not responsive (0014)",True)
+
         raise LookupError(f"{entryname} entry was not found in {linename} line in {config} config")
+        
 
     return entry
 

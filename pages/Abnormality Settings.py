@@ -252,3 +252,97 @@ def AbnormalitySettingsForInterpreted():
 
 
 AbnormalitySettingsForInterpreted()
+
+
+
+
+
+def AbnormalitySettingsForGas():
+    control_spectrum = js.ReadJSONConfig("InterpretedAbnormalityReaction",f"VSC")
+    
+
+    for key in control_spectrum:
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.write(f"{key}: {(control_spectrum[key])[1]} - {(control_spectrum[key])[2]}")
+            st.write(f"{key} critical: {(control_spectrum[key])[0]} - {(control_spectrum[key])[3]}")
+        with col2:
+            new_min_value = st.text_input(f"New minimal torr or cm3min threshold for {key}: ")
+            append_new_min_value = st.button(f"Edit min threshold for {key}:")
+            if append_new_min_value:
+
+                try:
+                    void = float(new_min_value)
+                    assert void <= float((control_spectrum[key])[2])
+                    assert void >= float((control_spectrum[key])[0])
+
+
+                    new_line = js.ReadJSONConfig("InterpretedAbnormalityReaction")
+
+                    (((new_line[f"VSC"])[key])[1]) = float(new_min_value)
+                    str_new_line = json.dumps(new_line)
+                    js.EditJSONConfig("InterpretedAbnormalityReaction", str_new_line)
+
+                except:
+                    st.write(f"Provided value is invalid")
+
+            
+            new_crit_min_value = st.text_input(f"New critical minimal torr or cm3min threshold for {key}: ")
+            append_new_crit_min_value = st.button(f"Edit critical min threshold for {key}:")
+            if append_new_crit_min_value:
+
+                try:
+                    void = float(new_crit_min_value)
+                    assert void <= float((control_spectrum[key])[1])
+
+
+                    new_line = js.ReadJSONConfig("InterpretedAbnormalityReaction")
+
+                    (((new_line[f"VSC"])[key])[0]) = float(new_crit_min_value)
+                    str_new_line = json.dumps(new_line)
+                    js.EditJSONConfig("InterpretedAbnormalityReaction", str_new_line)
+
+                except:
+                    st.write(f"Provided value is invalid")
+
+
+
+        with col3:
+            new_max_value = st.text_input(f"New maximal torr or cm3min threshold for {key}: ")
+            append_new_max_value = st.button(f"Edit max threshold for {key}:")
+            if append_new_max_value:
+
+                try:
+                    void = float(new_max_value)
+                    assert void >= float((control_spectrum[key])[1])
+                    assert void <= float((control_spectrum[key])[3])
+
+                    new_line = js.ReadJSONConfig("InterpretedAbnormalityReaction")
+
+                    (((new_line[f"VSC"])[key])[2]) = float(new_max_value)
+                    str_new_line = json.dumps(new_line)
+                    js.EditJSONConfig("InterpretedAbnormalityReaction",str_new_line)
+
+                except:
+                    st.write(f"Provided value is invalid")
+
+            new_crit_max_value = st.text_input(f"New critical maximal torr or cm3min threshold for {key}: ")
+            append_new_crit_max_value = st.button(f"Edit critical max threshold for {key}:")
+            if append_new_crit_max_value:
+
+                try:
+                    void = float(new_crit_max_value)
+                    assert void >= float((control_spectrum[key])[2])
+                    
+
+                    new_line = js.ReadJSONConfig("InterpretedAbnormalityReaction")
+
+                    (((new_line[f"VSC"])[key])[3]) = float(new_crit_max_value)
+                    str_new_line = json.dumps(new_line)
+                    js.EditJSONConfig("InterpretedAbnormalityReaction",str_new_line)
+
+                except:
+                    st.write(f"Provided value is invalid")
+
+        
+AbnormalitySettingsForGas()

@@ -9,6 +9,7 @@ import Logging
 import RGA_comms as RGA
 import subprocess
 from EmailNotificationSystem import NotifyUser
+from ArduinoComms import FillingActClose
 
 
 def signal_handler(signal, frame):
@@ -70,11 +71,17 @@ def Sampling():
 
                                 if not critical_errors:
                                         Logging.MakeLogEntry("Sampling terminated by user\n")
+                                        NotifyUser("0016","Sampling terminated by user (0016)",False)
+
 
                                 else:
                                         Logging.MakeLogEntry("Sampling terminated due to error\n")
 
-                                        NotifyUser("Sampling terminated due to error",True)
+                                        
+                                try:
+                                        FillingActClose()
+                                except:
+                                        NotifyUser("0011", f"Arduino actuator control failure (Event 0011)", True)
 
                                 break
 

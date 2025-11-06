@@ -275,7 +275,8 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
             ArduinoComms.SamplingActOpen()
 
             try:
-                VSC_comms.LogVSCData()
+                vsc_data = VSC_comms.LogVSCData()
+                code8, code9, code10, void = AnalyzeVSCLine()
             except:
                 NotifyUser("0007", f"VSC Communication/Control Failure (0007)", False)
                 Logging.MakeLogEntry("Failed to log VSC data")

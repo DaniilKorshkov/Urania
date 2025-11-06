@@ -460,7 +460,7 @@ def FullQuery(MainConfig="MainConfig"):
     print(f"Current mass flow for filling station: {filling_mfm_flow}")
     print(f"\n")
 
-def LogVSCData(MainConfig="MainConfig"):
+def LogVSCData(MainConfig="MainConfig", abnorm_analyze = False):
     #pg_port = ReadJSONConfig("vsc", "pressure_gauge_port")
     #pc_port = ReadJSONConfig("vsc", "pressure_controller_port")
     #mfc_port = ReadJSONConfig("vsc", "mfc_port")
@@ -511,6 +511,12 @@ def LogVSCData(MainConfig="MainConfig"):
     handle.write("\n")
     handle.write(json.dumps(dictionary_to_append))
     handle.close()
+
+
+    if abnorm_analyze:
+        
+
+    return dictionary_to_append
 
 
     
