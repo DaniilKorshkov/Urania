@@ -513,8 +513,8 @@ def LogVSCData(MainConfig="MainConfig", abnorm_analyze = False):
     handle.close()
 
 
-    if abnorm_analyze:
-        
+    
+
 
     return dictionary_to_append
 

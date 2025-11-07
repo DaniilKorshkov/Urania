@@ -104,7 +104,7 @@ def AnalyseSingleLine(spectrum_to_analyze,multi_inlet_valve, initial_mass, step,
 
 
 
-                        NotifyUser(,log_entry,False)
+                        #NotifyUser(,log_entry,False)
 
 
                         
@@ -282,28 +282,28 @@ def AnalyzeVSCLine(dictionary, SamplingLine = 1, CurrentlySampling = False, DoLo
 
 
 
-            if key == "pc_pressure":
-                if CurrentlySampling:
-                    if (dictionary[key] > boundaries[2]) or (dictionary[key] < boundaries[1]):
-                        code8 = True
-                        if DoLogging:
-                            log_entries.append(f"PC pressure = {dictionary[key]} while boundaries are {boundaries[1]} - {boundaries[2]}")
-                            NotifyUser("0008", f"PC Pressure {dictionary[key]} while boundaries are {boundaries[1]} - {boundaries[2]}",True)
-                
-                if (SamplingLine != 13) or (SamplingLine != 14):
-                    if (dictionary[key] < boundaries[0]):
-                        code9 = True
-                        if DoLogging:
-                            log_entries.append(f"PC pressure = {dictionary[key]} is critically low (min: {boundaries[0]})")
-                            NotifyUser("0009", f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})",True)
-
-                
-                if (dictionary[key] > boundaries[3]):
-                    code10 = True
+        if key == "pc_pressure":
+            if CurrentlySampling:
+                if (dictionary[key] > boundaries[2]) or (dictionary[key] < boundaries[1]):
+                    code8 = True
                     if DoLogging:
-                        log_entries.append(f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})")
-                        NotifyUser("0010", f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})",True)
-                
+                        log_entries.append(f"PC pressure = {dictionary[key]} while boundaries are {boundaries[1]} - {boundaries[2]}")
+                        NotifyUser("0008", f"PC Pressure {dictionary[key]} while boundaries are {boundaries[1]} - {boundaries[2]}",True)
+            
+            if (SamplingLine != 13) or (SamplingLine != 14):
+                if (dictionary[key] < boundaries[0]):
+                    code9 = True
+                    if DoLogging:
+                        log_entries.append(f"PC pressure = {dictionary[key]} is critically low (min: {boundaries[0]})")
+                        NotifyUser("0009", f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})",True)
+
+            
+            if (dictionary[key] > boundaries[3]):
+                code10 = True
+                if DoLogging:
+                    log_entries.append(f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})")
+                    NotifyUser("0010", f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})",True)
+            
 
 
 
