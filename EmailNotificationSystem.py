@@ -141,39 +141,48 @@ def NotifyUser(event_code, text, critical=False):
     live_crash = JSONoperators.ReadJSONConfig("email", "live_notifications_for_crash")
     live_abnorm = JSONoperators.ReadJSONConfig("email", "live_notifications_for_abnorm")
 
-    if critical:
-        try:
-            if email_crash == "True":
-                SendEmail("Sampling system failure", text)
-        except:
-            pass
-
-        try:
-            if live_crash == "True":
-                NotifyAsRoot(text, "ErrorIcon.png")
-        except:
-            pass
 
 
+    timeout_time = (JSONoperators.ReadJSONConfig("error_codes", "dictionary")[event_code])["timeout"]
+    current_time = datetime.datetime.now().timestamp()
+
+    if timeout_time > current_time:
+        pass
 
     else:
-        try:
-            if email_abnorm == "True":
-                SendEmailDjango(str(event_code), text)
-        except:
-            pass
+        if critical:
+            try:
+                if email_crash == "True":
+                    SendEmail("Sampling system failure", text)
+            except:
+                pass
 
-        try:
-            if live_abnorm == "True":
-                NotifyAsRoot(text, "AbnormalityIcon.png")
-        except:
-            pass
+            try:
+                if live_crash == "True":
+                    NotifyAsRoot(text, "ErrorIcon.png")
+            except:
+                pass
 
 
 
-'''if __name__ == "__main__":
-    NotifyUser("Test crash message",True)
-    NotifyUser("Test abnorm message", False)'''
+        else:
+            try:
+                if email_abnorm == "True":
+                    SendEmailDjango(str(event_code), text)
+            except:
+                pass
+
+            try:
+                if live_abnorm == "True":
+                    NotifyAsRoot(text, "AbnormalityIcon.png")
+            except:
+                pass
+
+
+
+    '''if __name__ == "__main__":
+        NotifyUser("Test crash message",True)
+        NotifyUser("Test abnorm message", False)'''
 
 
 

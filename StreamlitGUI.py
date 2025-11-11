@@ -24,14 +24,22 @@ def refresh():
     return True
 
 
-def date_time_input():  # function to input date and time as seconds from 01jan1970 through graphic user interface
+def date_time_input(self_name = None):  # function to input date and time as seconds from 01jan1970 through graphic user interface
 
+    if self_name == None: #self_name required to mitigate identical ID bug in streamlit
 
-    col = st.columns((1, 1), gap='medium')  # left part of the screen to input date, right - to input time
-    with col[0]:
-        date_value = st.date_input(label="Enter date: ",min_value=datetime.date(1969,1,1))
-    with col[1]:
-        time_value = st.time_input(label="Enter time: ")
+        col = st.columns((1, 1), gap='medium')  # left part of the screen to input date, right - to input time
+        with col[0]:
+            date_value = st.date_input(label="Enter date: ",min_value=datetime.date(1969,1,1))
+        with col[1]:
+            time_value = st.time_input(label="Enter time: ")
+    else:
+        col = st.columns((1, 1), gap='medium')  # left part of the screen to input date, right - to input time
+        with col[0]:
+            date_value = st.date_input(label=f"Enter date for {self_name} : ",min_value=datetime.date(1969,1,1))
+        with col[1]:
+            time_value = st.time_input(label=f"Enter time for {self_name}: ")
+
 
     date_value = str(date_value) # obtained results converted to strings and then split into integers
     time_value = str(time_value)

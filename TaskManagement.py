@@ -264,7 +264,12 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
         lg.MakeLogEntry(f"Multi inlet valved switched to position {valve_number}")
     except:
 
-        NotifyUser("0010", f"Multi Inlet Valve control failure (Event 0010)",True)
+        NotifyUser("0015", f"Multi Inlet Valve control failure (Event 0015)",True)
+
+        RGA_comms.rga_filament_control("Off")
+        ArduinoComms.FillingActClose()
+
+
         lg.MakeLogEntry(f"Sampling terminated as multi inlet valve is not responding")
         return True
 
@@ -276,14 +281,26 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
 
             try:
                 vsc_data = VSC_comms.LogVSCData()
-                code8, code9, code10, void = AnalyzeVSCLine( vsc_data, valve_number, False, DoLogging=True )
+                code8, code9, code10, code11, code12, code13, code14, void = AnalyzeVSCLine( vsc_data, valve_number, False, DoLogging=True )
+            
+                if code10 == True:
+                    RGA_comms.rga_filament_control("Off")
+                    ArduinoComms.FillingActClose()
+                    return True
+
+                if (code11 == True) or (code12 == True):
+                    ArduinoComms.FillingActClose()
+                    
+            
+            
+            
             except:
                 NotifyUser("0007", f"VSC Communication/Control Failure (0007)", False)
                 Logging.MakeLogEntry("Failed to log VSC data")
             try:
                 ArduinoComms.LogArduinoData()
             except:
-                NotifyUser("0011", f"Arduino pressure reading failure (Event 0011)", False)
+                #NotifyUser("0011", f"Arduino pressure reading failure (Event 0011)", False)
                 Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
 
             time.sleep(35)
@@ -300,7 +317,7 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
         try:
             ArduinoComms.LogArduinoData()
         except:
-            NotifyUser("0011", f"Arduino pressure reading failure (Event 0011)", False)
+            NotifyUser("0016", f"Arduino pressure reading failure (Event 0016)", False)
             Logging.MakeLogEntry("Failed to reach Arduino board for recording temperature and pressure")
 
 

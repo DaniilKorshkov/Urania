@@ -256,9 +256,15 @@ def AnalyzeVSCLine(dictionary, SamplingLine = 1, CurrentlySampling = False, DoLo
     log_entries = []
     control_spectrum = js.ReadJSONConfig("InterpretedAbnormalityReaction",f"VSC")
 
-    code8 = False
-    code9 = False
-    code10 = False
+    code8 = False #PC pressure deviation
+    code9 = False #PC pressure critically low
+    code10 = False #PC pressure critically high
+    code11 = False #PC pressure critically low (lines 13-14)
+
+    code12 = False #MFMF flow critically low
+    code13 = False #MFMF pressure critically low
+
+    code14 = False
 
     for key in dictionary:
 
@@ -271,10 +277,10 @@ def AnalyzeVSCLine(dictionary, SamplingLine = 1, CurrentlySampling = False, DoLo
              #   boundaries = control_spectrum["MFC"]
             case "pc_pressure":
                 boundaries = control_spectrum["PC"]
-            #case "mfm_flow":
-                #boundaries = control_spectrum["MFM"]
-            #case "filling_mfm_flow":
-             #   boundaries = control_spectrum["MFM_F"]
+            case "mfm_flow":
+                boundaries = control_spectrum["MFM"]
+            case "filling_mfm_flow":
+                boundaries = control_spectrum["MFM_F"]
             case default:
                 continue
 
@@ -283,19 +289,29 @@ def AnalyzeVSCLine(dictionary, SamplingLine = 1, CurrentlySampling = False, DoLo
 
 
         if key == "pc_pressure":
+
             if CurrentlySampling:
                 if (dictionary[key] > boundaries[2]) or (dictionary[key] < boundaries[1]):
                     code8 = True
                     if DoLogging:
                         log_entries.append(f"PC pressure = {dictionary[key]} while boundaries are {boundaries[1]} - {boundaries[2]}")
-                        NotifyUser("0008", f"PC Pressure {dictionary[key]} while boundaries are {boundaries[1]} - {boundaries[2]}",True)
+                        NotifyUser("0008", f"PC Pressure {dictionary[key]} while boundaries are {boundaries[1]} - {boundaries[2]}",False)
             
-            if (SamplingLine != 13) or (SamplingLine != 14):
+            if (SamplingLine != 13) and (SamplingLine != 14):
                 if (dictionary[key] < boundaries[0]):
                     code9 = True
                     if DoLogging:
                         log_entries.append(f"PC pressure = {dictionary[key]} is critically low (min: {boundaries[0]})")
-                        NotifyUser("0009", f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})",True)
+                        NotifyUser("0009", f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})",False)
+
+            if (SamplingLine == 13) or (SamplingLine == 14):
+                if (dictionary[key] < boundaries[0]):
+                    code11 = True
+                    if DoLogging:
+                        log_entries.append(f"PC pressure = {dictionary[key]} is critically low (min: {boundaries[0]})")
+                        NotifyUser("0011", f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})",True)
+
+
 
             
             if (dictionary[key] > boundaries[3]):
@@ -305,9 +321,30 @@ def AnalyzeVSCLine(dictionary, SamplingLine = 1, CurrentlySampling = False, DoLo
                     NotifyUser("0010", f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})",True)
             
 
+        if key == "filling_mfm_flow":
+            if (dictionary[key] < boundaries[0]):
+                code12 = True
+                if DoLogging:
+                    log_entries.append(f"Filling station flow = {dictionary[key]} is critically low (min: {boundaries[0]})")
+                    NotifyUser("0012", f"Filling station flow = {dictionary[key]} is critically low (min: {boundaries[0]})",True)
+            
+        if key == "mfm_flow":
+            if (dictionary[key] < boundaries[0]):
+                code13 = True
+                if DoLogging:
+                    log_entries.append(f"Sampling MFM flow = {dictionary[key]} is critically low (min: {boundaries[0]})")
+                    NotifyUser("0013", f"Sampling MFM flow = {dictionary[key]} is critically low (min: {boundaries[0]})",False)
+        
+        if key == "mfc_flow":
+            if (dictionary[key] < boundaries[0]):
+                code14 = True
+                if DoLogging:
+                    log_entries.append(f"Sampling MFC flow = {dictionary[key]} is critically low (min: {boundaries[0]})")
+                    NotifyUser("0014", f"Sampling MFC flow = {dictionary[key]} is critically low (min: {boundaries[0]})",False)
+            
 
 
-    return code8, code9, code10, log_entries
+    return code8, code9, code10, code11, code12, code13, code14, log_entries
 
 #def MakeLogEntry()
 
@@ -318,3 +355,42 @@ def AnalyzeVSCLine(dictionary, SamplingLine = 1, CurrentlySampling = False, DoLo
 
 
 #AnalyseSpectrum("FullScan","ControlSpectrumTest","AbnormalityLog",True)
+def AnalyzeArduinoLine(dictionary, SamplingLine = 1, CurrentlySampling = False, DoLogging=True):
+
+    log_entries = []
+    control_spectrum = js.ReadJSONConfig("InterpretedAbnormalityReaction",f"Arduino")
+
+    code17 = False #PC pressure deviation
+    
+    for key in dictionary:
+
+        
+
+        
+        boundaries = control_spectrum[key]
+            
+
+
+
+
+
+        if key == "PT-02":
+
+            
+
+            
+            if (dictionary[key] > boundaries[2]) or (dictionary[key] < boundaries[1]):
+                code10 = True
+                if DoLogging:
+                    log_entries.append(f"PT-02 pressure = {dictionary[key]} while boundaries are {boundaries[1]} - {boundaries[2]}")
+                    NotifyUser("0017", f"PT-02 pressure = {dictionary[key]} while boundaries are {boundaries[1]} - {boundaries[2]}",True)
+            
+
+        
+    return code17, log_entries
+
+#def MakeLogEntry()
+
+
+
+
