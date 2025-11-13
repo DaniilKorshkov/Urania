@@ -153,7 +153,7 @@ def NotifyUser(event_code, text, critical=False):
         if critical:
             try:
                 if email_crash == "True":
-                    SendEmail("Sampling system failure", text)
+                    SendEmailDjango(str(event_code), text)
             except:
                 pass
 
@@ -196,9 +196,9 @@ def SendEmailDjango(event_code = "0002", text = "Here is some data ...."):
 
     data = {
         "token": "kqvvLin-ykokvGLpISejkc3rlV7IETxR0JvEYM1PIIYNympl",
-        "type": "0002",
+        "type": event_code,
         "time_detected": now,
-        "data": "Here is some data ..... ",
+        "data": text,
     }
 
     headers = {

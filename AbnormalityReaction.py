@@ -249,7 +249,7 @@ def AnalyzeInterpretedFile(spectrum_filename,MainConfig="MainConfig"):
 
 
 
-
+#  vsc_pressure_dictionary = { "pg_pressure":760, "mfc_flow":100, "pc_pressure":760, "mfm_flow":100, "filling_mfm_flow":1000     }
 
 def AnalyzeVSCLine(dictionary, SamplingLine = 1, CurrentlySampling = False, DoLogging=True):
 
@@ -302,14 +302,14 @@ def AnalyzeVSCLine(dictionary, SamplingLine = 1, CurrentlySampling = False, DoLo
                     code9 = True
                     if DoLogging:
                         log_entries.append(f"PC pressure = {dictionary[key]} is critically low (min: {boundaries[0]})")
-                        NotifyUser("0009", f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})",False)
+                        NotifyUser("0009", f"PC pressure = {dictionary[key]} is critically low (max: {boundaries[3]})",False)
 
             if (SamplingLine == 13) or (SamplingLine == 14):
                 if (dictionary[key] < boundaries[0]):
                     code11 = True
                     if DoLogging:
                         log_entries.append(f"PC pressure = {dictionary[key]} is critically low (min: {boundaries[0]})")
-                        NotifyUser("0011", f"PC pressure = {dictionary[key]} is critically high (max: {boundaries[3]})",True)
+                        NotifyUser("0011", f"PC pressure = {dictionary[key]} is critically low (max: {boundaries[3]})",True)
 
 
 
