@@ -191,11 +191,12 @@ def NotifyUser(event_code, text, critical=False):
 def SendEmailDjango(event_code = "0002", text = "Here is some data ...."):
     now = datetime.datetime.now(pytz.timezone('America/Denver')).isoformat()
     #now = datetime.datetime.now(pytz.timezone('America/Toronto')).isoformat()
+    token = JSONoperators.ReadJSONConfig("email", "from_password")
 
     url = "https://apps1.physics.carleton.ca/alert/notification/email"  
 
     data = {
-        "token": "kqvvLin-ykokvGLpISejkc3rlV7IETxR0JvEYM1PIIYNympl",
+        "token": token,
         "type": event_code,
         "time_detected": now,
         "data": text,
