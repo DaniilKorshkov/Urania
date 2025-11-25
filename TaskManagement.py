@@ -274,6 +274,33 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
         return True
 
 
+    try:
+
+        required_flow = (js.ReadJSONConfig("vsc","flow_rate_list"))[  (int(valve_number)-1)  ]
+
+        vsc.ChangeMFCMode("Setpoint")
+        vsc.ChangeMFCFlowRate(required_flow)
+        lg.MakeLogEntry(f"Flow changed to {required_flow} SCCM")
+    except:
+
+        NotifyUser("0007", f"VSC Communication/Control Failure",True)
+
+        RGA_comms.rga_filament_control("Off")
+        ArduinoComms.FillingActClose()
+
+
+        lg.MakeLogEntry(f"Sampling terminated as multi inlet valve is not responding")
+        return True
+
+
+
+
+
+
+
+
+
+    
     
     try:
         for i in range(purge_cycles):
