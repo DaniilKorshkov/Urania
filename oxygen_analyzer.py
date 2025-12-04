@@ -31,6 +31,7 @@ def SendCommand(PORT):  #function to send command to oxygen analyser via Serial 
 
     try:
         ser.close()
+        ser.open()
     except:
         ser.open()
 
