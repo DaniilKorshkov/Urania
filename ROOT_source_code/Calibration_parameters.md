@@ -35,3 +35,5 @@ Questions for the future:
     However, we should care about uncertainty of concentrations ; not uncertainty of equation solution.
     For example, if we ignore peaks 45,47 and etc. for CO2, we will end up with greater uncertainty of least-square solution;
     However, we will still estimate concentration of CO2 correctly by the peak 44, and this solution might even be more accurate as only peak with highest measurement accuracy is taken into the account
+
+4) Should we hard code the set of calibration parameters?
