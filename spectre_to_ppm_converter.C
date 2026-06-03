@@ -6,6 +6,11 @@
 #include "TCanvas.h"
 #include "TMatrixD.h"
 #include "TDecompSVD.h"
+#include "Math/Functor.h"
+#include <Math/SMatrix.h>
+
+
+
 
 
 
@@ -13,6 +18,7 @@
 /// Outputs PPM of every gas in mixture 
 
 
+using namespace ROOT::Math;
 
 int main(int argc, char* argv[]) {
 
@@ -50,14 +56,14 @@ int main(int argc, char* argv[]) {
 
     /// std::cout << initial_MZ << MZ_step << amount_of_steps <<std::endl;
 
-    double unprocessed_mass_spectra[amount_of_steps];
+    TMatrixD unprocessed_mass_spectra(1,amount_of_steps);
 
 
     // Entries from 3 until 3+amount_of_steps are unprocessed mass spectra
 
     for(int i=0; i < amount_of_steps; i++){
-        unprocessed_mass_spectra[i] = std::atoi(argv[4+i]);
-         std::cout << unprocessed_mass_spectra[i] << std::endl;
+        unprocessed_mass_spectra(0,i) = std::atoi(argv[4+i]);
+         std::cout << unprocessed_mass_spectra(0,i) << std::endl;
 
     };
 
@@ -82,8 +88,8 @@ int main(int argc, char* argv[]) {
 
     int amount_of_matrix_entries; amount_of_matrix_entries = 6*amount_of_steps;
     TMatrixD mask_matrix(amount_of_steps, 6);
-    for(i=0, i<amount_of_steps,i++){
-        for(j=0, j<6, j++){
+    for(int i=0; i<amount_of_steps; i++){
+        for(int j=0; j<6; j++){
             TMatrixD(i,j) = 0;
         };
     };
@@ -132,7 +138,7 @@ int main(int argc, char* argv[]) {
     non_zero_masks[5] = true; };
 
     
-    for(i = 0, i < 6, i++){
+    for(int i = 0; i < 6; i++){
         if(non_zero_masks[i]){
             non_zero_masks_quantity ++;
         };
@@ -170,14 +176,26 @@ int main(int argc, char* argv[]) {
 
 
     TDecompSVD svd(mask_matrix); TMatrixD U = svd.GetU(); TVectorD Sigma = svd.GetSig(); TMatrixD V = svd.GetV();
-    TMatrixD SigmaMatrix(amount_of_steps, 6); for(i=0,i<6,i++){SigmaMatrix(i,i) = Sigma(i)};
+    TMatrixD SigmaMatrix(amount_of_steps, 6); 
+    for(int i=0;i<amount_of_steps;i++){ 
+        for(int j=0;j<6;j++){
+             if(i==j){SigmaMatrix(i,j) = Sigma(i);} else{SigmaMatrix(i,j) = 0;};
+            };
+        };
 
 
-    TMatrixD Utrans = ROOT::Math::Transpose(U); TMatrixD SigmaTrans = ROOT::Math::Transpose(SigmaMatrix);
-    TMatrixD solution_vector; solution_vector = 
+    U.T(); SigmaMatrix.T();
+    TMatrixD ppm_vector(1,6); ppm_vector = V*SigmaMatrix*U*unprocessed_mass_spectra;
 
 
 
+
+
+
+
+
+
+    
 
     // end of calculator block
 
@@ -191,15 +209,23 @@ int main(int argc, char* argv[]) {
 
     // start of output block
 
-    double helium_ppm = 0;
-    double argon_ppm = 0;
-    double oxygen_ppm = 0;
-    double nitrogen_ppm = 0;
-    double co2_ppm = 0;
-    double ch4_ppm = 0;
+    ///double helium_ppm = 0;
+    ///double argon_ppm = 0;
+    ///double oxygen_ppm = 0;
+    ///double nitrogen_ppm = 0;
+    ///double co2_ppm = 0;
+    ///double ch4_ppm = 0;
     
-    std::cout << helium_ppm << "," << argon_ppm << "," << oxygen_ppm << "," << nitrogen_ppm << "," << co2_ppm << "," << ch4_ppm << std::endl;
+    ///std::cout << helium_ppm << "," << argon_ppm << "," << oxygen_ppm << "," << nitrogen_ppm << "," << co2_ppm << "," << ch4_ppm << std::endl;
 
+    for(int i=0; i<6; i++){
+        if(!(non_zero_masks[i])){
+            ppm_vector(0,i) = 0;
+    };};
+
+    std::cout << ppm_vector(0,0) << " " << ppm_vector(0,1) << " " << ppm_vector(0,2) << " " << ppm_vector(0,3) << " " << ppm_vector(0,4) << " " << ppm_vector(0,5) << std::endl;
+
+    
 
     // end of output block
 
@@ -207,7 +233,7 @@ int main(int argc, char* argv[]) {
 }
 
 /// to compile type:
-///   g++ root_test.C $(root-config --glibs --cflags --libs) -o compiledtest
+///   g++ spectre_to_ppm_converter.C $(root-config --glibs --cflags --libs) -o spectre_to_ppm_converter
 
 
 /// to execute via Python3:
