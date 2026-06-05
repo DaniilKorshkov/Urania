@@ -1,0 +1,230 @@
+#include <iostream>
+#include <cstdlib> // For std::atoi
+#include "TH1D.h"
+#include "TFile.h"
+#include "TRandom3.h"
+#include "TCanvas.h"
+#include "TMatrixD.h"
+#include "TDecompSVD.h"
+#include "Math/Functor.h"
+#include <Math/SMatrix.h>
+
+
+
+
+double helium_4;
+double argon_40;  // caliration variables are declared as globals to easily pass to fitting function
+double oxygen_32;
+double nitrogen_28;
+double co2_44;
+double ch4_15;
+
+
+
+
+/// This program inputs three raw mass spectra parameters (first M/Z, step, amount of steps); raw mass spectra itself and coefficients as space-separated numbers
+/// Outputs PPM of every gas in mixture 
+
+
+double ionic_current_fit_for_specific_mz(double mz, double ppm_array[6]){
+
+            // PPM defined in following order: helium, argon, o2, n2, co2, ch4
+
+
+    switch(mz){
+        case double 4.0:
+            return (helium_4*ppm_array[0]);
+        case double 4.0:
+            return (helium_4*ppm_array[0]);
+        case double 4.0:
+            return (helium_4*ppm_array[0]);
+        case double 4.0:
+            return (helium_4*ppm_array[0]);
+        case double 4.0:
+            return (helium_4*ppm_array[0]);
+        case double 4.0:
+            return (helium_4*ppm_array[0]);
+        case default:
+            return 0;
+
+
+
+
+
+
+    };        // function for fitting IC.
+
+
+
+
+    };
+
+
+
+
+
+
+int main(int argc, char* argv[]) {
+
+    //start of input block
+
+
+
+    //Check if amount_of_steps argument is provided
+    if (argc < 3 ) {
+        std::cerr << "Incorrect amount of args provided" << std::endl;
+        return 1; // Return error code 1 for incorrect usage
+    } 
+
+    
+
+    
+
+        // first three input entries - parameters of mass spectra:
+
+    double initial_MZ = std::atoi(argv[1]);
+    int MZ_step = std::atoi(argv[2]);
+    int amount_of_steps = std::atoi(argv[3]);
+
+    
+
+
+
+    //Check quantity of arguements provided. This step is CRUCIAL to prevent program from accessing memory outside stack
+    if (argc != (10 + amount_of_steps) ) {
+        std::cerr << "Incorrect amount of args provided" << std::endl;
+        return 1; // Return error code 1 for incorrect usage
+    }
+
+
+
+    
+
+    helium_4 = std::atoi(argv[4 + amount_of_steps]);
+    argon_40 = std::atoi(argv[5 + amount_of_steps]);
+    oxygen_32 = std::atoi(argv[6 + amount_of_steps]);
+    nitrogen_28 = std::atoi(argv[7 + amount_of_steps]);
+    co2_44 = std::atoi(argv[8 + amount_of_steps]);
+    ch4_15 = std::atoi(argv[9 + amount_of_steps]);
+
+    std::cout << helium_4 << "," << ch4_15 << std::endl;
+
+
+    
+    
+
+
+    TH1D rga_scan_histogram("h", "rga", amount_of_steps, (initial_MZ-0.5), (0.5+initial_MZ + (amount_of_steps*MZ_step)));
+
+    for(i=0,i<amount_of_steps,i++){
+    
+        double current_mz = initial_MZ + MZ_step*i;
+        double ionic_current = std::atoi(argv[4+i]);
+        rga_scan_histogram.SetBinContent( current_mz, ionic_current);
+    };
+    
+
+    
+
+
+    
+
+
+
+
+    // end of input block
+
+
+    // beginning of calculator block
+
+    TF1 ffit("ffit",ionic_current_fit_for_specific_mz,1,49,10);  // TF1 function
+
+    ffit.SetParameters(0, 0);
+    ffit.SetParameters(1, 0);  // initial guess for all parameters (ppm's)
+    ffit.SetParameters(2, 0);
+    ffit.SetParameters(3, 0);
+    ffit.SetParameters(4, 0);
+    ffit.SetParameters(5, 0);
+
+    // Step 4: Fit the histogram with the function
+    rga_scan_histogram.Fit(ffit, double xxmin = 0, double xxmax = 1000000 );
+
+
+
+
+
+
+
+
+
+    
+
+    // end of calculator block
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // start of output block
+
+    ///double helium_ppm = 0;
+    ///double argon_ppm = 0;
+    ///double oxygen_ppm = 0;
+    ///double nitrogen_ppm = 0;
+    ///double co2_ppm = 0;
+    ///double ch4_ppm = 0;
+    
+    ///std::cout << helium_ppm << "," << argon_ppm << "," << oxygen_ppm << "," << nitrogen_ppm << "," << co2_ppm << "," << ch4_ppm << std::endl;
+
+    for(int i=0; i<6; i++){
+        if(!(non_zero_masks[i])){
+            ppm_vector(0,i) = 0;
+    };};
+
+    std::cout << ppm_vector(0,0) << " " << ppm_vector(0,1) << " " << ppm_vector(0,2) << " " << ppm_vector(0,3) << " " << ppm_vector(0,4) << " " << ppm_vector(0,5) << std::endl;
+
+    
+
+    // end of output block
+
+    return 0; // Successful execution
+}
+
+
+
+
+
+
+
+
+
+
+/// to compile type:
+///   g++ spectre_to_ppm_converter.C $(root-config --glibs --cflags --libs) -o spectre_to_ppm_converter
+
+
+/// to execute via Python3:
+///   CSV_concentrations = subprocess.run(["input_test",comma-separated-arguements],capture_output=True,cwd=cwd)
+///   #cwd parsed by Python from Config file. All arguements (script name and ints/floats) are provided as list
+
