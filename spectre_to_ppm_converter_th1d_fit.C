@@ -1,11 +1,14 @@
 #include <iostream>
 #include <cstdlib> // For std::atoi
 #include "TH1D.h"
+#include "TF1.h"
 #include "TFile.h"
 #include "TRandom3.h"
 #include "TCanvas.h"
 #include "TMatrixD.h"
 #include "TDecompSVD.h"
+#include "TFitResult.h"
+#include "TFitResultPtr.h"
 #include "Math/Functor.h"
 #include <Math/SMatrix.h>
 
@@ -26,33 +29,34 @@ double ch4_15;
 /// Outputs PPM of every gas in mixture 
 
 
-double ionic_current_fit_for_specific_mz(double mz, double ppm_array[6]){
+Double_t ionic_current_fit_for_specific_mz(double *mz, double *ppm_array){
 
             // PPM defined in following order: helium, argon, o2, n2, co2, ch4
 
 
-    switch(mz){
-        case double 4.0:
-            return (helium_4*ppm_array[0]);
-        case double 4.0:
-            return (helium_4*ppm_array[0]);
-        case double 4.0:
-            return (helium_4*ppm_array[0]);
-        case double 4.0:
-            return (helium_4*ppm_array[0]);
-        case double 4.0:
-            return (helium_4*ppm_array[0]);
-        case double 4.0:
-            return (helium_4*ppm_array[0]);
-        case default:
-            return 0;
+        Double_t ret; ret = 0;    
+    
+        if((*mz > 4)&&(*mz < 5)){
+            ret = helium_4*ppm_array[0];};
+        if((*mz > 15)&&(*mz < 16)){
+            ret = ch4_15*ppm_array[1];};
+        if((*mz > 28)&&(*mz < 29)){
+            ret = nitrogen_28*ppm_array[2];};
+        if((*mz > 32)&&(*mz < 33)){
+            ret = oxygen_32*ppm_array[3];};
+        if((*mz > 40)&&(*mz < 41)){
+            ret = argon_40*ppm_array[4];};
+        if((*mz > 44)&&(*mz < 45)){
+            ret = co2_44*ppm_array[5];};
+        
+        return ret;
 
 
 
 
 
 
-    };        // function for fitting IC.
+            // step-function for emulating RGA raw output (m/z is a variable, PPM's are parameters).
 
 
 
@@ -114,16 +118,18 @@ int main(int argc, char* argv[]) {
     
 
 
-    TH1D rga_scan_histogram("h", "rga", amount_of_steps, (initial_MZ-0.5), (0.5+initial_MZ + (amount_of_steps*MZ_step)));
+    TH1D* rga_scan_histogram_pointer = new TH1D("h", "rga", amount_of_steps, (initial_MZ-0.5), (0.5+initial_MZ + (amount_of_steps*MZ_step)));
 
-    for(i=0,i<amount_of_steps,i++){
+    for(int i=0;i<amount_of_steps;i++){
     
         double current_mz = initial_MZ + MZ_step*i;
         double ionic_current = std::atoi(argv[4+i]);
-        rga_scan_histogram.SetBinContent( current_mz, ionic_current);
+        rga_scan_histogram_pointer->SetBinContent( current_mz, ionic_current);
+        std::cout << current_mz << "  ------------  " << rga_scan_histogram_pointer->GetBinContent(current_mz) << std::endl;
     };
     
 
+    
     
 
 
@@ -137,18 +143,29 @@ int main(int argc, char* argv[]) {
 
     // beginning of calculator block
 
-    TF1 ffit("ffit",ionic_current_fit_for_specific_mz,1,49,10);  // TF1 function
+    TF1 ffit("ffit",ionic_current_fit_for_specific_mz,0,49,6);  // Wrap fitting function into TF1 class
 
-    ffit.SetParameters(0, 0);
-    ffit.SetParameters(1, 0);  // initial guess for all parameters (ppm's)
-    ffit.SetParameters(2, 0);
-    ffit.SetParameters(3, 0);
-    ffit.SetParameters(4, 0);
-    ffit.SetParameters(5, 0);
+    ffit.SetParameters(0, 0.5);
+    ffit.SetParameters(1, 0.5);  // initial guess for all parameters (ppm's)
+    ffit.SetParameters(2, 0.5);
+    ffit.SetParameters(3, 0.5);
+    ffit.SetParameters(4, 0.5);
+    ffit.SetParameters(5, 0.5);
 
     // Step 4: Fit the histogram with the function
-    rga_scan_histogram.Fit(ffit, double xxmin = 0, double xxmax = 1000000 );
+    
+    //TFitResultPtr ppm_fit_values = rga_scan_histogram_pointer->Fit(&ffit);
 
+    TFitResultPtr ppm_fit_values = rga_scan_histogram_pointer->Fit(&ffit,"S");
+
+
+
+    double he_ppm = ppm_fit_values->Parameter(0);
+    double ar_ppm      =  ppm_fit_values->Parameter(1);
+    double o2_ppm     =  ppm_fit_values->Parameter(2);
+    double n2_ppm =  ppm_fit_values->Parameter(3);
+    double co2_ppm      =  ppm_fit_values->Parameter(4);
+    double ch4_ppm     =  ppm_fit_values->Parameter(5);
 
 
 
@@ -197,13 +214,21 @@ int main(int argc, char* argv[]) {
     
     ///std::cout << helium_ppm << "," << argon_ppm << "," << oxygen_ppm << "," << nitrogen_ppm << "," << co2_ppm << "," << ch4_ppm << std::endl;
 
-    for(int i=0; i<6; i++){
-        if(!(non_zero_masks[i])){
-            ppm_vector(0,i) = 0;
-    };};
+    
 
-    std::cout << ppm_vector(0,0) << " " << ppm_vector(0,1) << " " << ppm_vector(0,2) << " " << ppm_vector(0,3) << " " << ppm_vector(0,4) << " " << ppm_vector(0,5) << std::endl;
+    std::cout << he_ppm << " " << ar_ppm << " " << o2_ppm << " " << n2_ppm << " " << co2_ppm << " " << ch4_ppm << std::endl;
 
+
+
+
+
+
+
+
+
+    TCanvas *c = new TCanvas("c", "Canvas", 800, 600);
+    rga_scan_histogram_pointer->Draw();
+    c->SaveAs("canvas.png");
     
 
     // end of output block
@@ -221,7 +246,7 @@ int main(int argc, char* argv[]) {
 
 
 /// to compile type:
-///   g++ spectre_to_ppm_converter.C $(root-config --glibs --cflags --libs) -o spectre_to_ppm_converter
+///   g++ spectre_to_ppm_converter_th1d_fit.C $(root-config --glibs --cflags --libs) -o spectre_to_ppm_converter
 
 
 /// to execute via Python3:
