@@ -22,12 +22,10 @@
 
 
 // Definition of global variables begin
-double helium_4;
-double argon_40;    // caliration variables are declared as globals to easily pass to fitting function
-double oxygen_32;
-double nitrogen_28;
-double co2_44;
-double ch4_15;
+
+// caliration variables are declared as globals to easily pass to fitting function
+double helium_4; double argon_40; double oxygen_32; double nitrogen_28; double co2_44; double ch4_15;
+
 // Definition of global variables end
 
 
