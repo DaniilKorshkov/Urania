@@ -179,11 +179,14 @@ def solve_mass_spectrum_ROOT(mass_spectrum):
 
 
 
+def calibrate_rga_ROOT(mass_spectrum):
+    comma_separated_arguements = [f"{cwd}/calibration_calculator","1", "1", "50","1","6"]
+
+    for element in mass_spectrum:
+        comma_separated_arguements.append(str(element))
 
 
-
-
-
+    parameter_definitions = ["0","4","1","40","2","32","3","28","4","44","5","15"]
 
 
 
