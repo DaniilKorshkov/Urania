@@ -39,7 +39,7 @@ double calibration_matrix[6][51];
 Double_t ionic_current_fit_for_specific_mz(double *mz, double *ppm_array){  
     
         Double_t ret; ret = 0;
-        int mz_closest_integer = round(*mz);
+        int mz_closest_integer = *mz;
         
         
         for(int i=0;i<6;i++){
