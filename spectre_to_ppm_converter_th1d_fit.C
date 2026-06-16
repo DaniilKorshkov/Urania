@@ -43,7 +43,8 @@ Double_t ionic_current_fit_for_specific_mz(double *mz, double *ppm_array){
         
         
         for(int i=0;i<6;i++){
-            ret += (calibration_matrix[i][mz_closest_integer])*(ppm_array[i]);
+            if(((*mz-mz_closest_integer)>0.45)&&((*mz-mz_closest_integer)<0.55)){
+                ret += (calibration_matrix[i][mz_closest_integer])*(ppm_array[i]);}
         };
 
         return ret; }; // This function returns Ionic Current with M/Z as variable, PPM's as variable parameters, calibration as static parameters
@@ -90,7 +91,7 @@ int main(int argc, char* argv[]) {
     
 
     // Definition of histogram
-    TH1D* rga_scan_histogram_pointer = new TH1D("h", "rga", amount_of_steps, (initial_MZ-0.5), (0.5+initial_MZ + (amount_of_steps*MZ_step)));
+    TH1D* rga_scan_histogram_pointer = new TH1D("h", "rga", amount_of_steps, (initial_MZ), (initial_MZ + (amount_of_steps*MZ_step)));
 
         for(int i=0;i<amount_of_steps;i++){
             double current_mz = initial_MZ + MZ_step*i;

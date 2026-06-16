@@ -170,7 +170,7 @@ int main(int argc, char* argv[]) {
     for(int i=0;i<(amount_of_calibration_parameters+amount_of_rga_scans-1);i++){
 
         // Last (amount_of_rga_scans-1) parameters - daily variance in RGA sensitivity
-        if(i<amount_of_calibration_parameters){ffit.SetParameters(i,10);}else{ffit.SetParameters(i,1); ffit.SetParLimits(i, 0.7, 1.3);};}  
+        if(i<amount_of_calibration_parameters){ffit.SetParameters(i,0.1);}else{ffit.SetParameters(i,1); ffit.SetParLimits(i, 0.7, 1.3);};}  
 
     
     // Fitting function iteslf
