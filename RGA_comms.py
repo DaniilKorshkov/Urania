@@ -328,95 +328,98 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,high_accur
 
     packages_list = ['Control  "MyProgram" "2.0"', 'FilamentControl On']
     j = amount_of_scans
-    for MolarMass in FaradayCupMasses:
-        timestamp = int(1000000*(datetime.datetime.now()).timestamp())
-        if int(MolarMass) in high_accuracy_list:
-            current_accuracy = 8
-        else:
-            current_accuracy = accuracy
 
-        packages_list.append(f'AddSinglePeak {timestamp}FSP{j} {MolarMass} {current_accuracy} 0 0 0')
-        packages_list.append(f'scanadd {timestamp}FSP{j}')
-        j += 1
-    packages_list.append(f"MeasurementDetectorIndex {0}")
-    packages_list.append('ScanStart 1')
-    packages_list.append(f'__wait_for_given_mass__ {FaradayCupMasses[(len(FaradayCupMasses)-1)]}')
-    packages_list.append('Release')
+    if len(FaradayCupMasses) > 0:
+        for MolarMass in FaradayCupMasses:
+            timestamp = int(1000000*(datetime.datetime.now()).timestamp())
+            if int(MolarMass) in high_accuracy_list:
+                current_accuracy = 8
+            else:
+                current_accuracy = accuracy
 
-    RawInput, ErrorMessage = SendPacketsToRGA(packages_list, ip_adress)
-    if ErrorMessage != None:
-        return None, ErrorMessage
+            packages_list.append(f'AddSinglePeak {timestamp}FSP{j} {MolarMass} {current_accuracy} 0 0 0')
+            packages_list.append(f'scanadd {timestamp}FSP{j}')
+            j += 1
+        packages_list.append(f"MeasurementDetectorIndex {0}")
+        packages_list.append('ScanStart 1')
+        packages_list.append(f'__wait_for_given_mass__ {FaradayCupMasses[(len(FaradayCupMasses)-1)]}')
+        packages_list.append('Release')
 
-    for line in RawInput:
-        # print(line)
-        split_line = line.split()
-        if "MassReading" in line:
-            #print(line)
-            MassReadingPosition = split_line.index("MassReading")
-            split_eng_notation = (split_line[MassReadingPosition+2]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
+        RawInput, ErrorMessage = SendPacketsToRGA(packages_list, ip_adress)
+        if ErrorMessage != None:
+            return None, ErrorMessage
 
-            power = 10 ** (int(split_eng_notation[1]))
+        for line in RawInput:
+            # print(line)
+            split_line = line.split()
+            if "MassReading" in line:
+                #print(line)
+                MassReadingPosition = split_line.index("MassReading")
+                split_eng_notation = (split_line[MassReadingPosition+2]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
 
-            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient/CurrentPressure  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+                power = 10 ** (int(split_eng_notation[1]))
 
-            Spectrum[ int((float(split_line[MassReadingPosition+1])-float(start_mass))/float(step)) ] = end_result
-        
-        elif "TotalPressure" in line:
-            PressurePosition = split_line.index("TotalPressure")
-            split_eng_notation = (split_line[PressurePosition+1]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
+                end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient/CurrentPressure  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
-            power = 10 ** (int(split_eng_notation[1]))
+                Spectrum[ int((float(split_line[MassReadingPosition+1])-float(start_mass))/float(step)) ] = end_result
+            
+            elif "TotalPressure" in line:
+                PressurePosition = split_line.index("TotalPressure")
+                split_eng_notation = (split_line[PressurePosition+1]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
 
-            end_result = (float(split_eng_notation[0]) * power)  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+                power = 10 ** (int(split_eng_notation[1]))
 
-            CurrentPressure = end_result
+                end_result = (float(split_eng_notation[0]) * power)  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+
+                CurrentPressure = end_result
 
 
     packages_list = ['Control  "MyProgram" "3.0"', 'FilamentControl On']
 
-    for MolarMass in MultiplierMasses:
-        timestamp = int(1000000*(datetime.datetime.now()).timestamp())
-        if int(MolarMass) in high_accuracy_list:
-            current_accuracy = 8
-        else:
-            current_accuracy = accuracy
-        packages_list.append(f'AddSinglePeak {timestamp}MSP{j} {MolarMass} {current_accuracy} 0 0 0')
-        packages_list.append(f'scanadd {timestamp}MSP{j}')
-        j += 1
-    packages_list.append(f"MeasurementDetectorIndex {1}")
-    packages_list.append('ScanStart 1')
-    packages_list.append(f'__wait_for_given_mass__ {MultiplierMasses[(len(MultiplierMasses)-1)]}')
-    packages_list.append('Release')
+    if len(MultiplierMasses) > 0:
+        for MolarMass in MultiplierMasses:
+            timestamp = int(1000000*(datetime.datetime.now()).timestamp())
+            if int(MolarMass) in high_accuracy_list:
+                current_accuracy = 8
+            else:
+                current_accuracy = accuracy
+            packages_list.append(f'AddSinglePeak {timestamp}MSP{j} {MolarMass} {current_accuracy} 0 0 0')
+            packages_list.append(f'scanadd {timestamp}MSP{j}')
+            j += 1
+        packages_list.append(f"MeasurementDetectorIndex {1}")
+        packages_list.append('ScanStart 1')
+        packages_list.append(f'__wait_for_given_mass__ {MultiplierMasses[(len(MultiplierMasses)-1)]}')
+        packages_list.append('Release')
 
-    RawInput, ErrorMessage = SendPacketsToRGA(packages_list, ip_adress)
-    if ErrorMessage != None:
-        return None, ErrorMessage
+        RawInput, ErrorMessage = SendPacketsToRGA(packages_list, ip_adress)
+        if ErrorMessage != None:
+            return None, ErrorMessage
 
-    for line in RawInput:
-        # print(line)
-        split_line = line.split()
-        if "MassReading" in line:
+        for line in RawInput:
             # print(line)
-            MassReadingPosition = split_line.index("MassReading")
-            split_eng_notation = (split_line[MassReadingPosition + 2]).split(
-                "e")  # output is given as engineering notation and need to be interpreted to readable form
+            split_line = line.split()
+            if "MassReading" in line:
+                # print(line)
+                MassReadingPosition = split_line.index("MassReading")
+                split_eng_notation = (split_line[MassReadingPosition + 2]).split(
+                    "e")  # output is given as engineering notation and need to be interpreted to readable form
 
-            power = 10 ** (int(split_eng_notation[1]))
+                power = 10 ** (int(split_eng_notation[1]))
 
-            end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient/CurrentPressure  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+                end_result = (float(split_eng_notation[0]) * power) * convertion_coefficient/CurrentPressure  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
-            Spectrum[int((float(split_line[MassReadingPosition + 1]) - float(start_mass)) / float(step))] = end_result
-        
+                Spectrum[int((float(split_line[MassReadingPosition + 1]) - float(start_mass)) / float(step))] = end_result
+            
 
-        elif "TotalPressure" in line:
-            PressurePosition = split_line.index("TotalPressure")
-            split_eng_notation = (split_line[PressurePosition+1]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
+            elif "TotalPressure" in line:
+                PressurePosition = split_line.index("TotalPressure")
+                split_eng_notation = (split_line[PressurePosition+1]).split("e")  # output is given as engineering notation and need to be interpreted to readable form
 
-            power = 10 ** (int(split_eng_notation[1]))
+                power = 10 ** (int(split_eng_notation[1]))
 
-            end_result = (float(split_eng_notation[0]) * power)  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
+                end_result = (float(split_eng_notation[0]) * power)  # convertion of engineering notation to readable form. Covertion cooficient is used for unit convertion
 
-            CurrentPressure = end_result
+                CurrentPressure = end_result
 
 
 
