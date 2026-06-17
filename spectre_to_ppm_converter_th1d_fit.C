@@ -27,7 +27,7 @@
 
 // caliration variables are declared as globals to easily pass to fitting function
 
-double calibration_matrix[6][51];
+double calibration_matrix[6][255];
 
 
 // Definition of global variables end
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
 
     
     // first three input entries - parameters of mass spectra:
-    double initial_MZ = std::atoi(argv[1]); int MZ_step = std::atoi(argv[2]); int amount_of_steps = std::atoi(argv[3]); int amount_of_calibration_parameters = std::atoi(argv[4]);
+    double initial_MZ = std::atof(argv[1]); double MZ_step = std::atof(argv[2]); int amount_of_steps = std::atoi(argv[3]); int amount_of_calibration_parameters = std::atoi(argv[4]);
 
 
     
@@ -77,13 +77,13 @@ int main(int argc, char* argv[]) {
 
 
     // Definition of calibration parameter matrix
-    for(int i=0;i<51;i++){for(int j=0;j<6;j++){calibration_matrix[j][i] = 0.0;}}
+    for(int i=0;i<255;i++){for(int j=0;j<6;j++){calibration_matrix[j][i] = 0.0;}}
     
 
     for(int i=0;i < amount_of_calibration_parameters;i++ ){
 
         
-        calibration_matrix[std::atoi(argv[5+amount_of_steps+(3*i)])][std::atoi(argv[6+amount_of_steps+(3*i)])] = std::atoi(argv[7+amount_of_steps+(3*i)]);
+        calibration_matrix[std::atoi(argv[5+amount_of_steps+(3*i)])][std::atoi(argv[6+amount_of_steps+(3*i)])] = std::atof(argv[7+amount_of_steps+(3*i)]);
         //std::cout << std::atoi(argv[5+amount_of_steps+(3*i)]) << " "<< std::atoi(argv[6+amount_of_steps+(3*i)]) << " " << std::atoi(argv[7+amount_of_steps+(3*i)]) << std::endl;
 
     }
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
 
         for(int i=0;i<amount_of_steps;i++){
             double current_mz = initial_MZ + MZ_step*i;
-            double ionic_current = std::atoi(argv[5+i]);
+            double ionic_current = std::atof(argv[5+i]);
             rga_scan_histogram_pointer->SetBinContent( current_mz, ionic_current);
         }
 

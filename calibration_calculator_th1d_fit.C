@@ -56,7 +56,7 @@ Double_t ionic_current_fit_for_specific_mz(double *mz, double *calibration_param
             
             
             // If M/Z for calibration parameter equals *M/Z as a variable, proceed further:
-            if((mz_closest_integer == calibration_parameters_mz_index[i])&&((mz_remainder-mz_closest_integer)>0.45)&&((mz_remainder-mz_closest_integer)<0.55)){
+            if(mz_closest_integer == calibration_parameters_mz_index[i]){
 
            
 
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
 
     
     // first three input entries - parameters of mass spectra:
-    double initial_MZ = std::atoi(argv[1]); int MZ_step = std::atoi(argv[2]); amount_of_steps = std::atoi(argv[3]); int amount_of_rga_scans = std::atoi(argv[4]); amount_of_calibration_parameters = std::atoi(argv[5]);
+    double initial_MZ = std::atof(argv[1]); double MZ_step = std::atof(argv[2]); amount_of_steps = std::atoi(argv[3]); int amount_of_rga_scans = std::atoi(argv[4]); amount_of_calibration_parameters = std::atoi(argv[5]);
 
     std::cout << "amt  of scans" << amount_of_rga_scans << std::endl;
     std::cout << "amt  of params" << amount_of_calibration_parameters << std::endl;
@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
 
     for(int i=0;i < amount_of_rga_scans;i++ ){
         for(int j =0; j < 6; j++){
-        ppm_array_matrix[j][i] = std::atoi(argv[6+amount_of_rga_scans*amount_of_steps + i*6 + j]);
+        ppm_array_matrix[j][i] = std::atof(argv[6+amount_of_rga_scans*amount_of_steps + i*6 + j]);
         std::cout << "ppm" << " " << j << " " << i << " "<< std::atoi(argv[6+amount_of_rga_scans*amount_of_steps + i*6 + j]) << std::endl;
         }
         
@@ -139,7 +139,7 @@ int main(int argc, char* argv[]) {
     
         for(int i=0;i<(amount_of_steps*amount_of_rga_scans);i++){
             double current_mz = initial_MZ + MZ_step*i;
-            double ionic_current = std::atoi(argv[6+i]);
+            double ionic_current = std::atof(argv[6+i]);
 
             std::cout << "MZ: " << (initial_MZ + MZ_step*i) << ", bin: " << ionic_current << std::endl;
 
