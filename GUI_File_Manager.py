@@ -135,9 +135,9 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
 
         try:
 
-            init_m = float(   int(32*init_m) / 32)
-            step = float( int(32*step) / 32)
-            final_m = float( int(32*final_m) / 32 )
+            init_m = float(   int(32*float(init_m)) / 32)
+            step = float( int(32*float(step)) / 32)
+            final_m = float( int(32*float(final_m)) / 32 )
         except:
             spectrum_is_valid = False
             st.write("Not a valid numbers inputed")
@@ -331,9 +331,9 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
 
         try:
 
-            init_m = float(init_m)
-            step = float(step)
-            final_m = float(final_m)
+            init_m = float(   int(32*float(init_m)) / 32)
+            step = float( int(32*float(step)) / 32)
+            final_m = float( int(32*float(final_m)) / 32 )
         except:
             spectrum_is_valid = False
             st.write("Not a valid numbers inputed")
