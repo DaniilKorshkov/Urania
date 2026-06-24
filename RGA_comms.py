@@ -340,7 +340,7 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,high_accur
             packages_list.append(f'AddSinglePeak {timestamp}FSP{j} {MolarMass} {current_accuracy} 0 0 0')
             packages_list.append(f'scanadd {timestamp}FSP{j}')
             j += 1
-        packages_list.append(f"MeasurementDetectorIndex {0}")
+        #packages_list.append(f"MeasurementDetectorIndex {0}")
         packages_list.append('ScanStart 1')
         packages_list.append(f'__wait_for_given_mass__ {FaradayCupMasses[(len(FaradayCupMasses)-1)]}')
         packages_list.append('Release')
@@ -383,10 +383,10 @@ def GetMassSpectrum(convertion_coefficient,start_mass,amount_of_scans,high_accur
                 current_accuracy = 8
             else:
                 current_accuracy = accuracy
-            packages_list.append(f'AddSinglePeak {timestamp}MSP{j} {MolarMass} {current_accuracy} 0 0 0')
+            packages_list.append(f'AddSinglePeak {timestamp}MSP{j} {MolarMass} {current_accuracy} 0 0 1')
             packages_list.append(f'scanadd {timestamp}MSP{j}')
             j += 1
-        packages_list.append(f"MeasurementDetectorIndex {1}")
+        #packages_list.append(f"MeasurementDetectorIndex {1}")
         packages_list.append('ScanStart 1')
         packages_list.append(f'__wait_for_given_mass__ {MultiplierMasses[(len(MultiplierMasses)-1)]}')
         packages_list.append('Release')
