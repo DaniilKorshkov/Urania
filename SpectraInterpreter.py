@@ -2,9 +2,9 @@ import numpy as np
 import JSONoperators as js
 import json
 import subprocess
-from ConvertCsvScanToList import read_filename
+#from ConvertCsvScanToList import read_filename
 
-def solve_mass_spectrum_old(mass_spectrum):  # mass spectrum is interpreted as least-square solution of overdefined square equation
+'''def solve_mass_spectrum_old(mass_spectrum):  # mass spectrum is interpreted as least-square solution of overdefined square equation
 
 
     samples_dict = js.ReadJSONConfig("cracking_patterns","list")
@@ -120,7 +120,6 @@ def solve_mass_spectrum(mass_spectrum):  # mass spectrum is interpreted as least
 
 
     
-''' 
 def solve_mass_spectrum_ROOT(mass_spectrum):
 
     cracking_patterns = js.ReadJSONConfig("cracking_patterns", "list")
@@ -192,13 +191,25 @@ def solve_mass_spectrum_ROOT(mass_spectrum,initial_mass,step):
 
 
    
-    print(comma_separated_arguements)
-    CSV_concentrations = (((subprocess.run(comma_separated_arguements,capture_output=True,cwd=cwd)).stdout).decode("utf-8")).strip("\n")
+    
+    CSV_concentrations = ((((subprocess.run(comma_separated_arguements,capture_output=True,cwd=cwd)).stdout).decode("utf-8")).strip("\n")).split(" ")[-6:]
+    results_sum = 0
+    for element in CSV_concentrations:
+        results_sum += float(element.strip("\n"))
+    i = 0
+    for element in CSV_concentrations:
+        CSV_concentrations[i] = 1000000*float(element.strip("\n"))/results_sum
+        i+=1
 
-    print(CSV_concentrations)
+    return CSV_concentrations, 0, 0
 
 
 
+
+
+
+'''def calibrate_rga(mass_spectrum_array,initial_mass,step):
+    calibration_parameters_dictionary = js.ReadJSONConfig("cracking_patterns", "list")
 
 
 
@@ -210,12 +221,45 @@ def calibrate_rga_ROOT(mass_spectrum_array,initial_mass,step):
     calibration_parameters_dictionary = js.ReadJSONConfig("cracking_patterns", "list")
 
 
-    comma_separated_arguements = [f"{cwd}/calibration_calculator",str(initial_mass), str(step),  str(len((mass_spectrum_array[0])["scan"])), str(len(mass_spectrum_array)), str(len(calibration_parameters_dictionary))]
+
+
+    reduced_mass_spectrum_array = []
+    reduced_calibration_parameters_dictionary = {}
+    mz_values_lookup = {}
+
+    i = 1
+    for key in calibration_parameters_dictionary:
+        split_key = key.split("_")
+
+
+        try:
+            reduced_calibration_parameters_dictionary[f"{split_key[0]}_{mz_values_lookup[split_key[1]]}"] = calibration_parameters_dictionary[key]
+
+        
+        except:
+            mz_values_lookup[split_key[1] ] = i
+
+       
+            reduced_calibration_parameters_dictionary[f"{split_key[0]}_{i}"] = calibration_parameters_dictionary[key]
+        
+            i += 1
+
+        
+
+
+    comma_separated_arguements = [f"{cwd}/calibration_calculator","1", "1",  str(len(mz_values_lookup)), str(len(mass_spectrum_array)), str(len(calibration_parameters_dictionary))]
 
 
     for element in mass_spectrum_array:
+        mz = initial_mass
         for subelement in element["scan"]:
-            comma_separated_arguements.append(str(subelement))
+            try:
+                placeholder = mz_values_lookup[str(mz)]
+                comma_separated_arguements.append(str(subelement))
+            except:
+                pass
+            mz += step
+
     
     for element in mass_spectrum_array:
         for subelement in element["ppm"]:
@@ -223,7 +267,7 @@ def calibrate_rga_ROOT(mass_spectrum_array,initial_mass,step):
 
 
     calibration_parameter_indexation_list = []
-    for key in calibration_parameters_dictionary:
+    for key in reduced_calibration_parameters_dictionary:
         split_key = key.split("_")
 
         comma_separated_arguements.append( element_lookup_dictionary[split_key[0]] )
@@ -232,14 +276,14 @@ def calibrate_rga_ROOT(mass_spectrum_array,initial_mass,step):
         calibration_parameter_indexation_list.append(key)       
         
                 
-             
+    print(comma_separated_arguements)         
     
 
 
     
 
     raw_output = (((subprocess.run(comma_separated_arguements,capture_output=True,cwd=cwd)).stdout).decode("utf-8")).strip("\n")
-    
+    print(raw_output)
 
     split_raw_output = raw_output.split(" ")
     calibration_parameter_list = split_raw_output[(len(split_raw_output) - len(calibration_parameters_dictionary) - 1 ):len(split_raw_output)]
@@ -248,7 +292,12 @@ def calibrate_rga_ROOT(mass_spectrum_array,initial_mass,step):
 
     new_calibration_dictionary = {}
     for i in range(len(calibration_parameter_indexation_list)):
-        new_calibration_dictionary[calibration_parameter_indexation_list[i]] = float((calibration_parameter_list[i]).strip("(limited)\n"))
+
+        for key in calibration_parameters_dictionary:
+            if calibration_parameters_dictionary[key] == calibration_parameter_indexation_list[i]:
+                
+        
+                new_calibration_dictionary[calibration_parameter_indexation_list[key]] = float((calibration_parameter_list[i]).strip("(limited)\n"))
     
     for key in new_calibration_dictionary:
         print(f"{key}: {new_calibration_dictionary[key]}")
@@ -286,7 +335,7 @@ def calibrate_rga_ROOT_2(mass_spectrum):
 
     CSV_concentrations = (((subprocess.run(comma_separated_arguements,capture_output=True,cwd=cwd)).stdout).decode("utf-8")).strip("\n")
 
-    print(CSV_concentrations)
+    print(CSV_concentrations)'''
 
 
 
@@ -306,27 +355,4 @@ if __name__ == "__main__":
     
 
     
-    files_for_calibration = [{"filename":"cgas-em-000067.csv","ppm":["0","100","0","999900","0","0"]},
-    {"filename":"cgas-fc-000001.csv","ppm":["0","1000000","0","0","0","0"]},
-    {"filename":"cgas-fc-000001.csv","ppm":["0","1000000","0","0","0","0"]},
-    {"filename":"cgas-em-000021.csv","ppm":["0","100","0","0","100000","0"]},
-    {"filename":"cgas-em-000021.csv","ppm":["0","100","0","0","100000","0"]},
-    {"filename":"cgas-em-000021.csv","ppm":["0","100","0","0","100000","0"]},
-    {"filename":"cgas-em-000021.csv","ppm":["0","100","0","0","100000","0"]}]
-    
-
-
-    calibration_input_parameters = []
-
-    for file in files_for_calibration:
-        
-        rga_scan = read_filename(file["filename"],initial_mass,step,amount_of_steps)
-        
-        calibration_input_parameters.append({"scan":rga_scan, "ppm":(file["ppm"])})
-    
-    
-    calibrate_rga_ROOT(calibration_input_parameters,initial_mass,step)
-
-
-    #calibrate_rga_ROOT([{"scan":[2507.628127884217, 283.32912811106195, 500.41344493032625, 31430.632926217696, -65.34057504680752, -260.9866511678882, 65.37488054401338, 370.43081772279197, 217.31368153111038, -130.51395864276745, 935.3849758320902, 644920.8717542005, 34436.05309367704, 109883.36932276537, 645297.5928678942, 6504943.388273818, 13229.290047016202, 23036.82831012785, 435.89095216260955, 217.5605550959866, 130.7784699289605, -217.56818619099357, 130.68288092730225, 239.2813812889088, -326.28058790831824, 108.97273804065223, 55228.10642735145, 6876444.17059916, 70925.51509507086, 12038.42118480004, 3851.0080071153316, 416075.2456707255, 435.06756711581795, 1674.929214665803, 43.57263546856219, 2785.1113369233303, 65.26816259060656, 632.0114034187445, 11289.879886353376, 962244.7935221458, 174.33723648680467, 2241.0655224152943, 533628.4526805484, 69806776.54876031, 806619.1333779099, 277370.8142221149, 3156.849020773373, 217.58443194205617, -195.88579599016168, -3.6227832250226837],"ppm":["10000","10000","10000","10000","960000","10000"]},{"scan":[2507.628127884217, 283.32912811106195, 500.41344493032625, 31430.632926217696, -65.34057504680752, -260.9866511678882, 65.37488054401338, 370.43081772279197, 217.31368153111038, -130.51395864276745, 935.3849758320902, 644920.8717542005, 34436.05309367704, 109883.36932276537, 645297.5928678942, 6504943.388273818, 13229.290047016202, 23036.82831012785, 435.89095216260955, 217.5605550959866, 130.7784699289605, -217.56818619099357, 130.68288092730225, 239.2813812889088, -326.28058790831824, 108.97273804065223, 55228.10642735145, 6876444.17059916, 70925.51509507086, 12038.42118480004, 3851.0080071153316, 416075.2456707255, 435.06756711581795, 1674.929214665803, 43.57263546856219, 2785.1113369233303, 65.26816259060656, 632.0114034187445, 11289.879886353376, 962244.7935221458, 174.33723648680467, 2241.0655224152943, 533628.4526805484, 69806776.54876031, 806619.1333779099, 277370.8142221149, 3156.849020773373, 217.58443194205617, -195.88579599016168, -3.6227832250226837],"ppm":["10000","10000","10000","10000","960000","10000"]}],1,1)
-    #solve_mass_spectrum_ROOT([2507.628127884217, 283.32912811106195, 500.41344493032625, 31430.632926217696, -65.34057504680752, -260.9866511678882, 65.37488054401338, 370.43081772279197, 217.31368153111038, -130.51395864276745, 935.3849758320902, 644920.8717542005, 34436.05309367704, 109883.36932276537, 645297.5928678942, 6504943.388273818, 13229.290047016202, 23036.82831012785, 435.89095216260955, 217.5605550959866, 130.7784699289605, -217.56818619099357, 130.68288092730225, 239.2813812889088, -326.28058790831824, 108.97273804065223, 55228.10642735145, 6876444.17059916, 70925.51509507086, 12038.42118480004, 3851.0080071153316, 416075.2456707255, 435.06756711581795, 1674.929214665803, 43.57263546856219, 2785.1113369233303, 65.26816259060656, 632.0114034187445, 11289.879886353376, 962244.7935221458, 174.33723648680467, 2241.0655224152943, 533628.4526805484, 69806776.54876031, 806619.1333779099, 277370.8142221149, 3156.849020773373, 217.58443194205617, -195.88579599016168, -3.6227832250226837],1,1)
+    print(solve_mass_spectrum_ROOT([2507.628127884217, 283.32912811106195, 500.41344493032625, 31430.632926217696, -65.34057504680752, -260.9866511678882, 65.37488054401338, 370.43081772279197, 217.31368153111038, -130.51395864276745, 935.3849758320902, 644920.8717542005, 34436.05309367704, 109883.36932276537, 645297.5928678942, 6504943.388273818, 13229.290047016202, 23036.82831012785, 435.89095216260955, 217.5605550959866, 130.7784699289605, -217.56818619099357, 130.68288092730225, 239.2813812889088, -326.28058790831824, 108.97273804065223, 55228.10642735145, 6876444.17059916, 70925.51509507086, 12038.42118480004, 3851.0080071153316, 416075.2456707255, 435.06756711581795, 1674.929214665803, 43.57263546856219, 2785.1113369233303, 65.26816259060656, 632.0114034187445, 11289.879886353376, 962244.7935221458, 174.33723648680467, 2241.0655224152943, 533628.4526805484, 69806776.54876031, 806619.1333779099, 277370.8142221149, 3156.849020773373, 217.58443194205617, -195.88579599016168, -3.6227832250226837],1,1))
