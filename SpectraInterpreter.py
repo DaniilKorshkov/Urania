@@ -201,7 +201,9 @@ def solve_mass_spectrum_ROOT(mass_spectrum,initial_mass,step):
         CSV_concentrations[i] = 1000000*float(element.strip("\n"))/results_sum
         i+=1
 
-    return CSV_concentrations, 0, 0
+
+    samples_solutions_dictionary = {"He":CSV_concentrations[0], "Ar":CSV_concentrations[1], "CO2":CSV_concentrations[4], "CH4":CSV_concentrations[5], "O2":CSV_concentrations[2], "N2":CSV_concentrations[3]}
+    return samples_solutions_dictionary, 0, 0
 
 
 
