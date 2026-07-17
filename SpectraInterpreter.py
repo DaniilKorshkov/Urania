@@ -2,7 +2,7 @@ import numpy as np
 import JSONoperators as js
 import json
 import subprocess
-#from ConvertCsvScanToList import read_filename
+from ConvertCsvScanToList import read_filename
 
 '''def solve_mass_spectrum_old(mass_spectrum):  # mass spectrum is interpreted as least-square solution of overdefined square equation
 
@@ -191,14 +191,15 @@ def solve_mass_spectrum_ROOT(mass_spectrum,initial_mass,step):
 
 
    
-    
+    #print(((subprocess.run(comma_separated_arguements,capture_output=True,cwd=cwd)).stdout).decode("utf-8"))
     CSV_concentrations = ((((subprocess.run(comma_separated_arguements,capture_output=True,cwd=cwd)).stdout).decode("utf-8")).strip("\n")).split(" ")[-6:]
+    
     results_sum = 0
     for element in CSV_concentrations:
-        results_sum += float(element.strip("\n"))
+        results_sum += abs(float(element.strip("\n")))
     i = 0
     for element in CSV_concentrations:
-        CSV_concentrations[i] = 1000000*float(element.strip("\n"))/results_sum
+        CSV_concentrations[i] = 1000000*abs(float(element.strip("\n"))/results_sum)
         i+=1
 
 
@@ -348,13 +349,78 @@ def calibrate_rga_ROOT_2(mass_spectrum):
 
 
 if __name__ == "__main__":
+
+
+    while True:
+        filename = str(input("Enter filename: "))
+        try:
+            handle = open(filename,"r")
+            handle.close()
+            break
+        except:
+            print("Invalid filename")
+
     
+    while True:
+        try:
+            initial_mass = float(input("Initial MZ: "))
+            break
+        except:
+            print("Not a valid number")
+
+    
+    while True:
+        try:
+            step = float(input("Step: "))
+            break
+        except:
+            print("Not a valid number")
+
+    
+    while True:
+        try:
+            amount_of_steps = float(input("Amount of steps: "))
+            break
+        except:
+            print("Not a valid number")
+
+
+    scan = read_filename("cgas-fc-000056.csv",initial_mass,step,amount_of_steps)
+    print(solve_mass_spectrum_ROOT(scan,initial_mass,step))
+
+    
+    '''
     #calibrate_rga_ROOT_2([2507.628127884217, 283.32912811106195, 500.41344493032625, 3143.632926217696, -65.34057504680752, -260.9866511678882, 65.37488054401338, 370.43081772279197, 217.31368153111038, -130.51395864276745, 935.3849758320902, 644920.8717542005, 34436.05309367704, 109883.36932276537, 645297.5928678942, 6504943.388273818, 13229.290047016202, 23036.82831012785, 435.89095216260955, 217.5605550959866, 130.7784699289605, -217.56818619099357, 130.68288092730225, 239.2813812889088, -326.28058790831824, 108.97273804065223, 55228.10642735145, 6876444.17059916, 70925.51509507086, 12038.42118480004, 3851.0080071153316, 416075.2456707255, 435.06756711581795, 1674.929214665803, 43.57263546856219, 2785.1113369233303, 65.26816259060656, 632.0114034187445, 11289.879886353376, 962244.7935221458, 174.33723648680467, 2241.0655224152943, 533628.4526805484, 69806776.54876031, 806619.1333779099, 277370.8142221149, 3156.849020773373, 217.58443194205617, -195.88579599016168, -3.6227832250226837])
 
     initial_mass = 1
     step = 1
     amount_of_steps = 50
     
+    doe_canyon = read_filename("cgas-fc-000004.csv",1,1,50)
+    print("Doe Canyon 4: ")
+    print(solve_mass_spectrum_ROOT(doe_canyon,1,1))
 
-    
-    print(solve_mass_spectrum_ROOT([2507.628127884217, 283.32912811106195, 500.41344493032625, 31430.632926217696, -65.34057504680752, -260.9866511678882, 65.37488054401338, 370.43081772279197, 217.31368153111038, -130.51395864276745, 935.3849758320902, 644920.8717542005, 34436.05309367704, 109883.36932276537, 645297.5928678942, 6504943.388273818, 13229.290047016202, 23036.82831012785, 435.89095216260955, 217.5605550959866, 130.7784699289605, -217.56818619099357, 130.68288092730225, 239.2813812889088, -326.28058790831824, 108.97273804065223, 55228.10642735145, 6876444.17059916, 70925.51509507086, 12038.42118480004, 3851.0080071153316, 416075.2456707255, 435.06756711581795, 1674.929214665803, 43.57263546856219, 2785.1113369233303, 65.26816259060656, 632.0114034187445, 11289.879886353376, 962244.7935221458, 174.33723648680467, 2241.0655224152943, 533628.4526805484, 69806776.54876031, 806619.1333779099, 277370.8142221149, 3156.849020773373, 217.58443194205617, -195.88579599016168, -3.6227832250226837],1,1))
+
+    cortez = read_filename("cgas-fc-000005.csv",1,1,50)
+    print("Cortez 5: ")
+    print(solve_mass_spectrum_ROOT(cortez,1,1))
+
+    cortez2 = read_filename("cgas-fc-000007.csv",1,1,50)
+    print("Cortez 7: ")
+    print(solve_mass_spectrum_ROOT(cortez2,1,1))
+
+    #cortez2 = read_filename("cgas-fc-000008.csv",34,1,7)
+    #print("Cortez 08: ")
+    #print(solve_mass_spectrum_ROOT(cortez2,34,1))
+
+    cortez2 = read_filename("cgas-fc-000011.csv",1,1,50)
+    print("Doe Canyon 11: ")
+    print(solve_mass_spectrum_ROOT(cortez2,1,1))
+
+    cortez2 = read_filename("cgas-fc-000020.csv",1,1,50)
+    print("Doe Canyon 20: ")
+    print(solve_mass_spectrum_ROOT(cortez2,1,1))
+
+    cortez2 = read_filename("cgas-fc-000056.csv",1,1,50)
+    print("Cortez 56: ")
+    print(solve_mass_spectrum_ROOT(cortez2,1,1))'''
