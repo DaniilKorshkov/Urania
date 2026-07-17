@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
     
 
     // Definition of histogram
-    TH1D* rga_scan_histogram_pointer = new TH1D("h", "rga", amount_of_steps, (initial_MZ), (initial_MZ + (amount_of_steps*MZ_step)));
+    TH1D* rga_scan_histogram_pointer = new TH1D("h", "rga", amount_of_steps, 1, (1 + (amount_of_steps*MZ_step)));
 
         for(int i=0;i<amount_of_steps;i++){
             double current_mz = initial_MZ + MZ_step*i;
@@ -138,6 +138,10 @@ int main(int argc, char* argv[]) {
     // end of calculator block
 
 
+
+    TCanvas *c1 = new TCanvas("c1", "Random Histogram", 800, 600);
+    rga_scan_histogram_pointer->Draw();
+    c1->SaveAs("scan_histogram.png");
 
 
 
