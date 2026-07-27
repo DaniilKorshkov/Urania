@@ -148,7 +148,7 @@ def constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initia
             print(oxygen)
             oxygen_label = "Oxygen ppm"
             table_range = display_range
-            ylabel = "ATM"
+            ylabel = "Ionic Current"
 
             if isppm == "True":
                     pascal_sum = 0
