@@ -325,7 +325,7 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
                         if isppm == "True":
                             ylabel = "PPM"
                         else:
-                            ylabel = "ATM"
+                            ylabel = "Ionic Current"
 
                         if (islogarithmic == "True" and isppm == "True"):
                             ax.set_yscale('symlog')
@@ -400,7 +400,7 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
                         if isppm == "True":
                             ylabel = "PPM"
                         else:
-                            ylabel = "ATM"
+                            ylabel = "Ionic current"
 
                         if (islogarithmic == "True" and isppm == "True"):
                             ax.set_yscale('symlog')
@@ -525,7 +525,7 @@ def display_one_sample_data(settings_filename,self_name):           # function t
 
 
         islogarithmic = st.radio(f"Do display logarithmic scalе?", ["True", "False"])
-        isppm = st.radio(f"Do convert to ppm?", ["True", "False"])
+        isppm = False
         
         constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initial_value, step, islogarithmic,isppm)
 
@@ -575,13 +575,13 @@ def TimeInputWidget():
     col = st.columns((1, 1, 1), gap='medium')
     with col[0]:
         days = st.text_input(
-            label="How much days of data to display: ")  # user is prompted to override amount of displayed spectrums
+            label="How many days of data to display: ")  # user is prompted to override amount of displayed spectrums
     with col[1]:
         hours = st.text_input(
-            label="How much hours of data to display: ")  # user is prompted to override amount of displayed spectrums
+            label="How many hours of data to display: ")  # user is prompted to override amount of displayed spectrums
     with col[2]:
         minutes = st.text_input(
-            label="How much minutes of data to display: ")  # user is prompted to override amount of displayed spectrums
+            label="How many minutes of data to display: ")  # user is prompted to override amount of displayed spectrums
 
     if days == None:   # if not specified, value is set to zero
         days = 0
