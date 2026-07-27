@@ -6,14 +6,19 @@ import JSONoperators as js
 def DeleteUnusedFiles(MainConfig="MainConfig"):
     Spectrum_List = FindAllSpectrums(MainConfig)
     for filename in Spectrum_List:
-        delete_button = st.button(f"Permanently delete {filename}")
+        delete_button = st.button(f"Permanently delete {filename}. This operation cannot be undone")
         if delete_button:
             try:
                 os.system(f"rm {filename}")
             except:
                 st.write(f"{filename} already deleted")
 
-    delete_main_log = st.button(f"Clean main log")
+
+    for i in range(5):
+        st.markdown("")
+
+    st.write(f"Wipe logs. This operation cannot be undone")
+    delete_main_log = st.button(f"Clear main log")
     if delete_main_log:
         log_name = js.ReadJSONConfig("log","MainLog")
         try:
@@ -25,14 +30,14 @@ def DeleteUnusedFiles(MainConfig="MainConfig"):
         except:
             st.write("USB log alrealy cleaned")
 
-    delete_abnorm_log = st.button(f"Clean abnormality log")
+    delete_abnorm_log = st.button(f"Clear abnormality log")
     if delete_abnorm_log:
         try:
             os.system(f"rm AbnormalityLog")
         except:
             st.write("Abnormality log already cleaned")
 
-    delete_vsc_log = st.button(f"Clean VSC log")
+    delete_vsc_log = st.button(f"Clear VSC log")
     if delete_vsc_log:
         try:
             os.system(f"rm VSC_log")
@@ -45,8 +50,11 @@ def DeleteUnusedFiles(MainConfig="MainConfig"):
 
 
 
+    for i in range(5):
+        st.markdown("")
 
-    delete_main_config = st.button(f"Reset config")
+
+    delete_main_config = st.button(f"Wipe settings to factory default. This operation cannot be undone")
     if delete_main_config:
         try:
             os.system(f"rm MainConfig")
