@@ -16,28 +16,7 @@ import GUI_File_Manager as fm
 import matplotlib.ticker as ticker
 import json
 from StreamlitGUI import TimeInputWidget
-
-
-def date_time_input():  # function to input date and time as seconds from 01jan1970 through graphic user interface
-
-
-    col = st.columns((1, 1), gap='medium')  # left part of the screen to input date, right - to input time
-    with col[0]:
-        date_value = st.date_input(label="Enter date: ",min_value=datetime.date(1969,1,1))
-    with col[1]:
-        time_value = st.time_input(label="Enter time: ")
-
-    date_value = str(date_value) # obtained results converted to strings and then split into integers
-    time_value = str(time_value)
-
-    date_array = date_value.split("-")
-    time_array = time_value.split(":")
-
-    #print(date_array)
-    #print(time_array)
-
-    datetime_value = (datetime.datetime(year=int(date_array[0]),month = int(date_array[1]),day=int(date_array[2]),hour=int(time_array[0]),minute=int(time_array[1]),second=int(time_array[2]))).timestamp()
-    return datetime_value  #integers are merged together using datetime.datetime and then returned
+from StreamlitGUI import date_time_input
 
 
 
@@ -339,7 +318,19 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
 
 
 
+def manually_compute_filled_volume(MainConfig="MainConfig"):
 
+
+    init_time = date_time_input(self_name = "Initial time")
+    final_time = date_time_input(self_name = "Final time")
+
+
+    st.write(f"Initial time: {datetime.datetime.fromtimestamp(init_time)}")
+    st.write(f"Final time: {datetime.datetime.fromtimestamp(final_time)}")
+
+    integral = JSONoperators.filling_numerical_integration(init_time,final_time)
+
+    st.write(f"Filled amount: {integral} liters")
 
 
 
@@ -591,6 +582,8 @@ def display_data():
 
     display_filling_counters("MainConfig")
     create_new_filling_counter("MainConfig")
+
+
     
     
 display_data()
