@@ -46,6 +46,11 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
         ax5.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax5.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        ax5.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        ax5.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+
+
         ax5.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax5.tick_params('x', labelrotation=90)
         ax5.legend()

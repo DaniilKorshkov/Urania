@@ -441,6 +441,10 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
 
         ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        ax.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        ax.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+
         ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax.tick_params('x', labelrotation=90)
         ax.legend()

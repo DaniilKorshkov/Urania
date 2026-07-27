@@ -217,6 +217,10 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
 
         ax1.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax1.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        ax1.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        ax1.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+
         ax1.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax1.tick_params('x', labelrotation=90)
         ax1.legend()
@@ -233,6 +237,10 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
 
         ax2.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax2.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        ax2.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        ax2.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+
         ax2.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax2.tick_params('x', labelrotation=90)
         ax2.legend()
@@ -249,6 +257,10 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
 
         ax3.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax3.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        ax3.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        ax3.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+
         ax3.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax3.tick_params('x', labelrotation=90)
         ax3.legend()
@@ -265,6 +277,11 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
 
         ax4.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax4.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+
+        ax4.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        ax4.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+
         ax4.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax4.tick_params('x', labelrotation=90)
         ax4.legend()
@@ -281,6 +298,11 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
 
         ax5.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax5.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        ax5.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        ax5.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+
+
         ax5.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax5.tick_params('x', labelrotation=90)
         ax5.legend()
@@ -298,6 +320,11 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
 
         ax6.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax6.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+
+        ax6.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        ax6.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+
         ax6.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax6.tick_params('x', labelrotation=90)
         ax6.legend()
@@ -318,19 +345,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
 
 
 
-def manually_compute_filled_volume(MainConfig="MainConfig"):
 
-
-    init_time = date_time_input(self_name = "Initial time")
-    final_time = date_time_input(self_name = "Final time")
-
-
-    st.write(f"Initial time: {datetime.datetime.fromtimestamp(init_time)}")
-    st.write(f"Final time: {datetime.datetime.fromtimestamp(final_time)}")
-
-    integral = JSONoperators.filling_numerical_integration(init_time,final_time)
-
-    st.write(f"Filled amount: {integral} liters")
 
 
 
@@ -577,12 +592,7 @@ def display_data():
 
     st.write("Filling counters:")
 
-    for i in range(2):
-        st.markdown("")
-
-    display_filling_counters("MainConfig")
-    create_new_filling_counter("MainConfig")
-
+    
 
     
     
