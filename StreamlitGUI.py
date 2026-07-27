@@ -530,8 +530,8 @@ def display_one_sample_data(settings_filename,self_name):           # function t
         constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initial_value, step, islogarithmic,isppm)
 
 
-        islogarithmic2 = st.radio(f"Do display logarithmic scale2?", ["True", "False"])
-        isppm2 = st.radio(f"Do convert to ppm2?", ["True", "False"])
+        islogarithmic2 = st.radio(f"Do display logarithmic scale (trendline)?", ["True", "False"])
+        isppm2 = st.radio(f"Do convert to ppm (trendline)?", ["True", "False"])
         isinterpreted = st.radio(f"Do show interpreted spectra?", ["True", "False"])
         constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,Settings["default_masses"], initial_value, step, islogarithmic2, isppm2,isinterpreted)
 
