@@ -1,8 +1,8 @@
 streamlit
 matplotlib
-streamlit
 pandas
 pyserial
 pyusb
 pyvisa-py
 python-netdiscover
+pytz
