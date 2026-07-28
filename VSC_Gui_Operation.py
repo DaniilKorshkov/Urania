@@ -245,7 +245,7 @@ def ArduinoGUI():
 
 
 
-        col3, col4 = st.columns(2)
+        col3, col4, col5 = st.columns(3)
 
         with col3:
             turn_on_act_one = st.button("Open FS actuator")
@@ -268,6 +268,18 @@ def ArduinoGUI():
             if turn_off_act_two:
                 ArduinoComms.SamplingActClose()
                 st.write(f"SS actuator closed!")
+
+        
+        with col5:
+            turn_on_act_three = st.button("Open CAL actuator")
+            turn_off_act_three = st.button("Close CAL actuator")
+
+            if turn_on_act_three:
+                ArduinoComms.CalibrationActOpen()
+                st.write(f"CAL actuator opened!")
+            if turn_off_act_three:
+                ArduinoComms.CalibrationActClose()
+                st.write(f"CAL actuator closed!")
 
 
 

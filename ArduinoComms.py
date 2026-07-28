@@ -173,6 +173,17 @@ def SamplingActOpen():
     PORT = JSONoperators.ReadJSONConfig("arduino", "port")
     void = str(SendCommand(PORT, "ACT_TWO_OFF"))
 
+def CalibrationActClose():
+
+    PORT = JSONoperators.ReadJSONConfig("arduino", "port")
+    void = str(SendCommand(PORT, "ACT_THREE_ON"))
+
+
+def CalibrationActOpen():
+
+    PORT = JSONoperators.ReadJSONConfig("arduino", "port")
+    void = str(SendCommand(PORT, "ACT_THREE_OFF"))
+
 
 
 def PingArduino():
