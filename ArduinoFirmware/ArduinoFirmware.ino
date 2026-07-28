@@ -11,11 +11,13 @@ const int AFIVE = A5;
 
 const int ACTUATOR_WRITE_ONE = 3;
 const int ACTUATOR_WRITE_TWO = 5;
+const int ACTUATOR_WRITE_THREE = 1; // Check GPIO terminal position on board
 
 
 
 int WRITE_ONE_STATUS = LOW;
 int WRITE_TWO_STATUS = LOW;
+int WRITE_THREE_STATUS = LOW;
   
 
 
@@ -59,7 +61,7 @@ void setup() {
 
   pinMode(ACTUATOR_WRITE_ONE,OUTPUT);
   pinMode(ACTUATOR_WRITE_TWO,OUTPUT);
- 
+  pinMode(ACTUATOR_WRITE_THREE,OUTPUT);
 
 
 
@@ -191,6 +193,30 @@ void loop() {
     Serial.print("START!ACT_TWO_OFFED!END");
    
    }
+
+  
+   else if(msg == "ACT_THREE_ON"){
+
+    WRITE_THREE_STATUS = HIGH;
+    
+
+    digitalWrite(ACTUATOR_WRITE_THREE,WRITE_THREE_STATUS);
+    Serial.print("START!ACT_THREE_ONED!END");
+    
+    
+  }
+
+   else if(msg == "ACT_THREE_OFF"){
+
+    WRITE_THREE_STATUS = LOW;
+    
+    
+    digitalWrite(ACTUATOR_WRITE_THREE,WRITE_THREE_STATUS);
+    Serial.print("START!ACT_THREE_OFFED!END");
+   
+   }
+
+
 
    else if(msg == "PING"){
     Serial.print("START!THIS_IS_ARDUINO!END");
