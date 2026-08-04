@@ -66,15 +66,20 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax1.set_ylabel("MFC flow (cm3/min)")
         ax1.set_title(f'MFC flow (cm3/min) vs time')
 
-        ax1.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax1.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax1.minorticks_on()
+        ax1.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax1.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax1.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax1.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax1.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax1.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        #ax5.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        #ax1.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+
+
         ax1.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax1.tick_params('x', labelrotation=90)
         ax1.legend()
-
 
         st.pyplot(fig1)
 
@@ -83,11 +88,17 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax2.set_ylabel("MFM flow (cm3/min)")
         ax2.set_title(f'MFM flow (cm3/min) vs time')
 
-        ax2.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax2.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax2.minorticks_on()
+        ax2.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax2.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax2.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax2.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax2.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax2.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        #ax5.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        
+
+
         ax2.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax2.tick_params('x', labelrotation=90)
         ax2.legend()
@@ -99,11 +110,17 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax3.set_ylabel("PT pressure (torr)")
         ax3.set_title(f'PT pressure (torr) vs time')
 
-        ax3.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax3.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax3.minorticks_on()
+        ax3.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax3.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax3.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax3.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax3.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax3.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        #ax5.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        
+
+
         ax3.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax3.tick_params('x', labelrotation=90)
         ax3.legend()
@@ -118,11 +135,17 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         ax4.set_ylabel("PC pressure (torr)")
         ax4.set_title(f'PC pressure (torr) vs time')
 
-        ax4.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax4.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax4.minorticks_on()
+        ax4.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax4.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax4.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax4.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax4.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax4.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        #ax5.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
+        #ax4.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+
+
         ax4.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax4.tick_params('x', labelrotation=90)
         ax4.legend()
@@ -132,21 +155,6 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
 
 
 
-        ax5.plot(x_converted, y_filling_mfm_flow)
-        ax5.set_xlabel(f'Time')
-        ax5.set_ylabel("Filling station flow (cm3/min)")
-        ax5.set_title(f'Filling station flow (cm3/min) vs time')
-
-        ax5.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax5.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-
-        ax5.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax5.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax5.xaxis.set_major_locator(ticker.MaxNLocator(5))
-        ax5.tick_params('x', labelrotation=90)
-        ax5.legend()
-
-        st.pyplot(fig5)
 
 
 
@@ -212,11 +220,12 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax1.set_ylabel("Pressure (psi)")
         ax1.set_title(f'Pressure revease station 1 pressure (psi) vs time')
 
-        ax1.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax1.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax1.minorticks_on()
+        ax1.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax1.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax1.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax1.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax1.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax1.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
         ax1.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
         ax1.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
@@ -232,11 +241,12 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax2.set_ylabel("Pressure (psi)")
         ax2.set_title(f'Pressure revease station 2 (psi) vs time')
 
-        ax2.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax2.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax2.minorticks_on()
+        ax2.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax2.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax2.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax2.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax2.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax2.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
         ax2.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
         ax2.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
@@ -252,11 +262,12 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax3.set_ylabel("Pressure (psi)")
         ax3.set_title(f'PT-01 pressure (psi) vs time')
 
-        ax3.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax3.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax3.minorticks_on()
+        ax3.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax3.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax3.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax3.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax3.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax3.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
         ax3.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
         ax3.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
@@ -272,11 +283,12 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax4.set_ylabel("Pressure (psi)")
         ax4.set_title(f'PT-02 pressure (psi) vs time')
 
-        ax4.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax4.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax4.minorticks_on()
+        ax4.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax4.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax4.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax4.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax4.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax4.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
 
         ax4.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
@@ -293,11 +305,12 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax5.set_ylabel("Pressure (psi)")
         ax5.set_title(f'PT-03 pressure (psi) vs time')
 
-        ax5.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax5.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax5.minorticks_on()
+        ax5.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax5.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax5.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax5.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax5.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax5.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
         ax5.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
         ax5.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
@@ -315,11 +328,12 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax6.set_ylabel("Pressure (psi)")
         ax6.set_title(f'PT-04 pressure (psi) vs time')
 
-        ax6.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax6.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax6.minorticks_on()
+        ax6.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax6.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax6.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax6.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax6.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax6.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
 
         ax6.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
@@ -587,10 +601,6 @@ def display_data():
     else:
         st.write("No filling station pressure data recorded yet")
 
-    for i in range(5):
-        st.markdown("")
-
-    st.write("Filling counters:")
 
     
 

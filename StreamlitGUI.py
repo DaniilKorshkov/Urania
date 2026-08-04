@@ -82,7 +82,7 @@ def three_dimentional_spectrum(spectrum_list, initial_value, step):  # function 
         # Plot the bar graph given by xs and ys on the plane y=k with 80% opacity.
         ax.bar(mass_range, ys, zs=time_moment, zdir='y', alpha=0.8)
 
-    ax.set_xlabel('M')
+    ax.set_xlabel('M/Z')
     ax.set_ylabel('time')
     ax.set_zlabel('PP(M?)')
 
@@ -166,8 +166,8 @@ def constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initia
 
             if islogarithmic == "True":
                 ax.set_yscale('symlog')
-                ylabel = f'log10 {ylabel}'
-                oxygen_label = "log10 oxygen ppm"
+                ylabel = f'{ylabel}'
+                oxygen_label = "Oxygen ppm"
                 if isppm == "True":
                     ax.set_ylim([1, 2000000])
                 else:
@@ -186,13 +186,15 @@ def constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initia
 
 
 
-            ax.set_xlabel(f'M')
+            ax.set_xlabel(f'M/Z')
             ax.set_ylabel(ylabel)
-            ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-            ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-            ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-            ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+            ax.minorticks_on()
+            ax.xaxis.grid(True,which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+            ax.yaxis.grid(True,which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+
+            ax.xaxis.grid(True,which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+            ax.yaxis.grid(True,which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
             try:
                 
@@ -436,14 +438,15 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
         ax.set_xlabel(f'Time')
         ax.set_ylabel(ylabel)
 
-        ax.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax.minorticks_on()
+        ax.xaxis.grid(True,which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax.yaxis.grid(True,which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
-        ax.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+        ax.xaxis.grid(True,which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax.yaxis.grid(True,which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+
+        
 
         ax.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax.tick_params('x', labelrotation=90)
