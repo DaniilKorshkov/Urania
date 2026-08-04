@@ -218,7 +218,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax1.plot(x_converted, y_pressure_one)
         ax1.set_xlabel(f'Time')
         ax1.set_ylabel("Pressure (psi)")
-        ax1.set_title(f'Pressure revease station 1 pressure (psi) vs time')
+        ax1.set_title(f'Pressure relief station 1 pressure (psi) vs time')
 
         ax1.minorticks_on()
         ax1.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)

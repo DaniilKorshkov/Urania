@@ -193,8 +193,8 @@ def constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initia
             ax.xaxis.grid(True,which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
             ax.yaxis.grid(True,which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-            ax.xaxis.grid(True,which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-            ax.yaxis.grid(True,which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+            ax.xaxis.grid(True,which='minor', color='k', alpha=0.3, linestyle=':', linewidth=0.75)
+            ax.yaxis.grid(True,which='minor', color='k', alpha=0.3, linestyle=':', linewidth=0.75)
 
             try:
                 
