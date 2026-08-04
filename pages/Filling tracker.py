@@ -36,19 +36,30 @@ def vsc_graphs(log_dictionary):  # function to display plots for constant masses
         fig5, ax5 = plt.subplots()
 
 
+        x = fn.get_time_list(log_dictionary)
+
+        x_converted = [dt.datetime.fromtimestamp(element) for element in x]
+
+        y_filling_mfm_flow = []
+
+        for key in x:
+                y_filling_mfm_flow.append((log_dictionary[f"{str(key)}"])["filling_mfm_flow"])
+
+
+
         ax5.plot(x_converted, y_filling_mfm_flow)
         ax5.set_xlabel(f'Time')
         ax5.set_ylabel("Filling station flow (cm3/min)")
         ax5.set_title(f'Filling station flow (cm3/min) vs time')
 
-        ax5.xaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
-        ax5.yaxis.grid(which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax5.minorticks_on()
+        ax5.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
+        ax5.yaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-        ax5.xaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
-        ax5.yaxis.grid(which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax5.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
+        ax5.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
-        ax5.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
-        ax5.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+        
 
 
         ax5.xaxis.set_major_locator(ticker.MaxNLocator(5))
@@ -338,11 +349,23 @@ def display_data():
 
     st.write("Filling counters:")
 
-    for i in range(5):
+    for i in range(2):
         st.markdown("")
 
     display_filling_counters("MainConfig")
     create_new_filling_counter("MainConfig")
+
+
+    for i in range(3):
+        st.markdown("")
+
+
+    st.write("Compute filled volume for time:")
+
+    for i in range(2):
+        st.markdown("")
+
+
     manually_compute_filled_volume("MainConfig")
 
     
