@@ -190,11 +190,14 @@ def constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initia
             ax.set_ylabel(ylabel)
 
             ax.minorticks_on()
+            if islogarithmic == "True":
+                #ax.xaxis.set_minor_locator(ticker.SymmetricalLogLocator(base=10, linthresh=0.01, subs=range(2, 10)))
+                ax.yaxis.set_minor_locator(ticker.SymmetricalLogLocator(base=10, linthresh=0.01, subs=range(2, 10)))
             ax.xaxis.grid(True,which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
             ax.yaxis.grid(True,which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
-            ax.xaxis.grid(True,which='minor', color='k', alpha=0.3, linestyle=':', linewidth=0.75)
-            ax.yaxis.grid(True,which='minor', color='k', alpha=0.3, linestyle=':', linewidth=0.75)
+            ax.xaxis.grid(True,which='minor', color='k', alpha=0.6, linestyle=':', linewidth=0.75)
+            ax.yaxis.grid(True,which='minor', color='k', alpha=0.6, linestyle=':', linewidth=0.75)
 
             try:
                 
@@ -331,11 +334,13 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
 
                         if (islogarithmic == "True" and isppm == "True"):
                             ax.set_yscale('symlog')
+                            
                         if isppm == "True":
                             ax.set_ylim([1, 2000000])
                         elif (islogarithmic == "True" and isppm == "False"):
                             ax.set_yscale('symlog')
                             ax.set_ylim([1, 500000000])
+                            
                         
 
 

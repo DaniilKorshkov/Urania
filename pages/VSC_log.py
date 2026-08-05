@@ -227,8 +227,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax1.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax1.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
-        ax1.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
-        ax1.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+        
 
         ax1.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax1.tick_params('x', labelrotation=90)
@@ -248,8 +247,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax2.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax2.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
-        ax2.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
-        ax2.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+        
 
         ax2.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax2.tick_params('x', labelrotation=90)
@@ -269,8 +267,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax3.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax3.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
-        ax3.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
-        ax3.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+        
 
         ax3.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax3.tick_params('x', labelrotation=90)
@@ -291,8 +288,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax4.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
 
-        ax4.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
-        ax4.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+        
 
         ax4.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax4.tick_params('x', labelrotation=90)
@@ -312,8 +308,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax5.xaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
         ax5.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
-        ax5.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
-        ax5.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+        
 
 
         ax5.xaxis.set_major_locator(ticker.MaxNLocator(5))
@@ -336,8 +331,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax6.yaxis.grid(True, which='minor', color='k', alpha=0.5, linestyle=':', linewidth=0.75)
 
 
-        ax6.set_xticks(np.arange(0, 100.1, 100/30), minor=True)
-        ax6.set_yticks(np.arange(0, 100.1, 100/30), minor=True)
+        
 
         ax6.xaxis.set_major_locator(ticker.MaxNLocator(5))
         ax6.tick_params('x', labelrotation=90)
