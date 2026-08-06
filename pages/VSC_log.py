@@ -208,12 +208,12 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         y_pressure_six = []
 
         for key in x:
-            y_pressure_one.append((log_dictionary[f"{str(key)}"])["PT-01"])
-            y_pressure_two.append((log_dictionary[f"{str(key)}"])["PT-02"])
-            y_pressure_three.append((log_dictionary[f"{str(key)}"])["PT-03"])
-            y_pressure_four.append((log_dictionary[f"{str(key)}"])["PT-04"])
-            y_pressure_five.append((log_dictionary[f"{str(key)}"])["PT-05"])
-            y_pressure_six.append((log_dictionary[f"{str(key)}"])["PT-06"])
+            y_pressure_one.append((log_dictionary[f"{str(key)}"])["CS-PT-01"])
+            y_pressure_two.append((log_dictionary[f"{str(key)}"])["CS-PT-02"])
+            y_pressure_three.append((log_dictionary[f"{str(key)}"])["CS-PT-03"])
+            y_pressure_four.append((log_dictionary[f"{str(key)}"])["CS-PT-04"])
+            y_pressure_five.append((log_dictionary[f"{str(key)}"])["CS-PT-05"])
+            y_pressure_six.append((log_dictionary[f"{str(key)}"])["CS-PT-06"])
 
         ax1.plot(x_converted, y_pressure_one)
         ax1.set_xlabel(f'Time')
@@ -238,7 +238,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax2.plot(x_converted, y_pressure_two)
         ax2.set_xlabel(f'Time')
         ax2.set_ylabel("Pressure (psi)")
-        ax2.set_title(f'Pressure revease station 2 (psi) vs time')
+        ax2.set_title(f'Pressure relief station 2 (psi) vs time')
 
         ax2.minorticks_on()
         ax2.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -258,7 +258,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax3.plot(x_converted, y_pressure_three)
         ax3.set_xlabel(f'Time')
         ax3.set_ylabel("Pressure (psi)")
-        ax3.set_title(f'PT-01 pressure (psi) vs time')
+        ax3.set_title(f'CS-PT-01 pressure (psi) vs time')
 
         ax3.minorticks_on()
         ax3.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -278,7 +278,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax4.plot(x_converted, y_pressure_four)
         ax4.set_xlabel(f'Time')
         ax4.set_ylabel("Pressure (psi)")
-        ax4.set_title(f'PT-02 pressure (psi) vs time')
+        ax4.set_title(f'CS-PT-02 pressure (psi) vs time')
 
         ax4.minorticks_on()
         ax4.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -299,7 +299,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax5.plot(x_converted, y_pressure_five)
         ax5.set_xlabel(f'Time')
         ax5.set_ylabel("Pressure (psi)")
-        ax5.set_title(f'PT-03 pressure (psi) vs time')
+        ax5.set_title(f'CS-PT-03 pressure (psi) vs time')
 
         ax5.minorticks_on()
         ax5.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
@@ -321,7 +321,7 @@ def arduino_graphs(log_dictionary):  # function to display plots for constant ma
         ax6.plot(x_converted, y_pressure_six)
         ax6.set_xlabel(f'Time')
         ax6.set_ylabel("Pressure (psi)")
-        ax6.set_title(f'PT-04 pressure (psi) vs time')
+        ax6.set_title(f'CS-PT-04 pressure (psi) vs time')
 
         ax6.minorticks_on()
         ax6.xaxis.grid(True, which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
