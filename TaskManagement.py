@@ -240,6 +240,10 @@ def GetTaskData(taskname, config="MainConfig"):
                 valve_position = dict_line["valve_position"]
                 accuracy = dict_line["accuracy"]
                 purge_cycles = dict_line["purge_cycles"]
+                try:
+                    mass_flow = dict_line["mass_flow"]
+                except:
+                    mass_flow = "default"
 
 
 
@@ -249,11 +253,11 @@ def GetTaskData(taskname, config="MainConfig"):
             pass
     handle.close()
 
-    return spectrum_filename,amount_of_scans, valve_position, accuracy, purge_cycles
+    return spectrum_filename,amount_of_scans, valve_position, accuracy, purge_cycles, mass_flow
 
 
 
-def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
+def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles, mass_flow):
     #signal.signal(signal.SIGALRM, TimeoutHandler())
     #global interrupted
     #critical_errors = False
@@ -274,23 +278,7 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
         return True
 
 
-    try:
-
-        required_flow = (js.ReadJSONConfig("vsc","flow_rate_list"))[  (int(valve_number)-1)  ]
-
-        vsc.ChangeMFCMode("Setpoint")
-        vsc.ChangeMFCFlowRate(required_flow)
-        lg.MakeLogEntry(f"Flow changed to {required_flow} SCCM")
-    except:
-
-        NotifyUser("0007", f"VSC Communication/Control Failure",True)
-
-        RGA_comms.rga_filament_control("Off")
-        ArduinoComms.FillingActClose()
-
-
-        lg.MakeLogEntry(f"Sampling terminated as multi inlet valve is not responding")
-        return True
+    
 
 
 
@@ -362,6 +350,30 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles):
     lg.MakeLogEntry(f"Purge finalized")
 
     initial_time = int(datetime.datetime.now().timestamp())
+
+
+    try:
+        if mass_flow != "default":
+            required_flow = int(mass_flow)
+        else:
+            required_flow = (js.ReadJSONConfig("vsc","flow_rate_list"))[  (int(valve_number)-1)  ]
+
+        if required_flow == 0:
+            ArduinoComms.SamplingActClose()
+        else:
+            ArduinoComms.SamplingActOpen()
+            vsc.ChangeMFCFlowRate(required_flow)
+        lg.MakeLogEntry(f"Flow changed to {required_flow} SCCM")
+    except:
+
+        NotifyUser("0007", f"VSC Communication/Control Failure",True)
+
+        RGA_comms.rga_filament_control("Off")
+        ArduinoComms.FillingActClose()
+
+
+        lg.MakeLogEntry(f"Sampling terminated as VSC is not responding")
+        return True
 
     while int(datetime.datetime.now().timestamp()) < (initial_time + amount_of_scans + 1):
         try:
@@ -453,8 +465,8 @@ def DoTask(config="MainConfig"):
         handle.write(taskname)
         handle.close()
 
-        spectrum_filename, amount_of_scans, valve_position, accuracy, purge_cycles  = GetTaskData(taskname,config)
-        critical_errors = MakeScan(spectrum_filename, valve_position, amount_of_scans, accuracy, purge_cycles)
+        spectrum_filename, amount_of_scans, valve_position, accuracy, purge_cycles, mass_flow  = GetTaskData(taskname,config)
+        critical_errors = MakeScan(spectrum_filename, valve_position, amount_of_scans, accuracy, purge_cycles, mass_flow)
 
         os.system("rm __currenttaskname__")
 

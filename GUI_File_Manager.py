@@ -68,13 +68,14 @@ def GUI_File_Info(filename,MainConfig="MainConfig"):
             step = dictline["step"]
             accuracy = dictline["accuracy"]
             purge_cycles = dictline["purge_cycles"]
+            mass_flow = dictline["mass_flow"]
 
             try:
                 #purging_time = dictline["purging_time"]
                 #calmdown_time = dictline["calmdown_time"]
                 #purging_mfc = dictline["purging_mfc"]
                 #calmdown_mfc = dictline["calmdown_mfc"]
-                return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}, accuracy:{accuracy}, amount of purge cycles:{purge_cycles}"
+                return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}, accuracy:{accuracy}, amount of purge cycles:{purge_cycles}, mass flow:{mass_flow}"
             except:
                 return f"{str(filename)} parameters: \nValve:{valve}; Initial M:{init_scan}, amount of scans:{amt_of_scans}, step:{step}"
 
@@ -97,6 +98,7 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
     accuracy = st.text_input(label="Enter scan accuracy from 1 to 8 (default - 5)")
     purge_cycles = st.text_input(label="Enter amount of purge cycles (default - 5)")
     minutes_of_scan = st.text_input("How much minutes data is recorded? (for 16 files at a time creation only, otherwise it is specified in TaskManager)")
+    mass_flow = st.text_input("Override default mass flow")
     M_per_minute = JSONoperators.ReadJSONConfig("spectrometer_parameters","M_per_minute")
     #spectrum_scans = int((M_per_minute*minutes_of_scan)/)
 
@@ -230,6 +232,13 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
             st.write("Provided amount of purge cycles is not an integer")
 
 
+        try:
+            if mass_flow == None or mass_flow == "":
+                mass_flow = "default"
+            placeholder = int(mass_flow)
+        except:
+            mass_flow = "default"
+
 
 
 
@@ -288,6 +297,7 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
             first_line["step"] = step
             first_line["accuracy"] = accuracy
             first_line["purge_cycles"] = purge_cycles
+            first_line["mass_flow"] = mass_flow
 
             #first_line["purging_time"] = purging_time
             #first_line["calmdown_time"] = calmdown_time
