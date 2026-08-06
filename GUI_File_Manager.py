@@ -221,8 +221,8 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
                 purge_cycles = 5
             purge_cycles = int(purge_cycles)
 
-            if purge_cycles < 1:
-                purge_cycles = 1
+            if purge_cycles < 0:
+                purge_cycles = 0
 
 
         except:
