@@ -410,11 +410,11 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
                             ylabel = "Ionic current"
 
                         if (islogarithmic == "True" and isppm == "True"):
-                            ax.yaxis.set_minor_locator(ticker.SymmetricalLogLocator(base=10, linthresh=0.01, subs=range(2, 10)))
+                            
                             ax.set_yscale('symlog')
                             ax.set_ylim([0.01, 1500000])
                         elif (islogarithmic == "True" and isppm == "False"):
-                            ax.yaxis.set_minor_locator(ticker.SymmetricalLogLocator(base=10, linthresh=0.01, subs=range(2, 10)))
+                            
                             ax.set_yscale('symlog')
                             ax.set_ylim([0.01, 1500000000])
                         
@@ -447,6 +447,9 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
 
 
         ax.minorticks_on()
+        if islogarithmic == "True":
+            ax.yaxis.set_minor_locator(ticker.SymmetricalLogLocator(base=10, linthresh=0.01, subs=range(2, 10)))
+
         ax.xaxis.grid(True,which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
         ax.yaxis.grid(True,which='major', color='k', alpha=0.8, linestyle='--', linewidth=1)
 
