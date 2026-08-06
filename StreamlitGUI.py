@@ -169,14 +169,14 @@ def constant_time_spectrum(spectrum_list, oxygen_list, custom_names_list, initia
                 ylabel = f'{ylabel}'
                 oxygen_label = "Oxygen ppm"
                 if isppm == "True":
-                    ax.set_ylim([1, 2000000])
+                    ax.set_ylim([0.01, 1500000])
                 else:
-                    ax.set_ylim([1, 1000000000])
+                    ax.set_ylim([0.01, 1500000000])
             else:
                 if isppm == "True":
-                    ax.set_ylim([1, 1100000])
+                    ax.set_ylim([0.01, 1500000])
                 else:
-                    ax.set_ylim([1, 500000000])
+                    ax.set_ylim([0.01, 1500000000])
 
 
 
@@ -336,10 +336,10 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
                             ax.set_yscale('symlog')
                             
                         if isppm == "True":
-                            ax.set_ylim([1, 2000000])
+                            ax.set_ylim([0.01, 1500000])
                         elif (islogarithmic == "True" and isppm == "False"):
                             ax.set_yscale('symlog')
-                            ax.set_ylim([1, 500000000])
+                            ax.set_ylim([0.01, 1500000000])
                             
                         
 
@@ -412,11 +412,11 @@ def constant_mass_spectrum(spectrum_list,oxygen_list,solutions_list,default_mass
                         if (islogarithmic == "True" and isppm == "True"):
                             ax.yaxis.set_minor_locator(ticker.SymmetricalLogLocator(base=10, linthresh=0.01, subs=range(2, 10)))
                             ax.set_yscale('symlog')
-                            ax.set_ylim([1, 2000000])
+                            ax.set_ylim([0.01, 1500000])
                         elif (islogarithmic == "True" and isppm == "False"):
                             ax.yaxis.set_minor_locator(ticker.SymmetricalLogLocator(base=10, linthresh=0.01, subs=range(2, 10)))
                             ax.set_yscale('symlog')
-                            ax.set_ylim([0, 2])
+                            ax.set_ylim([0.01, 1500000000])
                         
 
 
