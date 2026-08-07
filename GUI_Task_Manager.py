@@ -222,6 +222,13 @@ def display_all_tasks(MainConfig="MainConfig"):
                 scans = 1
 
 
+        try:
+            mass_flow = dict_line["mass_flow"]
+        except:
+            mass_flow = "default"
+
+
+
         except:
             task_is_valid = False
             st.write("Failed to calculate amount of time for scanning")
@@ -290,7 +297,7 @@ def display_all_tasks(MainConfig="MainConfig"):
 
 
             new_task_data = {"class": "task","name":name, "type": task_type, "valve_position": valve, "filename": filename,
-                             "scans": int(scans),"accuracy":accuracy,"purge_cycles":purge_cycles}
+                             "scans": int(scans),"accuracy":accuracy,"purge_cycles":purge_cycles,"mass_flow":mass_flow}
             if task_type == "emergency":
                 new_task_data["how_much_executions"] = executions
             if task_type == "scheduled":
