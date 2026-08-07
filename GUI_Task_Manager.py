@@ -221,6 +221,12 @@ def display_all_tasks(MainConfig="MainConfig"):
             if scans < 1:
                 scans = 1
 
+        
+        except:
+            task_is_valid = False
+            st.write("Failed to calculate amount of time for scanning")
+        
+
 
         try:
             mass_flow = dict_line["mass_flow"]
@@ -229,9 +235,6 @@ def display_all_tasks(MainConfig="MainConfig"):
 
 
 
-        except:
-            task_is_valid = False
-            st.write("Failed to calculate amount of time for scanning")
 
 
 
