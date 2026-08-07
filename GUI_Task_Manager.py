@@ -206,6 +206,11 @@ def display_all_tasks(MainConfig="MainConfig"):
                     accuracy = dictline["accuracy"]
                     purge_cycles = dictline["purge_cycles"]
 
+                    try:
+                        mass_flow = dictline["mass_flow"]
+                    except:
+                        mass_flow = "default"
+
 
 
                     break
@@ -228,11 +233,8 @@ def display_all_tasks(MainConfig="MainConfig"):
         
 
 
-        try:
-            mass_flow = dict_line["mass_flow"]
-        except:
-            mass_flow = "default"
-
+        
+       
 
 
 
