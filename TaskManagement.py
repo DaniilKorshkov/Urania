@@ -354,10 +354,12 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles, mass
 
     try:
         if mass_flow != "default":
-            required_flow = int(mass_flow)
             print(f"Required flow fetched as {required_flow}")
+            required_flow = int(mass_flow)
+            
         else:
             required_flow = (js.ReadJSONConfig("vsc","flow_rate_list"))[  (int(valve_number)-1)  ]
+            print(f"Default flow used: {required_flow}")
 
         if required_flow == 0:
             ArduinoComms.SamplingActClose()
