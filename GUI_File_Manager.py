@@ -235,9 +235,10 @@ def CreateSpectrum(filelist, MainConfig="MainConfig"):
         try:
             if mass_flow == None or mass_flow == "":
                 mass_flow = "default"
-            placeholder = int(mass_flow)
+            else:
+                mass_flow = int(mass_flow)
         except:
-            mass_flow = "default"
+            mass_flow = "Invalid mass flow provided"
 
 
 
