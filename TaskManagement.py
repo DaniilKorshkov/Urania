@@ -354,7 +354,7 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles, mass
 
     try:
         if mass_flow != "default":
-            print(f"Required flow fetched as {required_flow}")
+            print(f"Required flow fetched as {mass_flow}")
             required_flow = int(mass_flow)
             
         else:
