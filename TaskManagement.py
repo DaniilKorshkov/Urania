@@ -241,7 +241,7 @@ def GetTaskData(taskname, config="MainConfig"):
                 accuracy = dict_line["accuracy"]
                 purge_cycles = dict_line["purge_cycles"]
                 try:
-                    mass_flow = dict_line["mass_flow"]
+                    mass_flow = int(dict_line["mass_flow"])
                 except:
                     mass_flow = "default"
 
