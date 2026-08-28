@@ -288,7 +288,7 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles, mass
 
 
 
-    
+    vsc.ChangeMFCMode("Open")
     
     try:
         for i in range(purge_cycles):
@@ -321,7 +321,8 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles, mass
             time.sleep(35)
             ArduinoComms.SamplingActClose()
             time.sleep(30)
-        time.sleep(30)
+
+        
 
         try:
             VSC_comms.LogVSCData("MainConfig")
@@ -380,6 +381,9 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles, mass
 
         lg.MakeLogEntry(f"Sampling terminated as VSC is not responding")
         return True
+
+
+    time.sleep(60)
 
     while int(datetime.datetime.now().timestamp()) < (initial_time + amount_of_scans + 1):
         try:
