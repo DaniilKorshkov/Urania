@@ -350,7 +350,7 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles, mass
 
     lg.MakeLogEntry(f"Purge finalized")
 
-    initial_time = int(datetime.datetime.now().timestamp())
+    
 
 
     try:
@@ -385,6 +385,7 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles, mass
 
     time.sleep(60)
 
+    initial_time = int(datetime.datetime.now().timestamp())
     while int(datetime.datetime.now().timestamp()) < (initial_time + amount_of_scans + 1):
         try:
             
