@@ -368,6 +368,7 @@ def MakeScan(filename,valve_number,amount_of_scans, accuracy, purge_cycles, mass
         else:
             ArduinoComms.SamplingActOpen()
             vsc.ChangeMFCFlowRate(required_flow)
+            vsc.ChangeMFCMode("Setpoint")
             print(f"Sampling actuator opened, flow set to {required_flow}")
 
         lg.MakeLogEntry(f"Flow changed to {required_flow} SCCM")
