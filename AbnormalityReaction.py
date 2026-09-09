@@ -276,11 +276,11 @@ def AnalyzeVSCLine(dictionary, SamplingLine = 1, CurrentlySampling = False, DoLo
             #case "mfc_flow":
              #   boundaries = control_spectrum["MFC"]
             case "pc_pressure":
-                boundaries = control_spectrum["PC"]
+                boundaries = control_spectrum["CS-PC-01"]
             case "mfm_flow":
-                boundaries = control_spectrum["MFM"]
+                boundaries = control_spectrum["CS-FM-01"]
             case "filling_mfm_flow":
-                boundaries = control_spectrum["MFM_F"]
+                boundaries = control_spectrum["FS-FM"]
             case default:
                 continue
 
@@ -374,7 +374,7 @@ def AnalyzeArduinoLine(dictionary, SamplingLine = 1, CurrentlySampling = False, 
 
 
 
-        if key == "PT-02":
+        if key == "FS-PT-02":
 
             
 
