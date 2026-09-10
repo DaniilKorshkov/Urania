@@ -123,12 +123,12 @@ def LogArduinoData():
 
 
 
-    dictionary_to_append["CS-PT-01"] = ret_data[0]
-    dictionary_to_append["CS-PT-02"] = ret_data[1]
-    dictionary_to_append["CS-PT-03"] = ret_data[2]
-    dictionary_to_append["CS-PT-04"] = ret_data[3]
-    dictionary_to_append["CS-PT-05"] = ret_data[4]
-    dictionary_to_append["CS-PT-06"] = ret_data[5]
+    dictionary_to_append["FS-PT-01"] = ret_data[0]
+    dictionary_to_append["FS-PT-02"] = ret_data[1]
+    dictionary_to_append["FS-PT-03"] = ret_data[2]
+    dictionary_to_append["FS-PT-04"] = ret_data[3]
+    dictionary_to_append["FS-PT-07"] = ret_data[4]
+    dictionary_to_append["FS-PT-08"] = ret_data[5]
 
     if ret_data[6] == 1:
         dictionary_to_append["actuator_one_status"] = "open"
