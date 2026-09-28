@@ -1,4 +1,4 @@
-from ConvertCsvScanToList import read_em_fc_combined
+from ConvertCsvScanToList import read_filename
 import JSONoperators
 import json
 from SpectraInterpreter import solve_mass_spectrum_ROOT
@@ -9,10 +9,10 @@ def Calibration():
     step = 1
     amount_of_steps = 50
 
-    cgas000108 = [0] + read_em_fc_combined("000108",initial_mass,step,amount_of_steps) #95% CO2 w. 1% of methane, helium, N2, O2, Ar
-    cgas000107 = [0] + read_em_fc_combined("000107",initial_mass,step,amount_of_steps) # 100% CO2
-    cgas000105 = [0] + read_em_fc_combined("000105",initial_mass,step,amount_of_steps) #95% Ar w. 1% of methane, helium, N2, O2, CO2
-    cgas000084 = [0] + read_em_fc_combined("000084",initial_mass,step,amount_of_steps) # 100% N2
+    cgas000108 = [0] + read_filename("cgas-em-000108.csv",initial_mass,step,amount_of_steps) #95% CO2 w. 1% of methane, helium, N2, O2, Ar
+    cgas000107 = [0] + read_filename("cgas-em-000107.csv",initial_mass,step,amount_of_steps) # 100% CO2
+    cgas000105 = [0] + read_filename("cgas-em-000105.csv",initial_mass,step,amount_of_steps) #95% Ar w. 1% of methane, helium, N2, O2, CO2
+    cgas000084 = [0] + read_filename("cgas-em-000084.csv",initial_mass,step,amount_of_steps) # 100% N2
 
 
     coefficients = {}
@@ -54,11 +54,11 @@ if __name__ == "__main__":
     JSONoperators.EditJSONConfig("cracking_patterns",config_string)
 
 
-    scan = read_em_fc_combined("000108",1,1,50)
+    scan = read_filename("cgas-em-000108.csv",1,1,50)
     print(solve_mass_spectrum_ROOT(scan,1,1))
 
-    scan = read_em_fc_combined("000105",1,1,50)
+    scan = read_filename("cgas-em-000105.csv",1,1,50)
     print(solve_mass_spectrum_ROOT(scan,1,1))
 
-    scan = read_em_fc_combined("000084",1,1,50)
+    scan = read_filename("cgas-em-000084.csv",1,1,50)
     print(solve_mass_spectrum_ROOT(scan,1,1))
