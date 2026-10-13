@@ -43,7 +43,7 @@ Double_t ionic_current_fit_for_specific_mz(double *mz, double *ppm_array){
         
         
         for(int i=0;i<6;i++){
-            if(((*mz-mz_closest_integer)>0.45)&&((*mz-mz_closest_integer)<0.55)){
+            if(((*mz-mz_closest_integer)>0)&&((*mz-mz_closest_integer)<1)){
                 ret += (calibration_matrix[i][mz_closest_integer])*(ppm_array[i]);}
         };
 
@@ -140,6 +140,7 @@ int main(int argc, char* argv[]) {
 
 
     TCanvas *c1 = new TCanvas("c1", "Random Histogram", 800, 600);
+    c1->SetLogy(1);
     rga_scan_histogram_pointer->Draw();
     c1->SaveAs("scan_histogram.png");
 
