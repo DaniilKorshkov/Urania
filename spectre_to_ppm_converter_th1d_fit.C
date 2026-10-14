@@ -13,6 +13,8 @@
 #include "TFitResultPtr.h"
 #include "Math/Functor.h"
 #include <Math/SMatrix.h>
+#include <ctime>
+#include "TPaveText.h"
 
 
 
@@ -183,7 +185,37 @@ int main(int argc, char* argv[]) {
     legend->SetFillStyle(0);
     legend->Draw();
 
-    c1->SaveAs("scan_histogram.png");
+    // Display the raw fit method output in a box below the histogram legend.
+    TPaveText *fit_output_box = new TPaveText(0.74, 0.06, 0.98, 0.49, "NDC");
+    fit_output_box->SetFillColor(kWhite);
+    fit_output_box->SetBorderSize(1);
+    fit_output_box->SetTextAlign(12);
+    fit_output_box->SetTextSize(0.02);
+    fit_output_box->SetMargin(0.01);
+    char fit_output_line[256];
+    std::sprintf(fit_output_line, "Raw fit output:");
+    fit_output_box->AddText(fit_output_line);
+    for (int i = 0; i < 6; i++) {
+        std::sprintf(fit_output_line, "p%d = %.6g", i, ppm_fit_values->Parameter(i));
+        fit_output_box->AddText(fit_output_line);
+    }
+    std::sprintf(fit_output_line, "Chi2 = %.6g", ppm_fit_values->Chi2());
+    fit_output_box->AddText(fit_output_line);
+    std::sprintf(fit_output_line, "NDf = %u", ppm_fit_values->Ndf());
+    fit_output_box->AddText(fit_output_line);
+    std::sprintf(fit_output_line, "Edm = %.6g", ppm_fit_values->Edm());
+    fit_output_box->AddText(fit_output_line);
+    std::sprintf(fit_output_line, "NCalls = %u", ppm_fit_values->NCalls());
+    fit_output_box->AddText(fit_output_line);
+    fit_output_box->Draw();
+
+    std::time_t now = std::time(nullptr);
+    std::tm* local_time = std::localtime(&now);
+    char timestamp[64];
+    std::strftime(timestamp, sizeof(timestamp), "%H:%M:%S-%d-%m-%Y", local_time);
+    char output_filename[256];
+    std::sprintf(output_filename, "scan_histogram_%s.png", timestamp);
+    c1->SaveAs(output_filename);
 
 
 
