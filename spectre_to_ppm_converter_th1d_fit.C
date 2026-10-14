@@ -1,10 +1,12 @@
 #include <iostream>
+#include <cstdio>  // For std::sprintf
 #include <cstdlib> // For std::atoi
 #include "TH1D.h"
 #include "TF1.h"
 #include "TFile.h"
 #include "TRandom3.h"
 #include "TCanvas.h"
+#include "TLegend.h"
 #include "TMatrixD.h"
 #include "TDecompSVD.h"
 #include "TFitResult.h"
@@ -91,7 +93,7 @@ int main(int argc, char* argv[]) {
     
 
     // Definition of histogram
-    TH1D* rga_scan_histogram_pointer = new TH1D("h", "rga", amount_of_steps, 1, (1 + (amount_of_steps*MZ_step)));
+    TH1D* rga_scan_histogram_pointer = new TH1D("h", "RGA scan", amount_of_steps, 1, (1 + (amount_of_steps*MZ_step)));
 
         for(int i=0;i<amount_of_steps;i++){
             double current_mz = initial_MZ + MZ_step*i;
@@ -131,7 +133,7 @@ int main(int argc, char* argv[]) {
 
     
     // Fitting function iteslf
-    TFitResultPtr ppm_fit_values = rga_scan_histogram_pointer->Fit(&ffit,"S");
+    TFitResultPtr ppm_fit_values = rga_scan_histogram_pointer->Fit(&ffit,"S0");
 
 
 
@@ -139,9 +141,48 @@ int main(int argc, char* argv[]) {
 
 
 
-    TCanvas *c1 = new TCanvas("c1", "Random Histogram", 800, 600);
+    TCanvas *c1 = new TCanvas("c1", "Random Histogram", 900, 600);
+    c1->SetRightMargin(0.28);
     c1->SetLogy(1);
-    rga_scan_histogram_pointer->Draw();
+    rga_scan_histogram_pointer->SetStats(0);
+    rga_scan_histogram_pointer->Draw("hist");
+
+    const char* entry_names[6] = {"helium", "argon", "oxygen", "nitrogen", "CO2", "methane"};
+
+    TLegend *legend = new TLegend(0.74, 0.5, 0.98, 0.88);
+
+    TF1* comps[6];
+
+    // Plot ionic_current_fit_for_specific_mz contribution with a different
+    // colour for each entry of ppm_array (one curve per gas/compound).
+    for (int i = 0; i < 6; i++) {
+        double params[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+        params[i] = ppm_fit_values->Parameter(i);
+        char name[64];
+        std::sprintf(name, "comp_%d", i);
+        TF1 *comp = new TF1(name, ionic_current_fit_for_specific_mz,
+            initial_MZ, (initial_MZ + (amount_of_steps * MZ_step)), 6);
+        for (int j = 0; j < 6; j++) { comp->SetParameter(j, params[j]); }
+        comp->SetLineColor(i + 2);   // distinct colour per ppm_array entry
+        comp->SetLineWidth(2);
+        comp->Draw("same");
+
+        comps[i] = comp;
+    }
+
+    int legend_order[6] = {0, 1, 2, 3, 5, 4};
+    for (int k = 0; k < 6; k++) {
+        int i = legend_order[k];
+        legend->AddEntry(comps[i], entry_names[i], "l");
+    }
+
+    char chi2_text[128];
+    std::sprintf(chi2_text, "Chi2 = %.6g", ppm_fit_values->Chi2());
+    legend->AddEntry((TObject*)0, chi2_text, "");
+
+    legend->SetFillStyle(0);
+    legend->Draw();
+
     c1->SaveAs("scan_histogram.png");
 
 
