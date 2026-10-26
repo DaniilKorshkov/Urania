@@ -40,6 +40,19 @@ double calibration_matrix[6][255];
 
 
 
+// Uncertainty of a single ionic current measurement.
+// The model is a polynomial: 1% of the measured current plus a constant offset of 5.
+float IonicCurrentUncertainty(float ionic_current) {
+
+    float ionic_current_error = 0.01*ionic_current;
+
+    return ionic_current_error;
+
+} // This function returns the uncertainty of an ionic current reading in the units of the current itself
+
+
+
+
 // step-function for emulating RGA raw output (m/z is a variable, PPM's are parameters) for fitting purpose
 Double_t ionic_current_fit_for_specific_mz(double *mz, double *ppm_array){  
     
@@ -110,7 +123,11 @@ int main(int argc, char* argv[]) {
         for(int i=0;i<amount_of_steps;i++){
             double current_mz = initial_MZ + MZ_step*i;
             double ionic_current = std::atof(argv[5+i]);
-            rga_scan_histogram_pointer->SetBinContent( current_mz, ionic_current);
+            int current_bin = static_cast<int>(current_mz);
+            rga_scan_histogram_pointer->SetBinContent( current_bin, ionic_current);
+            // The bin error is the uncertainty of the ionic current measurement.
+            // It is the error source used by the fitter for the main fit.
+            rga_scan_histogram_pointer->SetBinError( current_bin, IonicCurrentUncertainty(ionic_current));
         }
 
 
@@ -208,8 +225,8 @@ int main(int argc, char* argv[]) {
                 double x_center = rga_scan_histogram_pointer->GetBinCenter(bin);
                 double model_value = ionic_current_fit_for_specific_mz(&x_center, params);
 
-                double bin_error = std::sqrt(std::fabs(observed));
-                if (bin_error == 0.0) { bin_error = 1.0; }
+                double bin_error = rga_scan_histogram_pointer->GetBinError(bin);
+                if (bin_error <= 0.0) { continue; } // bins without measurement are excluded from the fit as well
 
                 double residual = observed - model_value;
                 chi2 += (residual * residual) / (bin_error * bin_error);
