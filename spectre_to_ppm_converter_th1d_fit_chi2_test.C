@@ -16,7 +16,8 @@
 #include <ctime>
 #include "TPaveText.h"
 #include "TGraph.h"
-
+#include <fstream>  // For saving to text file that can be imported as Excel
+#include <format>
 
 
 
@@ -226,7 +227,7 @@ int main(int argc, char* argv[]) {
                 double model_value = ionic_current_fit_for_specific_mz(&x_center, params);
 
                 double bin_error = rga_scan_histogram_pointer->GetBinError(bin);
-                if (bin_error <= 0.0) { continue; } // bins without measurement are excluded from the fit as well
+                if (model_value <= 0 || bin_error <= 0) continue; // bins without measurement are excluded from the fit as well
 
                 double residual = observed - model_value;
                 chi2 += (residual * residual) / (bin_error * bin_error);
@@ -296,8 +297,27 @@ int main(int argc, char* argv[]) {
         legend->AddEntry(comps[i], entry_names[i], "l");
     }
 
-    char chi2_text[128];
-    std::sprintf(chi2_text, "Chi2 = %.6g", ppm_fit_values->Chi2());
+    double params[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+            for (int i = 0; i < 6; i++) {
+                params[i] = ppm_fit_values->Parameter(i);
+            }
+
+    double chi2 = 0.0;
+            for (int bin = 1; bin <= rga_scan_histogram_pointer->GetNbinsX(); bin++) {
+                double observed = rga_scan_histogram_pointer->GetBinContent(bin);
+                double x_center = rga_scan_histogram_pointer->GetBinCenter(bin);
+                double model_value = ionic_current_fit_for_specific_mz(&x_center, params);
+
+                double bin_error = rga_scan_histogram_pointer->GetBinError(bin);
+                if (model_value <= 0 || bin_error <= 0) continue; // bins without measurement are excluded from the fit as well
+
+                double residual = observed - model_value;
+                chi2 += (residual * residual) / (bin_error * bin_error);
+            }
+
+
+
+    char chi2_text[128]; std::sprintf(chi2_text, "Chi2 = %.6g", chi2);
     legend->AddEntry((TObject*)0, chi2_text, "");
 
     legend->SetFillStyle(0);
@@ -341,6 +361,74 @@ int main(int argc, char* argv[]) {
     // Output the already-normalized parameters.
     double he_ppm = normalized_params[0]; double ar_ppm = normalized_params[1]; double o2_ppm = normalized_params[2]; double n2_ppm = normalized_params[3]; double co2_ppm = normalized_params[4]; double ch4_ppm = normalized_params[5];
     std::cout << he_ppm << " " << ar_ppm << " " << o2_ppm << " " << n2_ppm << " " << co2_ppm << " " << ch4_ppm << std::endl;
+
+    // Save peak data to Excel-compatible text file when save graphs is True
+    if (save_graphs) {
+        // Create a filename for the Excel table
+        char excel_filename[256];
+        std::sprintf(excel_filename, "peak_data_%s.csv", run_timestamp);
+        
+        // Open file for writing
+        std::ofstream excel_file(excel_filename);
+        
+        // Write header
+        excel_file << "MZ,Observed Value,Model Predicted Value,Model Predicted Uncertainty\n";
+        
+        // Process all bins in the histogram (covering all MZ values modeled by the fit)
+        int row_counter = 2;
+        for (int bin = 1; bin <= rga_scan_histogram_pointer->GetNbinsX(); bin++) {
+            double mz_value = rga_scan_histogram_pointer->GetBinCenter(bin);
+            double observed_val = rga_scan_histogram_pointer->GetBinContent(bin);
+            double bin_error = rga_scan_histogram_pointer->GetBinError(bin);
+            
+            
+            
+            // Calculate model predicted value for this MZ using all fitted parameters
+            double params[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+            for (int i = 0; i < 6; i++) {
+                params[i] = ppm_fit_values->Parameter(i);
+            }
+            double model_pred_val = ionic_current_fit_for_specific_mz(&mz_value, params);
+            
+            // Skip bins where model prediction is zero (no meaningful contribution)
+            if (model_pred_val <= 0) continue;
+
+            // Skip bins without data
+            if (model_pred_val <= 0 || bin_error <= 0) continue;
+            
+            // Get the uncertainty from the fit (parameter error)
+            double model_pred_uncertainty = ppm_fit_values->ParError(0); // Simplified approach
+            
+            // Calculate Chi2 test for this specific point
+            // This computes chi2 = (observed - predicted)^2 / error^2
+            double chi2_test = 0.0;
+            if (bin_error > 0) {
+                double residual = observed_val - model_pred_val;
+                chi2_test = (residual * residual) / (bin_error * bin_error);
+            }
+            
+            // Write data to file
+            excel_file << int(mz_value) << "," 
+                      << observed_val << "," 
+                      << model_pred_val << "," 
+                      << bin_error << "\n";
+                      row_counter++;
+        }
+        
+        
+        
+        // Append normalized parameters and uncertainties for each gas
+        
+        excel_file << "\nGas,Normalized Value,Uncertainty\n";
+        for (int i = 0; i < 6; i++) {
+            excel_file << chi2_param_names[i] << "," 
+                       << normalized_params[i] << "," 
+                       << normalized_errors[i] << "\n";
+        }
+        
+        
+        excel_file.close();
+    }
 
     // end of output block
 
