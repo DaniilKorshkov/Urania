@@ -175,6 +175,7 @@ int main(int argc, char* argv[]) {
     double normalized_sum = 0.0;
     for (int i = 0; i < 6; i++) { normalized_sum += std::fabs(fitted_params[i]); }
     if (normalized_sum == 0.0) { normalized_sum = 1.0; }
+    normalized_sum = 1;
     for (int i = 0; i < 6; i++) { normalized_params[i] = 1000000.0 * std::fabs(fitted_params[i]) / normalized_sum; }
     // Scale the raw fit uncertainties by the same normalization factor.
     for (int i = 0; i < 6; i++) { normalized_errors[i] = 1000000.0 * ppm_fit_values->ParError(i) / normalized_sum; }
@@ -200,7 +201,8 @@ int main(int argc, char* argv[]) {
         if (!(err > 1e-8)) { err = std::fabs(fitted_params[ipar]) * 0.1 + 0.1; }
 
         TGraph* g = new TGraph();
-        char graph_title[128];
+        char graph_title[256];
+        double min_chi2 = 1e300;
         std::sprintf(graph_title, "Chi2 vs %s (other parameters fixed)", chi2_param_names[ipar]);
         g->SetTitle(graph_title);
         g->SetMarkerStyle(20);
@@ -235,8 +237,13 @@ int main(int argc, char* argv[]) {
 
             // Display the scanned parameter in normalized units.
             double normalized_trial = 1000000.0 * trial / normalized_sum;
+            if (chi2 < min_chi2) { min_chi2 = chi2; }
             g->SetPoint(g->GetN(), normalized_trial, chi2);
         }
+
+        char legend_title[256];
+        std::sprintf(legend_title, "Chi2 vs %s (other parameters fixed); min chi2 = %.6g", chi2_param_names[ipar], min_chi2);
+        g->SetTitle(legend_title);
 
         g->GetXaxis()->SetTitle("Normalized parameter");
         g->GetYaxis()->SetTitle("Chi2");
@@ -245,6 +252,40 @@ int main(int argc, char* argv[]) {
         // Draw on the combined (single) canvas.
         chi2_combined_canvas->cd(ipar + 1);
         g->Draw("APL");
+        TLegend* leg = new TLegend(0.55, 0.75, 0.88, 0.88);
+        leg->SetTextSize(0.04);
+        char leg_entry[256];
+        std::sprintf(leg_entry, "%s:#chi^{2} = %.6g", chi2_param_names[ipar], min_chi2);
+        leg->AddEntry(g, leg_entry, "lp");
+
+        // Find the deviation in x from the best-fit value that increases chi2 by 1.
+        double fitted_x = 1000000.0 * fitted_params[ipar] / normalized_sum;
+        double target = min_chi2 + 1.0;
+        double left_dev = 0.0, right_dev = 0.0;
+        int n = g->GetN();
+        double* xs = g->GetX();
+        double* ys = g->GetY();
+        for (int k = 1; k < n; k++) {
+            if (xs[k-1] <= fitted_x && xs[k] >= fitted_x) continue;
+            if (ys[k-1] < target && ys[k] >= target) {
+                // crossing on right side
+                double frac = (target - ys[k-1]) / (ys[k] - ys[k-1]);
+                right_dev = (xs[k-1] + frac * (xs[k] - xs[k-1])) - fitted_x;
+            }
+            if (ys[k-1] >= target && ys[k] < target) {
+                // crossing on left side
+                double frac = (target - ys[k]) / (ys[k-1] - ys[k]);
+                left_dev = fitted_x - (xs[k] + frac * (xs[k-1] - xs[k]));
+            }
+        }
+        if (left_dev < 0) left_dev = -left_dev;
+        if (right_dev < 0) right_dev = -right_dev;
+        double dev = (left_dev + right_dev) / 2.0;
+
+        char leg_entry2[256];
+        std::sprintf(leg_entry2, "#Delta x = %.6g", dev);
+        leg->AddEntry((TObject*)0, leg_entry2, "");
+        leg->Draw();
     }
 
     if (save_graphs) {
@@ -447,4 +488,3 @@ int main(int argc, char* argv[]) {
 /// to execute via Python3:
 ///   CSV_concentrations = subprocess.run(["input_test",comma-separated-arguements],capture_output=True,cwd=cwd)
 ///   #cwd parsed by Python from Config file. All arguements (script name and ints/floats) are provided as list
-
