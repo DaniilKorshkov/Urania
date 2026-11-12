@@ -16,6 +16,8 @@
 #include <ctime>
 #include "TPaveText.h"
 #include "TGraph.h"
+#include "TMarker.h"
+#include "TLine.h"
 #include <fstream>  // For saving to text file that can be imported as Excel
 #include <format>
 
@@ -285,6 +287,21 @@ int main(int argc, char* argv[]) {
         char leg_entry2[256];
         std::sprintf(leg_entry2, "#Delta x = %.6g", dev);
         leg->AddEntry((TObject*)0, leg_entry2, "");
+
+        TMarker* best_fit_marker = new TMarker(fitted_x, min_chi2, 20);
+        best_fit_marker->SetMarkerColor(kRed);
+        best_fit_marker->SetMarkerSize(1.2);
+        best_fit_marker->Draw();
+
+        char leg_entry3[256];
+        std::sprintf(leg_entry3, "x = %.6g", fitted_x);
+        leg->AddEntry(best_fit_marker, leg_entry3, "p");
+
+        TLine* chi2_plus_one_line = new TLine(xs[0], min_chi2 + 1.0, xs[n-1], min_chi2 + 1.0);
+        chi2_plus_one_line->SetLineColor(kRed);
+        chi2_plus_one_line->SetLineWidth(1);
+        chi2_plus_one_line->Draw();
+
         leg->Draw();
     }
 
